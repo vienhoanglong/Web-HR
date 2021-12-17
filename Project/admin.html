@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập</title>
+    <title>Admin</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
@@ -133,30 +133,96 @@
                 <div class="col-xl-9 col-lg-7">
                     <div class="card shadow mb-4">
                         <!-- Card Body -->
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Bảng Danh Sách Nhân Viên</h6>
+                        </div>
                         <div class="card-body">
-                            <div class="chart-area">
-                                <canvas id="myAreaChart"></canvas>
+                            <div class="form-outline mb-2">
+                                <input type="search" class="form-control" placeholder="Search..."/>
+                                
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Mã nhân viên</th>
+                                            <th>Họ Tên</th>
+                                            <th>Chức vụ</th>
+                                            <th>Phòng Ban</th>
+                                            <th>Function</th>
+                                        </tr>
+                                    </thead>     
+                                    <tbody>
+                                        <tr>
+                                            <td>NV01</td>
+                                            <td>Viên Hoàng Long</td>
+                                            <td>Trưởng phòng CNTT</td>
+                                            <td>Phòng CNTT</td>
+                                            <td>
+                                                <a class="btn btn-primary btn-icon-split"> 
+                                                    <span class="icon text-white-50"><i class="fa fa-edit"></i></span>
+                                                    <span >Edit</span>
+                                                </a>
+                                                <a class="btn btn-danger btn-icon-split"> 
+                                                    <span class="icon text-white-50"><i class="fa fa-remove"></i></span>
+                                                    <span>Delete</span>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>NV01</td>
+                                            <td>Viên Hoàng Long</td>
+                                            <td>Trưởng phòng CNTT</td>
+                                            <td>Phòng CNTT</td>
+                                            <td>
+                                                <a class="btn btn-primary btn-icon-split"> 
+                                                    <span class="icon text-white-50"><i class="fa fa-edit"></i></span>
+                                                    <span >Edit</span>
+                                                </a>
+                                                <a class="btn btn-danger btn-icon-split"> 
+                                                    <span class="icon text-white-50"><i class="fa fa-remove"></i></span>
+                                                    <span>Delete</span>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>NV01</td>
+                                            <td>Viên Hoàng Long</td>
+                                            <td>Nhân viên phòng CNTT</td>
+                                            <td>Phòng CNTT</td>
+                                            <td>
+                                                <a class="btn btn-primary btn-icon-split"> 
+                                                    <span class="icon text-white-50"><i class="fa fa-edit"></i></span>
+                                                    <span >Edit</span>
+                                                </a>
+                                                <a class="btn btn-danger btn-icon-split"> 
+                                                    <span class="icon text-white-50"><i class="fa fa-remove"></i></span>
+                                                    <span>Delete</span>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <ul class="pagination">
+                                    <li class="page-item"><a class="page-link" href="#">Trước</a></li>
+                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">4</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">5</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">Sau</a></li>
+                                  </ul>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-9 col-lg-7">
+                <div class="col-xl-3">
                     <div class="card shadow mb-4">
-                        <!-- Card Body -->
-                        <div class="card-body">
-                            <div class="chart-area">
-                                <canvas id="myAreaChart"></canvas>
-                            </div>
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Danh sách thông báo</h6>
                         </div>
-                    </div>
-                </div>
-                <div class="col-xl-9 col-lg-7">
-                    <div class="card shadow mb-4">
-                        <!-- Card Body -->
                         <div class="card-body">
-                            <div class="chart-area">
-                                <canvas id="myAreaChart"></canvas>
-                            </div>
+                            <!-- Content notification -->
                         </div>
                     </div>
                 </div>

@@ -223,3 +223,9 @@ ul ul a {
 .text-orange {
   color: #f77741;
 }
+/* Trang Profile */
+.img-profile-edit {
+  width: 120px;
+  height: 120px;
+}
+/* Trang Add_Employee */
