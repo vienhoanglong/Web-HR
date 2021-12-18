@@ -71,3 +71,39 @@ $(document).ready(function () {
         });
     });
 });
+//show dialog details department
+$(document).ready(function () {
+    $(".click-details-department").click(function () {
+        $('#details-department').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+    });
+});
+//show dialog detail calender
+$(document).ready(function () {
+    $(".click-detail-calender").click(function () {
+        $('#detail-calender').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+    });
+});
+//Show dialog cancel calender
+$(document).ready(function () {
+    $(".click-cancel-calender").click(function () {
+        $('#cancel-calendar').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+    });
+});
+//Show dialog create calendar
+$(document).ready(function () {
+    $(".create-calender-tp").click(function () {
+        $('#create-calendar').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+    });
+});
