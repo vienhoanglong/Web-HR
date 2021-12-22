@@ -55,11 +55,13 @@ a:focus {
   background: #141523;
   color: #fff;
   transition: all 0.3s;
+  
 }
 #sidebar.active {
   min-width: 80px;
   max-width: 80px;
   text-align: center;
+
 }
 #sidebar.active .sidebar-header h4,
 #sidebar.active .CTAs {
@@ -72,9 +74,9 @@ a:focus {
   text-align: left;
 }
 #sidebar.active ul li a {
-  padding: 20px 10px;
+  padding: 10px 10px;
   text-align: center;
-  font-size: 14px;
+  font-size: 12px;
 }
 #sidebar.active ul li a i {
   margin-right: 0;
@@ -145,6 +147,9 @@ ul ul a {
 .navbar-nav {
   flex-direction: row !important;
 }
+#nav-head{
+  margin-left: 0px;
+}
 @media (max-width: 1023px) {
   #sidebar {
     min-width: 80px;
@@ -201,6 +206,7 @@ ul ul a {
     display: none;
   }
 }
+
 .img-profile {
   height: 45px;
   width: 45px;
@@ -213,6 +219,7 @@ ul ul a {
 }
 .container-fluid {
   padding-left: 0px !important ;
+  margin-left: 0px;
 }
 .navbar-header {
   margin: 0px;
