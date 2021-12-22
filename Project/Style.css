@@ -213,10 +213,15 @@ ul ul a {
 }
 .container-fluid {
   padding-left: 0px !important ;
+  padding-right: 0px !important;
+}
+.col-lg-12 {
+  padding-right: 0px !important;
 }
 .navbar-header {
   margin: 0px;
 }
+
 .text-gray-800 {
   margin: 20px !important;
 }
@@ -229,3 +234,4 @@ ul ul a {
   height: 120px;
 }
 /* Trang Add_Employee */
+/* Trang Calendar_Employee */

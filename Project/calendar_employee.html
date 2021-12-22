@@ -75,18 +75,20 @@
             </nav>  
             <!-- Page Content  -->
             <div class="container-fluid">
-                <div class="col-xl-12 col-lg-9">
-                    <div class="card shadow mb-4 mt-5">
+                <div class="col-xl-12 col-lg-12">
+                    <div class="mt-2">
+                        <div class="row ml-1">
+                            <div class="mr-2">
+                                <a class="create-calendar-tp  btn btn-primary"><i class="fa fa-plus-circle" aria-hidden="true"></i>
+                                    Xin nghỉ phép</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card shadow mb-4">
                         <!-- Card Body -->
                         <div class="card-header">
                             <h4 class="font-weight-bold text-primary">Bảng Danh Sách Yêu Cầu Xin Nghỉ Phép</h4>
                             <h6 class="font-weight-bold text-danger">*Note: Tổng ngày nghỉ trong năm là 14 ngày</h6>
-                            <div>
-                                <button class="create-calender-tp btn btn-primary"><i class="fa fa-plus-circle" aria-hidden="true"></i>
-                                 Xin nghỉ phép</button>
-                                 <button class="btn btn-primary"><i class="fa fa-check-circle" aria-hidden="true"></i>
-                                   Kết quả</button>
-                            </div>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -108,21 +110,21 @@
                                             <td>3 Ngày</td>
                                             <td>12/12/21-15/12/21</td>
                                             <td>
-                                                <a class="btn click-detail-calender text-primary">Chi tiết<a>
+                                                <a class="btn click-detail-calendar text-primary">Chi tiết<a>
                                             </td>
                                             <td>
-                                                <a class="btn btn-success btn-icon-split click-accept-calender"> 
+                                                <a class="btn btn-success btn-icon-split click-accept-calendar"> 
                                                     <span class="icon text-white-100"><i class="fa fa-check"></i></span>
                                                    
                                                 </a>
-                                                <a class="btn btn-danger btn-icon-split click-cancel-calender"> 
+                                                <a class="btn btn-danger btn-icon-split click-cancel-calendar"> 
                                                     <span class="icon text-white-100"><i class="fa fa-times"></i></span>
                                                 </a>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
-                                <ul class="pagination">
+                                <ul class="pagination mb-4">
                                     <li class="page-item"><a class="page-link" href="#">Trước</a></li>
                                     <li class="page-item active"><a class="page-link" href="#">1</a></li>
                                     <li class="page-item"><a class="page-link" href="#">2</a></li>
@@ -132,69 +134,111 @@
                                     <li class="page-item"><a class="page-link" href="#">Sau</a></li>
                                   </ul>
                             </div>
-                        </div>
+                        </div> 
                     </div>
+                    <!-- Result calender -->
+                    <section class="bg-gradient-primary-to-secondary">
+                        <div class="card shadow mb-4">
+                            <div class="card-header">
+                                <h4 class="font-weight-bold text-primary">Bảng Danh Sách Kết Quả Nghỉ Phép</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered text-center table-hover" id="dataTable" width="100%" cellspacing="0">
+                                        <thead>
+                                            <tr>
+                                                <th>STT</th>
+                                                <th>Họ và tên</th>
+                                                <th>Yêu cầu</th>
+                                                <th>Thời gian</th>
+                                                <th>Lí do</th>
+                                                <th>Phê duyệt</th>
+                                            </tr>
+                                        </thead>     
+                                        <tbody>
+                                            <tr>
+                                                <td>1</td>
+                                                <td>Viên Hoàng Long</td>
+                                                <td>3 Ngày</td>
+                                                <td>12/12/21-15/12/21</td>
+                                                <td>
+                                                    <a class="btn click-result-calendar text-primary">Chi tiết<a>
+                                                </td>
+                                                <td>
+                                                   <strong class="text-light bg-info">Thành công</strong>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <ul class="pagination">
+                                        <li class="page-item"><a class="page-link" href="#">Trước</a></li>
+                                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">4</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">5</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">Sau</a></li>
+                                      </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
                 </div> 
             </div>  
         </div>
         <!-- Dialog detail calendar -->
-        <div id="detail-calender" class="modal fade" role="dialog">
+        <div id="detail-calendar" class="modal fade" role="dialog">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <form id="myForm" method="">
-                        <div class="modal-header">
-                            <h3 class="modal-title">Thông tin chi tiết ngày nghỉ</h3>
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <div class="modal-header">
+                        <h3 class="modal-title">Thông tin chi tiết ngày nghỉ</h3>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="num-rd">Mã nhân viên: </label>
+                            <span>NV01</span>
                         </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label for="num-rd">Mã nhân viên: </label>
-                                <span>NV01</span>
-                            </div>
-                            <div class="form-group">
-                                <label for="name-rd">Họ và tên: </label>
-                                <strong>Viên Hoàng Long</strong>
-                            </div>
-                            <div class="form-group">
-                                <label for="name-rmd">Chức vụ: </label>
-                                <span>Nhân viên phòng CNTT</span>
-                            </div>
-                            <div class="form-group">
-                                <div class="row">
-                                    <div class="col">
-                                        <label for="name-rmd">Số ngày đã nghỉ: </label>
-                                        <span>5 ngày</span>
-                                    </div>
-                                    <div class="col">
-                                        <label for="name-rmd">Số ngày nghỉ còn lại: </label>
-                                        <span>9 ngày</span>
-                                    </div>
+                        <div class="form-group">
+                            <label for="name-rd">Họ và tên: </label>
+                            <strong>Viên Hoàng Long</strong>
+                        </div>
+                        <div class="form-group">
+                            <label for="name-rmd">Chức vụ: </label>
+                            <span>Nhân viên phòng CNTT</span>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="name-rmd">Số ngày đã nghỉ: </label>
+                                    <span>5 ngày</span>
+                                </div>
+                                <div class="col">
+                                    <label for="name-rmd">Số ngày nghỉ còn lại: </label>
+                                    <span>9 ngày</span>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <h5 class="font-weight-bold">Yêu cầu xin nghỉ</h5>
-                            </div>
-                            <div class="form-group">
-                                <div class="row">
-                                    <div class="col">
-                                        <label for="name-rmd">Số ngày yêu cầu: </label>
-                                        <span>3 ngày</span>
-                                    </div>
-                                    <div class="col">
-                                        <label for="name-rmd">Thời gian: </label>
-                                        <span>12/12/21 - 15/12/21</span>
-                                    </div>
+                        </div>
+                        <div class="form-group">
+                            <h5 class="font-weight-bold">Yêu cầu xin nghỉ</h5>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="name-rmd">Số ngày yêu cầu: </label>
+                                    <span>3 ngày</span>
+                                </div>
+                                <div class="col">
+                                    <label for="name-rmd">Thời gian: </label>
+                                    <span>12/12/21 - 15/12/21</span>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label for="name-rmd">Lí do: </label>
-                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus optio earum at velit ipsa harum ipsum, minus a officia commodi? Blanditiis iusto vel repellat atque facere assumenda asperiores sint veritatis?</p>
-                            </div>
                         </div>
-                        <div class="modal-footer pull-left">
-                            <button type="button" class="btn br-color" data-dismiss="modal">Cancel</button>
+                        <div class="form-group">
+                            <label for="name-rmd">Lí do: </label>
+                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus optio earum at velit ipsa harum ipsum, minus a officia commodi? Blanditiis iusto vel repellat atque facere assumenda asperiores sint veritatis?</p>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -222,7 +266,7 @@
                 <div class="modal-content">
                     <form id="myForm" method="">
                         <div class="modal-header">
-                            <h5 class="modal-title">Thêm phòng ban mới</h5>
+                            <h3 class="modal-title">Tạo đơn xin nghỉ phép</h3>
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
                         </div>
                         <div class="modal-body">
@@ -283,6 +327,66 @@
                             <button type="submit" class="btn br-color">Submit</button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+        <!-- Dialog result calendar -->
+        <div id="result-calendar" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Thông tin chi tiết ngày nghỉ</h3>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="num-rd">Mã nhân viên: </label>
+                            <span>NV01</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="name-rd">Họ và tên: </label>
+                            <strong>Viên Hoàng Long</strong>
+                        </div>
+                        <div class="form-group">
+                            <label for="name-rmd">Chức vụ: </label>
+                            <span>Nhân viên phòng CNTT</span>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="name-rmd">Số ngày đã nghỉ: </label>
+                                    <span>5 ngày</span>
+                                </div>
+                                <div class="col">
+                                    <label for="name-rmd">Số ngày nghỉ còn lại: </label>
+                                    <span>9 ngày</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <h5 class="font-weight-bold">Yêu cầu xin nghỉ</h5>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="name-rmd">Số ngày yêu cầu: </label>
+                                    <span>3 ngày</span>
+                                </div>
+                                <div class="col">
+                                    <label for="name-rmd">Thời gian: </label>
+                                    <span>12/12/21 - 15/12/21</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="name-rmd">Lí do: </label>
+                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus optio earum at velit ipsa harum ipsum, minus a officia commodi? Blanditiis iusto vel repellat atque facere assumenda asperiores sint veritatis?</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="name-rmd">Tình trạng: </label>
+                            <strong class="btn text-light bg-info">Thành công</strong>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

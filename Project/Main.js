@@ -80,18 +80,18 @@ $(document).ready(function () {
         });
     });
 });
-//show dialog detail calender
+//show dialog detail calendar
 $(document).ready(function () {
-    $(".click-detail-calender").click(function () {
-        $('#detail-calender').modal({
+    $(".click-detail-calendar").click(function () {
+        $('#detail-calendar').modal({
             backdrop: 'static',
             keyboard: false
         });
     });
 });
-//Show dialog cancel calender
+//Show dialog cancel calendar
 $(document).ready(function () {
-    $(".click-cancel-calender").click(function () {
+    $(".click-cancel-calendar").click(function () {
         $('#cancel-calendar').modal({
             backdrop: 'static',
             keyboard: false
@@ -100,8 +100,17 @@ $(document).ready(function () {
 });
 //Show dialog create calendar
 $(document).ready(function () {
-    $(".create-calender-tp").click(function () {
+    $(".create-calendar-tp").click(function () {
         $('#create-calendar').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+    });
+});
+//Show dialog result calendar
+$(document).ready(function () {
+    $(".click-result-calendar").click(function () {
+        $('#result-calendar').modal({
             backdrop: 'static',
             keyboard: false
         });
