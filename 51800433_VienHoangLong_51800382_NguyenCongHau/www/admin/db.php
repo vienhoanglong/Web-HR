@@ -1,35 +1,32 @@
 <?php
 
-	#  https://www.w3schools.com/php/php_mysql_select.asp
- 
-    $host = 'mysql-server'; // tên mysql server
-    $user = 'root';
-    $pass = 'root';
-    $db = 'product_management'; // tên databse
+#  https://www.w3schools.com/php/php_mysql_select.asp
 
-    $conn = new mysqli($host, $user, $pass, $db);
-    $conn->set_charset("utf8");
-    if ($conn->connect_error) {
-        die('Không thể kết nối database: ' . $conn->connect_error);
-    }
+$host = 'mysql-server'; // tên mysql server
+$user = 'root';
+$pass = 'root';
+$db = 'product_management'; // tên databse
 
-	echo "Kết nối thành công tới database<br><br>";
+$conn = new mysqli($host, $user, $pass, $db);
+$conn->set_charset("utf8");
+if ($conn->connect_error) {
+	die('Không thể kết nối database: ' . $conn->connect_error);
+}
 
-	$sql = "SELECT * from product";
-	$result = $conn->query($sql);
+echo "Kết nối thành công tới database<br><br>";
 
-	if ($result->num_rows > 0) {
-		while($row = $result->fetch_assoc()) 
-		{
-			echo json_encode($row);
-			echo "<br>";
-		}
+$sql = "SELECT * from product";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+	while ($row = $result->fetch_assoc()) {
+		echo json_encode($row);
+		echo "<br>";
 	}
-	else {
-		echo "Bảng chưa có dữ liệu";
-	}
+} else {
+	echo "Bảng chưa có dữ liệu";
+}
 
-	// Sử dụng link tuyệt đối tính từ root, vì vậy có dấu / đầu tiên
-	echo "<br><img src='/images/tdt-logo.png' />";
-	echo "<p>Đây là ảnh mẫu, lấy từ thư mục images tại web root.</p>";
-?>
+// Sử dụng link tuyệt đối tính từ root, vì vậy có dấu / đầu tiên
+echo "<br><img src='/images/tdt-logo.png' />";
+echo "<p>Đây là ảnh mẫu, lấy từ thư mục images tại web root.</p>";
