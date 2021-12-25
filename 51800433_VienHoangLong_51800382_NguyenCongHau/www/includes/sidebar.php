@@ -23,7 +23,7 @@
             <a href="#"><i class="fa fa-calendar"></i>Lịch</a>
         </li>
         <li>
-            <a href="#"><i class="fa fa-sign-out"></i>Thoát</a>
+            <a href="/logout.php"><i class="fa fa-sign-out"></i>Thoát</a>
         </li>
     </ul>
 </nav>

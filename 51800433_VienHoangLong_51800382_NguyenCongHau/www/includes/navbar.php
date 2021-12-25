@@ -16,7 +16,7 @@
             </div>
         </form>
         <ul class="nav navbar-nav navbar-right">
-            <li class="nav-item item-username"><a href="#">Viên Hoàng Long</a></li>
+            <li class="nav-item item-username"><a href="#">Tài khoản - <?= $_SESSION['name'] ?></a></li>
             <img class="img-profile rounded-circle" src="/images/avt.jpeg">
         </ul>
     </div>
