@@ -1,0 +1,33 @@
+version: "3.8"
+services:
+    mysql-server:
+        image: mysql:8.0.1
+        ports:
+            - 3399:3306
+        restart: always
+        volumes:
+            - ./mysql/data:/var/lib/mysql # nếu để dòng này thì dòng bên dưới sẽ không có tác dụng
+            - ./mysql/sql/:/docker-entrypoint-initdb.d/
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_USER: user
+            MYSQL_PASSWORD: user
+
+    web:
+        build: ./www
+        restart: always
+        ports:
+            - 8080:80
+        volumes:
+            - ./www:/var/www/html/
+        depends_on:
+            - "mysql-server"
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin:latest
+        ports:
+            - 8888:80
+        restart: always
+        environment:
+            - PMA_HOST=mysql-server
+        depends_on:
+            - "mysql-server"

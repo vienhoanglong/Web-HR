@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script language="javascript" src="main.js"></script>
+</head>
+<body>
+    <div class="wrapper">
+        <nav id="sidebar" class="active">
+            <div class="sidebar-header">
+                <h4>Manager Employee</h4>
+                <strong>ME</strong>
+            </div>
+            <ul class="components">
+                <li >
+                    <a href="#"><i class="fa fa-home"></i>Trang chủ</a>
+                </li>
+                <li class="active">
+                    <a href="profile.html"><i class="fa fa-id-card-o"></i>Cá nhân</a>
+                </li>
+                <li>
+                    <a href="add_employee.html"> <i class="fa fa-users"></i>Quản lý nhân viên</a>
+                </li>
+                <li>
+                    <a href="#"> <i class="fa fa-tasks"></i>Task</a>
+                </li>
+                <li>
+                    <a href="#"> <i class="fa fa-briefcase"></i>Phòng ban</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa fa-calendar"></i>Lịch</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa fa-sign-out"></i>Thoát</a>
+                </li>
+            </ul>
+        </nav>
+        <div id="content">
+            <!-- Navbar -->
+            <nav class="navbar navbar-inverse navbar-light bg-white">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <button type="button" id="sidebar-collapse" class="btn navbar-btn">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                    </div>
+                    <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                        <div class="input-group">
+                            <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
+                                aria-label="Search" aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                                <button class="btn text-orange" type="button">
+                                    <i class="fa fa-search fa-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="nav-item item-notification">
+                            <a href="#"><i class="fa fa-bell text-orange"></i></a>
+                        </li>
+                        <li class="nav-item item-username"><a href="#">Viên Hoàng Long</a></li>
+                        <img class="img-profile rounded-circle" src="PS1png.png">             
+                    </ul>
+                </div>
+            </nav>  
+            <!-- Page Content  -->
+            <div class="container-fluid">
+                <div class="container-fluid">
+                    <div class="d-sm-flex justify-content-between">
+                        <h4 class="text-gray-800">Thông tin về bạn</h4>
+                    </div>
+                </div>
+                <div class="row m-2">
+                    <div class="col-xl-9 col-lg-7">
+                        <div class="card shadow mb-4">
+                            <div class="card-body">
+                                <div class="text-center mb-5 pt-5">
+                                    <img class="img-profile-edit rounded-circle shadow mb-4" src="/PS1png.png" alt="">
+                                    <h3>Viên Hoàng Long</h3>
+                                </div>
+                                <form>
+                                    <div class="form-row m-2">
+                                        <div class="col mr-4">
+                                            <label>Mã nhân viên</label>
+                                            <input type="text" class="form-control" placeholder="NV01" readonly>
+                                        </div>
+                                        <div class="col">
+                                            <label>Username</label>
+                                            <input type="text" class="form-control" placeholder="Vienhoanglong" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-row m-2">
+                                        <div class="col mr-4">
+                                            <label>Chức vụ</label>
+                                            <input type="text" class="form-control" placeholder="Trưởng phòng" readonly>
+                                        </div>
+                                        <div class="col">
+                                            <label>Phòng ban</label>
+                                            <input type="text" class="form-control" placeholder="Phòng CNTT" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-row m-2">
+                                      <label> Email</label>
+                                      <input type="text" class="form-control" placeholder="vienhoanglong789@gmail.com">
+                                    </div>
+                                    <div class="form-row m-2">
+                                      <label> Password</label>
+                                      <input type="text" class="form-control" placeholder="********************">
+                                    </div>
+                                    <div class="form-row m-2">
+                                        <div class="col  mr-4">
+                                            <label>New Password</label>
+                                            <input type="text" class="form-control">
+                                        </div>
+                                        <div class="col">
+                                            <label>Confirm Password</label>
+                                            <input type="text" class="form-control">
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="m-2 btn btn-lg br-color">Save changes</button>
+                                  </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Thông báo -->
+                    <div class="col-xl-3">
+                        <div class="card shadow mb-2">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Danh sách thông báo</h6>
+                            </div>
+                            <div class="card-body">
+                                <!-- Content notification -->
+                            </div>
+                        </div>
+                    </div>
+                </div>  
+            </div>     
+        </div>
+    </div>
+</body>
+</html>
