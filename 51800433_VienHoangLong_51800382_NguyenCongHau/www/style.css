@@ -28,7 +28,6 @@ span {
 .br-color {
   background-color: #0077bb;
   color: #ffffff;
-  border-radius: 10px;
   font-weight: bold;
 }
 /* Trang Home */
@@ -233,4 +232,8 @@ ul ul a {
   width: 120px;
   height: 120px;
 }
-/* Trang Add_Employee */
+.upload-img {
+  width: 0px;
+  height: 0px;
+  overflow: hidden;
+}

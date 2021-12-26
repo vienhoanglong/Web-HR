@@ -8,7 +8,7 @@
             <a href="#"><i class="fa fa-home"></i>Trang chủ</a>
         </li>
         <li>
-            <a href="#"><i class="fa fa-id-card-o"></i>Cá nhân</a>
+            <a href="/profile.php"><i class="fa fa-id-card-o"></i>Cá nhân</a>
         </li>
         <li>
             <a href="#"> <i class="fa fa-users"></i>Quản lý nhân viên</a>

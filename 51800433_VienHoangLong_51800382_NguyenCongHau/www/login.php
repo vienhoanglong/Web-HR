@@ -37,9 +37,11 @@ require_once('db.php');
             $error['pass'] = 'Mật khẩu phải có ít nhất 6 ký tự!';
         } else {
             $data = login($user, $pass);
+
             if ($data) {
                 $_SESSION['user'] = $user;
                 $_SESSION['name'] = $data['fullname'];
+                $_SESSION['activated'] = $data['activated'];
 
                 header('Location: index.php');
                 ob_end_flush();
@@ -51,7 +53,7 @@ require_once('db.php');
     }
     ?>
     <div class="container">
-        <form class="w-50 mx-auto mt-5 p-4 card form-login" action="" method="Post">
+        <form class="col-md-6 mt-5 mx-auto p-3 border rounded card form-login" action="" method="Post">
             <h3 class="mx-auto">ĐĂNG NHẬP</h3>
             <div class="form-group">
                 <label>Username</label>

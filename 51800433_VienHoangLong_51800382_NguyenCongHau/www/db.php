@@ -46,3 +46,17 @@ function login($user, $pass)
         return null;
     } else return $data;
 }
+function change_password($user, $pass)
+{
+    $hash = password_hash($pass, PASSWORD_DEFAULT);
+    $sql = 'update users set activated = 1, password = ? where username = ?';
+    $conn = open_database();
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('ss', $hash, $user);
+
+    if (!$stm->execute()) {
+        return array('code' => 2, 'error' => 'Cant Execute');
+    }
+
+    return array('code' => 0, 'error' => 'Password is changed successfully!');
+}

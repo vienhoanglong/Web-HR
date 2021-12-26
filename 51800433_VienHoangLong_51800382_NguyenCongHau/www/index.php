@@ -4,6 +4,10 @@ if (!isset($_SESSION['user'])) {
 	header('Location: login.php');
 	exit();
 }
+if ($_SESSION['activated'] == 0) {
+	header('Location: change_password.php');
+	exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
