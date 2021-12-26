@@ -1,5 +1,9 @@
 <?php
 session_start();
+if (!isset($_SESSION['user'])) {
+    header('Location: login.php');
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -15,6 +19,12 @@ session_start();
 </head>
 
 <body>
+    <?php
+    require_once('db.php');
+    $user = $_SESSION['user'];
+    $info = getInformation($user);
+    $info = $info->fetch_assoc();
+    ?>
     <div class="wrapper">
         <?php include('includes/sidebar.php'); ?>
         <div id="content">
@@ -29,40 +39,40 @@ session_start();
                     <div class="col-xl-12 col-lg-9">
                         <div class="card shadow mb-4">
                             <div class="card-body">
-                                <div class="text-center mb-4">
-                                    <img class="img-profile-edit rounded-circle shadow" src="/PS1png.png" alt="">
-                                    <label class="btn d-flex justify-content-center ">
-                                        <span class="input-group-text">
-                                            <i class="fa fa-camera"></i>
-                                        </span>
-                                        <input type="file" class="upload-img" value="Upload Photo">
-                                    </label>
-                                    <h4>Viên Hoàng Long</h4>
-                                </div>
-                                <form>
+                                <form action="" method="post">
+                                    <div class="text-center mb-4">
+                                        <img class="img-profile-edit rounded-circle shadow" src="/images/<?= $info['avatar'] ?>" alt="">
+                                        <label class="btn d-flex justify-content-center ">
+                                            <span class="input-group-text">
+                                                <i class="fa fa-camera"></i>
+                                            </span>
+                                            <input type="file" class="upload-img" value="Upload Photo">
+                                        </label>
+                                        <h4 class="text-primary"><?= $info['fullname'] ?></h4>
+                                    </div>
                                     <div class="form-row m-2">
                                         <div class="col mr-4">
                                             <label>Mã nhân viên</label>
-                                            <input type="text" class="form-control" placeholder="NV01" readonly>
+                                            <input type="text" class="form-control" value="<?= $info['id'] ?>" readonly>
                                         </div>
                                         <div class="col">
                                             <label>Username</label>
-                                            <input type="text" class="form-control" placeholder="Vienhoanglong" readonly>
+                                            <input type="text" class="form-control" value="<?= $info['username'] ?>" readonly>
                                         </div>
                                     </div>
                                     <div class="form-row m-2">
                                         <div class="col mr-4">
                                             <label>Chức vụ</label>
-                                            <input type="text" class="form-control" placeholder="Trưởng phòng" readonly>
+                                            <input type="text" class="form-control" placeholder="Admin" value="<?= $info['position'] ?>" readonly>
                                         </div>
                                         <div class="col">
                                             <label>Phòng ban</label>
-                                            <input type="text" class="form-control" placeholder="Phòng CNTT" readonly>
+                                            <input type="text" class="form-control" placeholder="Admin" value="<?= $info['department'] ?>" readonly>
                                         </div>
                                     </div>
                                     <div class="form-row m-2">
                                         <label> Email</label>
-                                        <input type="text" class="form-control" placeholder="vienhoanglong789@gmail.com">
+                                        <input type="text" class="form-control" value="<?= $info['email'] ?>">
                                     </div>
                                     <div class="form-row m-2">
                                         <label> Password</label>

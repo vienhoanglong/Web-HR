@@ -57,6 +57,15 @@ function change_password($user, $pass)
     if (!$stm->execute()) {
         return array('code' => 2, 'error' => 'Cant Execute');
     }
-
     return array('code' => 0, 'error' => 'Password is changed successfully!');
+}
+function getInformation($user)
+{
+    $conn = open_database();
+    $sql = 'select * from users where username = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('s', $user);
+    $stm->execute();
+    $data = $stm->get_result();
+    return $data;
 }

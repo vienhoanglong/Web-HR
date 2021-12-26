@@ -94,7 +94,6 @@ if ($_SESSION['activated'] == 0) {
 						<div class="card-body">
 							<div class="form-outline mb-2">
 								<input type="search" class="form-control" placeholder="Search..." />
-
 							</div>
 							<div class="table-responsive">
 								<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
