@@ -1,5 +1,43 @@
 <?php
 session_start();
+if (!isset($_SESSION['user'])) {
+    header('Location: login.php');
+    exit();
+}
+require_once('db.php');
+$errors = array(
+    'error' => 0
+);
+$fullname = '';
+$username = '';
+$position = '';
+$department = '';
+$email = '';
+if (isset($_POST['fullname']) && isset($_POST['username']) && isset($_POST['position']) && isset($_POST['department']) && isset($_POST['email'])) {
+    $fullname = $_POST['fullname'];
+    $username = $_POST['username'];
+    $position = $_POST['position'];
+    $department = $_POST['department'];
+    $email = $_POST['email'];
+    $result = create_employee($username, $fullname, $email, $department, $position);
+    if ($result['code'] == 3) {
+        $errors['error'] = 1;
+        $errors['position'] = "Hiện phòng ban này đã có trưởng phòng";
+    }
+    if ($result['code'] == 1) {
+        $errors['error'] = 1;
+        $errors['username'] = 'Tài khoản nhân viên đã tồn tại';
+    }
+    if ($result['code'] == 2) {
+        $errors['error'] = 1;
+        $errors['comand'] = 'Lệnh không được thực hiện!';
+    }
+    if ($result['code'] == 4) {
+        $errors['error'] = 1;
+        $errors['email'] = 'Email đã tồn tại!';
+    }
+    die(json_encode($errors));
+}
 ?>
 
 <!DOCTYPE html>
@@ -16,6 +54,10 @@ session_start();
 </head>
 
 <body>
+    <?php
+    $d_name = get_name_department();
+    print_r($d_name);
+    ?>
     <div class="wrapper">
         <?php include('includes/sidebar.php'); ?>
         <div id="content">
@@ -168,52 +210,62 @@ session_start();
                 </div>
             </div>
         </div>
+
         <!-- Dialog create employee-->
         <div id="create-employee" class="modal fade" role="dialog">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <form id="myForm" method="">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Thêm nhân viên mới</h5>
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        </div>
-                        <div class="modal-body">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Thêm nhân viên mới</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="Post" action="" novalidate>
                             <div class="form-group">
                                 <label for="fulname">Họ và tên</label>
                                 <input name="fullname" class="form-control" type="text" placeholder="Full name" id="fullname">
+                                <span id="er-fullname" class="text-danger font-weight-bold"></span>
                             </div>
                             <div class="form-group">
                                 <label for="username">Username</label>
                                 <input name="username" class="form-control" type="text" placeholder="User name" id="username">
+                                <span id="er-username" class="text-danger font-weight-bold"></span>
                             </div>
                             <div class="form-group">
                                 <label for="position">Chức vụ</label>
-                                <select class="form-control" id="position">
-                                    <option>Nhân viên</option>
-                                    <option>Trưởng phòng</option>
+                                <select class="form-control" name="position" id="position">
+                                    <option value="employee">Nhân viên</option>
+                                    <option value="manager">Trưởng phòng</option>
                                 </select>
+                                <span id="er-position" class="text-danger font-weight-bold"></span>
                             </div>
                             <div class="form-group">
                                 <label for="department">Phòng ban</label>
-                                <select class="form-control" id="department">
-                                    <option>Phòng tài chính</option>
-                                    <option>Phòng marketing</option>
-                                    <option>Phòng kết toán</option>
-                                    <option>Phòng nhân sự</option>
-                                    <option>Phòng CNTT</option>
+                                <select class="form-control" name="department">
+                                    <?php
+                                    foreach ($d_name as $key => $value) :
+                                        echo '<option value =' . $value['idDepartment'] . '>' . $value['nameDepartment'] . '</option>';
+                                    endforeach;
+                                    ?>
                                 </select>
+                                <span id="er-department" class="text-danger font-weight-bold"></span>
                             </div>
                             <div class="form-group">
                                 <label for="email">Email</label>
                                 <input name="email" class="form-control" type="text" placeholder="email123@example.com" id="email">
+                                <span id="er-email" class="text-danger font-weight-bold"></span>
                             </div>
+                            <span class="alert-danger">
 
-                        </div>
-                        <div class="modal-footer pull-left">
-                            <button type="button" class="btn br-color" data-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn br-color">Create</button>
-                        </div>
-                    </form>
+                            </span>
+                            <span class="alert-success">
+
+                            </span>
+                            <div class="modal-footer">
+                                <button type="button" id="btn-create-employee" class="btn br-color">Create</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

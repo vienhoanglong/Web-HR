@@ -22,7 +22,7 @@ if (!isset($_SESSION['user'])) {
     <?php
     require_once('db.php');
     $user = $_SESSION['user'];
-    $info = getInformation($user);
+    $info = get_information($user);
     $info = $info->fetch_assoc();
     ?>
     <div class="wrapper">
