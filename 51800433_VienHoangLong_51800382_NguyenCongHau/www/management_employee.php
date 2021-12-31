@@ -5,6 +5,7 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 require_once('db.php');
+$users = get_employee();
 $errors = array(
     'error' => 0
 );
@@ -13,6 +14,7 @@ $username = '';
 $position = '';
 $department = '';
 $email = '';
+
 if (isset($_POST['fullname']) && isset($_POST['username']) && isset($_POST['position']) && isset($_POST['department']) && isset($_POST['email'])) {
     $fullname = $_POST['fullname'];
     $username = $_POST['username'];
@@ -38,6 +40,37 @@ if (isset($_POST['fullname']) && isset($_POST['username']) && isset($_POST['posi
     }
     die(json_encode($errors));
 }
+//Delete employee
+$er_delete = array(
+    'error' => 0
+);
+if (isset($_POST['employee_id'])) {
+    $employee_id = $_POST['employee_id'];
+    $result = delete_employee($employee_id);
+    if ($result['code'] == 1) {
+        $er_delete['error'] = 1;
+        $er_delete = 'Xóa không thành công';
+    }
+    if ($result['code'] == 0) {
+        $er_delete['error'] = 0;
+        $er_delete = ' Xóa thành công';
+    }
+    die(json_encode($er_delete));
+}
+//Edit employee
+if (isset($_POST['checking_edit'])) {
+    $ud_employee_id = $_POST['ud_employee_id'];
+    $data = [];
+    $result = get_information_update_employee($ud_employee_id);
+    if (mysqli_fetch_assoc($result) > 0) {
+        foreach ($result as $row) {
+            array_push($data, $row);
+            header('Content-Type: application/json');
+            die(json_encode($data));
+        }
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -56,7 +89,7 @@ if (isset($_POST['fullname']) && isset($_POST['username']) && isset($_POST['posi
 <body>
     <?php
     $d_name = get_name_department();
-    print_r($d_name);
+    // print_r($d_name);
     ?>
     <div class="wrapper">
         <?php include('includes/sidebar.php'); ?>
@@ -92,108 +125,32 @@ if (isset($_POST['fullname']) && isset($_POST['username']) && isset($_POST['posi
                                             <th>Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>NV01</td>
-                                            <td><a href="#" class="font-weight-bold">Viên Hoàng Long</a></td>
-                                            <td>Trưởng phòng CNTT</td>
-                                            <td>Phòng CNTT</td>
-                                            <td>
-                                                <a class="btn btn-primary btn-icon-split click-update-employee">
-                                                    <span class="icon text-white-50"><i class="fa fa-edit"></i></span>
-                                                    <span>Edit</span>
-                                                </a>
-                                                <a class="btn btn-danger btn-icon-split click-delete-employee">
-                                                    <span class="icon text-white-50"><i class="fa fa-trash"></i></span>
-                                                    <span>Delete</span>
-                                                </a>
-                                                <a class="btn btn-info btn-icon-split click-reset-password">
-                                                    <span class="icon text-white-50"><i class="fa fa-repeat"></i></span>
-                                                    <span>Pass</span>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>NV01</td>
-                                            <td><a href="#" class="font-weight-bold">Viên Hoàng Long</a></td>
-                                            <td>Trưởng phòng CNTT</td>
-                                            <td>Phòng CNTT</td>
-                                            <td>
-                                                <a class="btn btn-primary btn-icon-split click-update-employee">
-                                                    <span class="icon text-white-50"><i class="fa fa-edit"></i></span>
-                                                    <span>Edit</span>
-                                                </a>
-                                                <a class="btn btn-danger btn-icon-split click-delete-employee">
-                                                    <span class="icon text-white-50"><i class="fa fa-trash"></i></span>
-                                                    <span>Delete</span>
-                                                </a>
-                                                <a class="btn btn-info btn-icon-split click-reset-password">
-                                                    <span class="icon text-white-50"><i class="fa fa-repeat"></i></span>
-                                                    <span>Pass</span>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>NV01</td>
-                                            <td><a href="#" class="font-weight-bold">Viên Hoàng Long</a></td>
-                                            <td>Trưởng phòng CNTT</td>
-                                            <td>Phòng CNTT</td>
-                                            <td>
-                                                <a class="btn btn-primary btn-icon-split click-update-employee">
-                                                    <span class="icon text-white-50"><i class="fa fa-edit"></i></span>
-                                                    <span>Edit</span>
-                                                </a>
-                                                <a class="btn btn-danger btn-icon-split click-delete-employee">
-                                                    <span class="icon text-white-50"><i class="fa fa-trash"></i></span>
-                                                    <span>Delete</span>
-                                                </a>
-                                                <a class="btn btn-info btn-icon-split click-reset-password">
-                                                    <span class="icon text-white-50"><i class="fa fa-repeat"></i></span>
-                                                    <span>Pass</span>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>NV01</td>
-                                            <td><a href="#" class="font-weight-bold">Viên Hoàng Long</a></td>
-                                            <td>Trưởng phòng CNTT</td>
-                                            <td>Phòng CNTT</td>
-                                            <td>
-                                                <a class="btn btn-primary btn-icon-split click-update-employee">
-                                                    <span class="icon text-white-50"><i class="fa fa-edit"></i></span>
-                                                    <span>Edit</span>
-                                                </a>
-                                                <a class="btn btn-danger btn-icon-split click-delete-employee">
-                                                    <span class="icon text-white-50"><i class="fa fa-trash"></i></span>
-                                                    <span>Delete</span>
-                                                </a>
-                                                <a class="btn btn-info btn-icon-split click-reset-password">
-                                                    <span class="icon text-white-50"><i class="fa fa-repeat"></i></span>
-                                                    <span>Pass</span>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>NV01</td>
-                                            <td><a href="#" class="font-weight-bold">Viên Hoàng Long</a></td>
-                                            <td>Trưởng phòng CNTT</td>
-                                            <td>Phòng CNTT</td>
-                                            <td>
-                                                <a class="btn btn-primary btn-icon-split click-update-employee">
-                                                    <span class="icon text-white-50"><i class="fa fa-edit"></i></span>
-                                                    <span>Edit</span>
-                                                </a>
-                                                <a class="btn btn-danger btn-icon-split click-delete-employee">
-                                                    <span class="icon text-white-50"><i class="fa fa-trash"></i></span>
-                                                    <span>Delete</span>
-                                                </a>
-                                                <a class="btn btn-info btn-icon-split click-reset-password">
-                                                    <span class="icon text-white-50"><i class="fa fa-repeat"></i></span>
-                                                    <span>Pass</span>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    </tbody>
+                                    <?php
+                                    while ($row = mysqli_fetch_assoc($users)) { ?>
+
+                                        <tbody>
+                                            <tr>
+                                                <td id="id-employee"><?= $row['id'] ?></td>
+                                                <td><a href="#" class="font-weight-bold"><?= $row['fullname'] ?></a></td>
+                                                <td><?= $row['position'] ?></td>
+                                                <td><?= $row['department'] ?></td>
+                                                <td>
+                                                    <a class="btn btn-primary btn-icon-split click-update-employee">
+                                                        <span class="icon text-white-50"><i class="fa fa-edit"></i></span>
+                                                        <span>Edit</span>
+                                                    </a>
+                                                    <a class="btn btn-danger btn-icon-split click-delete-employee">
+                                                        <span class="icon text-white-50"><i class="fa fa-trash"></i></span>
+                                                        <span>Delete</span>
+                                                    </a>
+                                                    <a class="btn btn-info btn-icon-split click-reset-password">
+                                                        <span class="icon text-white-50"><i class="fa fa-repeat"></i></span>
+                                                        <span>Pass</span>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    <?php } ?>
                                 </table>
                                 <ul class="pagination">
                                     <li class="page-item"><a class="page-link" href="#">Trước</a></li>
@@ -232,16 +189,30 @@ if (isset($_POST['fullname']) && isset($_POST['username']) && isset($_POST['posi
                                 <span id="er-username" class="text-danger font-weight-bold"></span>
                             </div>
                             <div class="form-group">
-                                <label for="position">Chức vụ</label>
+                                <div class="form-check form-check-inline">
+                                    <label for="position">Chức vụ</label>
+                                </div>
+                                <!-- <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="position" value="Employee" checked>
+                                    <label class="form-check-label">
+                                        Nhân viên
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="position" value="Manager">
+                                    <label class="form-check-label">
+                                        Trưởng phòng
+                                    </label>
+                                </div> -->
                                 <select class="form-control" name="position" id="position">
-                                    <option value="employee">Nhân viên</option>
-                                    <option value="manager">Trưởng phòng</option>
+                                    <option value="Employee">Nhân viên</option>
+                                    <option value="Manager">Trưởng phòng</option>
                                 </select>
                                 <span id="er-position" class="text-danger font-weight-bold"></span>
                             </div>
                             <div class="form-group">
                                 <label for="department">Phòng ban</label>
-                                <select class="form-control" name="department">
+                                <select class="form-control" name="department" id="department">
                                     <?php
                                     foreach ($d_name as $key => $value) :
                                         echo '<option value =' . $value['idDepartment'] . '>' . $value['nameDepartment'] . '</option>';
@@ -279,40 +250,40 @@ if (isset($_POST['fullname']) && isset($_POST['username']) && isset($_POST['posi
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
                         </div>
                         <div class="modal-body">
-                            <div class="form-group">
-                                <label for="id">Mã nhân viên</label>
-                                <input name="id" class="form-control" type="text" id="id" readonly>
+                            <div class="fomr-group">
+                                <input type="hidden" name="employee_id" id="employee_id">
                             </div>
                             <div class="form-group">
-                                <label for="fulname">Họ và tên</label>
-                                <input name="fullname" class="form-control" type="text" placeholder="Full name" id="fullname">
+                                <label>Họ và tên</label>
+                                <input name="fullname" id="update_fullname" class="form-control" type="text">
                             </div>
                             <div class="form-group">
-                                <label for="username">Username</label>
-                                <input name="username" class="form-control" type="text" placeholder="User name" id="username">
+                                <label>Username</label>
+                                <input name="username" id="update_user" class="form-control" type="text">
                             </div>
                             <div class="form-group">
-                                <label for="position">Chức vụ</label>
-                                <select class="form-control" id="position">
-                                    <option>Nhân viên</option>
-                                    <option>Trưởng phòng</option>
-                                </select>
+                                <label>Chức vụ</label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="update_position" value="Employee" id="checked_employee">
+                                    <label class="form-check-label">
+                                        Nhân viên
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="update_position" value="Manager" id="checked_manager">
+                                    <label class="form-check-label">
+                                        Trưởng phòng
+                                    </label>
+                                </div>
                             </div>
                             <div class="form-group">
-                                <label for="department">Phòng ban</label>
-                                <select class="form-control" id="department">
-                                    <option>Phòng tài chính</option>
-                                    <option>Phòng marketing</option>
-                                    <option>Phòng kết toán</option>
-                                    <option>Phòng nhân sự</option>
-                                    <option>Phòng CNTT</option>
-                                </select>
+                                <label>Phòng ban</label>
+                                <input name="department" id="update_department" class="form-control" type="text" readonly>
                             </div>
                             <div class="form-group">
-                                <label for="email">Email</label>
-                                <input name="email" class="form-control" type="text" placeholder="email123@example.com" id="email">
+                                <label>Email</label>
+                                <input name="email" class="form-control" type="text" id="update_email">
                             </div>
-
                         </div>
                         <div class="modal-footer pull-left">
                             <button type="button" class="btn br-color" data-dismiss="modal">Cancel</button>
@@ -330,13 +301,15 @@ if (isset($_POST['fullname']) && isset($_POST['username']) && isset($_POST['posi
                         <hp class="modal-title">Xóa nhân viên</hp>
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
-                    <div class="modal-body">
-                        <p>Bạn có chắc rằng muốn xóa nhân viên <strong>Viên Hoàng Long</strong> ?</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-danger">Delete</button>
-                    </div>
+                    <form action="" method="">
+                        <div class="modal-body">
+                            <input type="hidden" name="employee_id" id="employee_id">
+                            <p>Bạn có chắc rằng muốn xóa nhân viên này ?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" id="btn-delete-employee">Delete</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

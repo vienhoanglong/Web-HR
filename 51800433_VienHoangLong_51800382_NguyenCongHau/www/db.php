@@ -69,6 +69,16 @@ function get_information($user)
     $data = $stm->get_result();
     return $data;
 }
+function get_information_update_employee($user)
+{
+    $conn = open_database();
+    $sql = 'select * from users where id = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('i', $user);
+    $stm->execute();
+    $data = $stm->get_result();
+    return $data;
+}
 function check_user($user)
 {
     $sql = 'select username from users where username = ?';
@@ -140,7 +150,7 @@ function get_department_byid($idDepartment)
     $sql = 'select nameDepartment from department where idDepartment = ?';
     $conn = open_database();
     $stm = $conn->prepare($sql);
-    $stm->bind_param('i', $id_department);
+    $stm->bind_param('i', $idDepartment);
     if (!$stm->execute()) {
         die('Query error: ' . $stm->error);
     }
@@ -148,7 +158,7 @@ function get_department_byid($idDepartment)
     $data = $result->fetch_assoc();
     return $data;
 }
-function create_employee($user, $fullname, $email, $idDepartment, $position)
+function create_employee($user, $fullname, $email, $department, $position)
 {
     if (check_user($user)) {
         return array('code' => 1, 'error' => 'Tài khoản nhân viên đã tồn tại');
@@ -159,8 +169,8 @@ function create_employee($user, $fullname, $email, $idDepartment, $position)
     if (check_manager_department($user)) {
         return array('code' => 3, 'error' => 'Hiện phòng ban này đã có trưởng phòng');
     }
-    $department = get_department_byid($idDepartment);
-    $role = ($position === 'manager') ? $role = 1 : $role = 2;
+    $department = implode(get_department_byid($department));
+    $role = ($position === 'Manager') ? $role = 1 : $role = 2;
     $pass = $user;
     $hash = password_hash($pass, PASSWORD_DEFAULT);
     $rand = random_int(0, 1000);
@@ -173,4 +183,33 @@ function create_employee($user, $fullname, $email, $idDepartment, $position)
         return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
     }
     return array('code' => 0, 'error' => 'Tạo nhân viên mới thành công!');
+}
+function get_employee()
+{
+    $conn = open_database();
+    $sql = 'select * from users where role between ? and ?';
+    $role1 = 1;
+    $role2 = 2;
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('ii', $role1, $role2);
+    $stm->execute();
+    $data = $stm->get_result();
+    return $data;
+}
+function delete_employee($employee_id)
+{
+    $conn = open_database();
+    $sql = 'delete from users where id = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('i', $employee_id);
+    $stm->execute();
+    if ($stm->affected_rows === 0) {
+        return array('code' => 1, 'error' => 'Xóa không thành công');
+    }
+    return array('code' => 0, 'error' => 'Xóa thành công');
+}
+function update_employee()
+{
+    $conn = open_database();
+    $sql = 'update users';
 }

@@ -1,4 +1,9 @@
 $(document).ready(function(){$('#sidebar-collapse').on('click',function(){$('#sidebar').toggleClass('active');});});
+// $(document).on('click', '.components li', function() {
+//     $(".components li").removeClass("active");
+//     $(this).addClass("active");
+// });
+
 // show dialog create employee
 $(document).ready(function () {
     $(".click-create-employee").click(function () {
@@ -25,7 +30,6 @@ $(document).on('click','#btn-create-employee',function(){
     var position = $('#position').val();
     var department = $('#department').val();
     var email = $('#email').val();
-    
     //Kiểm tra lỗi
     if (fullname == '') {
         $('#er-fullname').html('Vui lòng nhập tên đẩy đủ!');
@@ -44,7 +48,6 @@ $(document).on('click','#btn-create-employee',function(){
         url: 'management_employee.php',
         data: {fullname:fullname, username:username, position: position, department: department, email:email},
         success: function(data) {
-            console.log(data);
             if (data.hasOwnProperty('error') && data.error == '1'){
                 var html ='';
                 // Lặp qua các key và xử lý nối lỗi
@@ -58,18 +61,17 @@ $(document).on('click','#btn-create-employee',function(){
             }
             else{ // Thành công
                 $('.alert-success').html('Tạo tài khoản thành công!');
-                // 4 giay sau sẽ tắt popup
+                // 2 giay sau sẽ tắt popup
                 setTimeout(function(){
                     $('#create-employee').modal('hide');
                     location.reload();
-                }, 4000);
+                }, 1000);
                 
             }
         }
         })
     }
 })
-
 // show dialog update employee
 $(document).ready(function () {
     $(".click-update-employee").click(function () {
@@ -77,8 +79,41 @@ $(document).ready(function () {
             backdrop: 'static',
             keyboard: false
         });
+        var update_empid = $(this).closest('tr').find('#id-employee').text();
+        //console.log(update_empid);
+        // $('#employee_id').val(update_empid);
+        $.ajax({
+            type:'post',
+            url: 'management_employee.php',
+            dataType:'JSON',
+            data:{checking_edit:true, ud_employee_id:update_empid},
+            success: function(data){
+                //console.log(data);
+                $.each(data, function(key, value){
+                    //console.log(value)
+                    $('#update_fullname').val(value['fullname']);
+                    $('#update_user').val(value['username']);
+                    // $('#update_position').val(value['position']);
+                    $('#update_position').val(value['position']);
+                    // var tmp = $(this).val(value['position']);
+                    var checked = $(this).val(value['position'])[0].position;
+                    if(checked == 'Manager'){
+                        $("#checked_manager").prop("checked", true);
+                    }else{
+                        $('#checked_employee').prop('checked', true)
+                    }
+                    $('#update_department').val(value['department']);
+                    $('#update_email').val(value['email']);
+                });
+               
+            }
+        })
+        
     });
 });
+$(document).on('click', '#btn-update-employee', function(){
+    
+})
 // show dialog delete employee
 $(document).ready(function () {
     $(".click-delete-employee").click(function () {
@@ -86,7 +121,32 @@ $(document).ready(function () {
             backdrop: 'static',
             keyboard: false
         });
+        var employee_id = $(this).closest('tr').find('#id-employee').text();
+        //console.log(employee_id);
+        $('#employee_id').val(employee_id);
     });
+});
+$(document).on('click','#btn-delete-employee',function(){
+    var employee_id =  $('#employee_id').val();
+    // console.log('ID Employee:', employee_id);
+    if(employee_id ==''){
+        alert('Thao tác xóa bị lỗi')
+    }else{
+        $.ajax({
+            type: 'post',
+            dataType : 'JSON',
+            url: 'management_employee.php',
+            data: {employee_id:employee_id},
+            success: function(data) {
+                setTimeout(function(){
+                    $('#delete-employee').modal('hide');
+                    location.reload();
+                }, 1000);
+                    
+            }
+            })
+    }
+    
 });
 //show dialog re-password employee
 $(document).ready(function () {
@@ -169,3 +229,4 @@ $(document).ready(function () {
         });
     });
 });
+
