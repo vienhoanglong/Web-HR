@@ -30,6 +30,7 @@ $(document).on('click','#btn-create-employee',function(){
     var position = $('#position').val();
     var department = $('#department').val();
     var email = $('#email').val();
+
     //Kiểm tra lỗi
     if (fullname == '') {
         $('#er-fullname').html('Vui lòng nhập tên đẩy đủ!');
@@ -81,7 +82,7 @@ $(document).ready(function () {
         });
         var update_empid = $(this).closest('tr').find('#id-employee').text();
         //console.log(update_empid);
-        // $('#employee_id').val(update_empid);
+        $('#ud_employee_id').val(update_empid);
         $.ajax({
             type:'post',
             url: 'management_employee.php',
@@ -93,8 +94,7 @@ $(document).ready(function () {
                     //console.log(value)
                     $('#update_fullname').val(value['fullname']);
                     $('#update_user').val(value['username']);
-                    // $('#update_position').val(value['position']);
-                    $('#update_position').val(value['position']);
+                    $('#employee_position').val(value['position']);
                     // var tmp = $(this).val(value['position']);
                     var checked = $(this).val(value['position'])[0].position;
                     if(checked == 'Manager'){
@@ -112,7 +112,49 @@ $(document).ready(function () {
     });
 });
 $(document).on('click', '#btn-update-employee', function(){
-    
+    var ud_employee_id = $('#ud_employee_id').val();
+    var fullname = $('#update_fullname').val();
+    var username = $('#update_user').val();
+    var position = $('input[name="update_position"]:checked').val();
+    var email = $('#update_email').val();
+    if(fullname == ''){
+        $('#ud-err-fullname').html('Vui lòng nhập tên đẩy đủ!');
+    }else if (username == '') {
+        $('#ud-err-username').html('Vui lòng nhập tên tài khoản!');
+    } else if (position == '') {
+        $('#ud-err-position').html('Vui lòng chọn chức vụ!');
+    } else if (email == '' || IsEmail(email) == false) {
+        $('#ud-err-email').html('Email không hợp lệ hoặc trống!');
+    } else{
+        $.ajax({
+            type: 'post',
+            dataType : 'JSON',
+            url: 'management_employee.php',
+            data: {ud_employee_fullname:fullname, ud_employee_username:username, ud_employee_position: position, ud_employee_email:email, ud_employee_id: ud_employee_id},
+            success: function(data) {
+                if (data.hasOwnProperty('error') && data.error == '1'){
+                    var html ='';
+                    // Lặp qua các key và xử lý nối lỗi
+                    $.each(data, function(key, item){
+                        // Tránh key error ra vì nó là key thông báo trạng thái
+                        if (key != 'error'){ 
+                            html += '<li>'+item+'</li>';
+                        }
+                    });
+                    $('.ud-employee-error').html(html).removeClass('hide');
+                }
+                else{ // Thành công
+                    $('.ud-employee-success').html('Cập nhật tài khoản thành công!');
+                    // 2 giay sau sẽ tắt popup
+                    setTimeout(function(){
+                        $('#update-employee').modal('hide');
+                        location.reload();
+                    }, 1000);
+                    
+                }
+            }
+        })
+    }
 })
 // show dialog delete employee
 $(document).ready(function () {
@@ -144,7 +186,7 @@ $(document).on('click','#btn-delete-employee',function(){
                 }, 1000);
                     
             }
-            })
+        })
     }
     
 });
@@ -155,6 +197,57 @@ $(document).ready(function () {
             backdrop: 'static',
             keyboard: false
         });
+        var update_empid = $(this).closest('tr').find('#id-employee').text();
+        //console.log(update_empid);
+        $('#rs_employee_id').val(update_empid);
+    });
+});
+$(document).on('click','#btn-reset-password',function(){
+    var rs_employee_id =  $('#rs_employee_id').val();
+    if(rs_employee_id ==''){
+        alert('Thao tác xóa bị lỗi')
+    }else{
+        $.ajax({
+            type: 'post',
+            dataType : 'JSON',
+            url: 'management_employee.php',
+            data: {rs_employee_id:rs_employee_id},
+            success: function(data) {
+                setTimeout(function(){
+                    $('#re-password-employee').modal('hide');
+                    location.reload();
+                }, 1000);            
+            }
+        })
+    }
+})
+//Show details employee
+$(document).ready(function () {
+    $(".click-details-employee").click(function () {
+        $('#details-employee').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+        var load_employee_id = $(this).closest('tr').find('#id-employee').text();
+        $('#load_employee_id').val(load_employee_id);
+        $.ajax({
+            type:'post',
+            url: 'management_employee.php',
+            dataType:'JSON',
+            data:{checking_edit:true, ud_employee_id:load_employee_id},
+            success: function(data){
+                // console.log(data);
+                $.each(data, function(key, value){
+                    // console.log(value)
+                    $('#load_fullname').val(value['fullname']);
+                    $('#load_user').val(value['username']);
+                    $('#load_position').val(value['position']);  
+                    $('#load_department').val(value['department']);
+                    $('#load_email').val(value['email']);
+                });
+               
+            }
+        })
     });
 });
 //show dialog create department

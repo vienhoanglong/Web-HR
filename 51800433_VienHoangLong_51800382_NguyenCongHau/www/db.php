@@ -55,9 +55,9 @@ function change_password($user, $pass)
     $stm->bind_param('ss', $hash, $user);
 
     if (!$stm->execute()) {
-        return array('code' => 2, 'error' => 'Cant Execute');
+        return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
     }
-    return array('code' => 0, 'error' => 'Password is changed successfully!');
+    return array('code' => 0, 'error' => 'Thay đổi mật khẩu thành công!');
 }
 function get_information($user)
 {
@@ -69,7 +69,7 @@ function get_information($user)
     $data = $stm->get_result();
     return $data;
 }
-function get_information_update_employee($user)
+function get_information_load_employee($user)
 {
     $conn = open_database();
     $sql = 'select * from users where id = ?';
@@ -158,6 +158,7 @@ function get_department_byid($idDepartment)
     $data = $result->fetch_assoc();
     return $data;
 }
+
 function create_employee($user, $fullname, $email, $department, $position)
 {
     if (check_user($user)) {
@@ -166,7 +167,7 @@ function create_employee($user, $fullname, $email, $department, $position)
     if (is_email_exists($email)) {
         return array('code' => 4, 'error' => 'Email đã tồn tại');
     }
-    if (check_manager_department($user)) {
+    if (($position === 'Manager') && check_manager_department($department)) {
         return array('code' => 3, 'error' => 'Hiện phòng ban này đã có trưởng phòng');
     }
     $department = implode(get_department_byid($department));
@@ -181,6 +182,14 @@ function create_employee($user, $fullname, $email, $department, $position)
     $stm->bind_param('sssssssi', $user, $fullname, $email, $hash, $token, $department, $position, $role);
     if (!$stm->execute()) {
         return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+    }
+    //Cập nhật trưởng phòng trong phòng ban
+    if ($role == 1) {
+        $sql1 = 'update department set manager = ? where nameDepartment = ?';
+        $conn = open_database();
+        $stm = $conn->prepare($sql1);
+        $stm->bind_param('ss', $user, $department);
+        $stm->execute();
     }
     return array('code' => 0, 'error' => 'Tạo nhân viên mới thành công!');
 }
@@ -204,12 +213,49 @@ function delete_employee($employee_id)
     $stm->bind_param('i', $employee_id);
     $stm->execute();
     if ($stm->affected_rows === 0) {
-        return array('code' => 1, 'error' => 'Xóa không thành công');
+        return array('code' => 1, 'error' => 'Xóa không thành công!');
     }
-    return array('code' => 0, 'error' => 'Xóa thành công');
+    return array('code' => 0, 'error' => 'Xóa thành công!');
 }
-function update_employee()
+function update_employee($fullname, $user, $position, $email, $employee_id)
 {
     $conn = open_database();
-    $sql = 'update users';
+    $role = ($position === 'Manager') ? $role = 1 : $role = 2;
+    $sql = 'update users set fullname = ?, username = ?, position = ?, email = ?, role = ? where id = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('ssssii', $fullname, $user, $position, $email, $role, $employee_id);
+    if (!$stm->execute()) {
+        return array('code' => 1, 'error' => 'Không thể thực hiện lệnh!');
+    }
+    return array('code' => 0, 'error' => 'Cập nhật nhân viên thành công!');
+}
+function get_user_byid($employee_id)
+{
+    $conn = open_database();
+    $sql = 'select username from users where id = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('i', $employee_id);
+    $stm->execute();
+    $result = $stm->get_result();
+    $data = $result->fetch_assoc();
+    return $data;
+}
+function reset_password_default($employee_id)
+{
+    $user = implode(get_user_byid($employee_id));
+    $pass = $user;
+    $activated = 0;
+    $hash = password_hash($pass, PASSWORD_DEFAULT);
+    $rand = random_int(0, 1000);
+    $token = md5($user . '+' .  $rand);
+    // $sql = 'update users set password = ?, activated = ? where user = ?';
+    $sql = 'update users set activated = ?, password = ?, activate_token = ? where username = ?';
+    $conn = open_database();
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('isss', $activated, $hash, $token, $user);
+
+    if (!$stm->execute()) {
+        return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+    }
+    return array('code' => 0, 'error' => 'Reset mật khẩu về mặc định thành công!');
 }

@@ -57,11 +57,12 @@ if (isset($_POST['employee_id'])) {
     }
     die(json_encode($er_delete));
 }
-//Edit employee
+
+//Hiển thị dữ liệu employee lên modal
 if (isset($_POST['checking_edit'])) {
     $ud_employee_id = $_POST['ud_employee_id'];
     $data = [];
-    $result = get_information_update_employee($ud_employee_id);
+    $result = get_information_load_employee($ud_employee_id);
     if (mysqli_fetch_assoc($result) > 0) {
         foreach ($result as $row) {
             array_push($data, $row);
@@ -70,7 +71,49 @@ if (isset($_POST['checking_edit'])) {
         }
     }
 }
-
+//Update employee
+$ud_eployee_fullname = '';
+$ud_eployee_username = '';
+$ud_eployee_position = '';
+$ud_eployee_email = '';
+$ud_eployee_id = '';
+$er_update = array(
+    'error' => 0
+);
+if (isset($_POST['ud_employee_fullname']) && isset($_POST['ud_employee_username']) && isset($_POST['ud_employee_position']) &&  isset($_POST['ud_employee_email']) && isset($_POST['ud_employee_id'])) {
+    $ud_employee_fullname = $_POST['ud_employee_fullname'];
+    $ud_employee_username = $_POST['ud_employee_username'];
+    $ud_employee_position = $_POST['ud_employee_position'];
+    $ud_employee_email = $_POST['ud_employee_email'];
+    $ud_employee_id = $_POST['ud_employee_id'];
+    $result = update_employee($ud_employee_fullname, $ud_employee_username, $ud_employee_position, $ud_employee_email, $ud_employee_id);
+    if ($result['code'] == 0) {
+        $er_update['error'] = 0;
+        $er_update = 'Cập nhật nhân viên thành công!';
+    }
+    if ($result['code'] == 1) {
+        $er_update['error'] = 1;
+        $er_update = 'Cập nhật nhân viên không thành công!';
+    }
+    die(json_encode($er_update));
+}
+//Reset password default 
+$er_reset = array(
+    'error' => 0
+);
+if (isset($_POST['rs_employee_id'])) {
+    $rs_employee_id = $_POST['rs_employee_id'];
+    $result = reset_password_default($rs_employee_id);
+    if ($result['code'] == 0) {
+        $er_reset['error'] = 0;
+        $er_reset = 'Reset mật khẩu về mặc định thành công!';
+    }
+    if ($result['code'] == 1) {
+        $er_reset['error'] = 1;
+        $er_reset = 'Reset mật khẩu về mặc định không thành công!';
+    }
+    die(json_encode($er_reset));
+}
 ?>
 
 <!DOCTYPE html>
@@ -131,7 +174,7 @@ if (isset($_POST['checking_edit'])) {
                                         <tbody>
                                             <tr>
                                                 <td id="id-employee"><?= $row['id'] ?></td>
-                                                <td><a href="#" class="font-weight-bold"><?= $row['fullname'] ?></a></td>
+                                                <td><a href="#" class="font-weight-bold click-details-employee"><?= $row['fullname'] ?></a></td>
                                                 <td><?= $row['position'] ?></td>
                                                 <td><?= $row['department'] ?></td>
                                                 <td>
@@ -192,18 +235,6 @@ if (isset($_POST['checking_edit'])) {
                                 <div class="form-check form-check-inline">
                                     <label for="position">Chức vụ</label>
                                 </div>
-                                <!-- <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="position" value="Employee" checked>
-                                    <label class="form-check-label">
-                                        Nhân viên
-                                    </label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="position" value="Manager">
-                                    <label class="form-check-label">
-                                        Trưởng phòng
-                                    </label>
-                                </div> -->
                                 <select class="form-control" name="position" id="position">
                                     <option value="Employee">Nhân viên</option>
                                     <option value="Manager">Trưởng phòng</option>
@@ -251,15 +282,17 @@ if (isset($_POST['checking_edit'])) {
                         </div>
                         <div class="modal-body">
                             <div class="fomr-group">
-                                <input type="hidden" name="employee_id" id="employee_id">
+                                <input type="hidden" name="ud_employee_id" id="ud_employee_id">
                             </div>
                             <div class="form-group">
                                 <label>Họ và tên</label>
                                 <input name="fullname" id="update_fullname" class="form-control" type="text">
+                                <span id="ud-err-fullname" class="text-danger font-weight-bold"></span>
                             </div>
                             <div class="form-group">
                                 <label>Username</label>
                                 <input name="username" id="update_user" class="form-control" type="text">
+                                <span id="ud-err-username" class="text-danger font-weight-bold"></span>
                             </div>
                             <div class="form-group">
                                 <label>Chức vụ</label>
@@ -275,6 +308,7 @@ if (isset($_POST['checking_edit'])) {
                                         Trưởng phòng
                                     </label>
                                 </div>
+                                <span id="ud-err-department" class="text-danger font-weight-bold"></span>
                             </div>
                             <div class="form-group">
                                 <label>Phòng ban</label>
@@ -283,11 +317,18 @@ if (isset($_POST['checking_edit'])) {
                             <div class="form-group">
                                 <label>Email</label>
                                 <input name="email" class="form-control" type="text" id="update_email">
+                                <span id="ud-err-email" class="text-danger font-weight-bold"></span>
                             </div>
+                            <span class="alert-danger ud-employee-error">
+
+                            </span>
+                            <span class="alert-success ud-employee-success">
+
+                            </span>
                         </div>
                         <div class="modal-footer pull-left">
                             <button type="button" class="btn br-color" data-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn br-color">Update</button>
+                            <button type="button" id="btn-update-employee" class="btn br-color">Update</button>
                         </div>
                     </form>
                 </div>
@@ -322,12 +363,54 @@ if (isset($_POST['checking_edit'])) {
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
+                        <input type="text" name="rs_employee_id" id="rs_employee_id">
                         <p>Bạn có chắc rằng muốn reset mật khẩu về mặc định ?</p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-dismiss="modal">No</button>
-                        <button type="button" class="btn btn-danger">Yes</button>
+                        <button type="button" class="btn btn-danger" id="btn-reset-password">Yes</button>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div id="details-employee" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form id="myForm" method="">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Thông tin chi tiết nhân viên</h5>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+
+                            <div class="fomr-group">
+                                <input type="hidden" name="load_employee_id" id="load_employee_id">
+                            </div>
+                            <div class="form-group">
+                                <label>Họ và tên</label>
+                                <input name="fullname" id="load_fullname" class="form-control" type="text" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Username</label>
+                                <input name="username" id="load_user" class="form-control" type="text" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Chức vụ</label>
+                                <input name="username" id="load_position" class="form-control" type="text" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Phòng ban</label>
+                                <input name="department" id="load_department" class="form-control" type="text" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input name="email" class="form-control" type="text" id="load_email" readonly>
+                            </div>
+                        </div>
+                        <div class="modal-footer pull-left">
+                            <button type="button" class="btn br-color" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
