@@ -1,4 +1,5 @@
 <?php
+ob_start();
 session_start();
 if (!isset($_SESSION['user'])) {
     header('Location: login.php');
@@ -24,6 +25,45 @@ if (!isset($_SESSION['user'])) {
     $user = $_SESSION['user'];
     $info = get_information($user);
     $info = $info->fetch_assoc();
+    $error = [];
+    $pass_old = '';
+    $user_new = '';
+    $pass_confirm = '';
+    if (isset($_POST['pass_old']) && isset($_POST['pass_old']) && isset($_POST['pass_old'])) {
+        $pass = $_POST['pass_old'];
+        $newpass = $_POST['pass_new'];
+        $confirm = $_POST['pass_confirm'];
+        $user = $_SESSION['user'];
+        if (empty($pass)) {
+            $error['pass-old'] = 'Vui lòng nhập mật khẩu hiện tại!';
+        } else if (strlen($pass) < 6) {
+            $error['pass-old'] = 'Mật khẩu phải có từ 6 kí tự trở lên!';
+        } else if (empty($newpass)) {
+            $error['pass-new'] = 'Vui lòng nhập mật khẩu mới!';
+        } else if (strlen($newpass) < 6) {
+            $error['pass-new'] = 'Mật khẩu phải có từ 6 kí tự trở lên!';
+        } else if ($newpass != $confirm) {
+            $error['pass-confim'] = 'Mật khẩu không khớp!';
+        } else {
+            $result = change_new_password($user, $pass, $newpass);
+            if ($result['code'] == 1) {
+                $error['err'] = 'Thay đổi mật khẩu không thành công!';
+            } else if ($result['code'] == 2) {
+                $error['err'] = 'Mật khẩu hiện tại không đúng!';
+            } else {
+                session_destroy();
+                echo '<div class="col-md-6 mt-5 mx-auto p-3 border rounded card">
+                <h4>Thay đổi mật khẩu thành công</h4>
+                <p>Tài khoản của bạn đã được đăng xuất khỏi hệ thống.</p>
+                <p>Nhấn <a href="login.php" class="text-primary">vào đây</a> để trở về trang đăng nhập, hoặc trang web sẽ tự động chuyển hướng sau <span class="text-danger">5</span> giây nữa.</p>
+                <a class="btn btn-info" href="login.php">Đăng nhập</a>
+                </div>';
+                header("refresh:5;url=login.php");
+                ob_end_flush();
+                exit();
+            }
+        }
+    }
     ?>
     <div class="wrapper">
         <?php include('includes/sidebar.php'); ?>
@@ -31,7 +71,7 @@ if (!isset($_SESSION['user'])) {
             <!-- Navbar -->
             <?php include('includes/navbar.php'); ?>
             <!-- Page Content  -->
-            <div class="container-fluid">
+            <div class="container">
                 <div class="d-sm-flex justify-content-between">
                     <h4 class="text-gray-800">Thông tin về bạn</h4>
                 </div>
@@ -39,7 +79,7 @@ if (!isset($_SESSION['user'])) {
                     <div class="col-xl-12 col-lg-9">
                         <div class="card shadow mb-4">
                             <div class="card-body">
-                                <form action="" method="post">
+                                <form method="post" action="" novalidate>
                                     <div class="text-center mb-4">
                                         <img class="img-profile-edit rounded-circle shadow" src="/images/<?= $info['avatar'] ?>" alt="">
                                         <label class="btn d-flex justify-content-center ">
@@ -72,23 +112,33 @@ if (!isset($_SESSION['user'])) {
                                     </div>
                                     <div class="form-row m-2">
                                         <label> Email</label>
-                                        <input type="text" class="form-control" value="<?= $info['email'] ?>">
+                                        <input type="text" class="form-control" value="<?= $info['email'] ?>" readonly>
                                     </div>
                                     <div class="form-row m-2">
                                         <label> Password</label>
-                                        <input type="text" class="form-control" placeholder="********************">
+                                        <input type="password" class="form-control" name="pass_old" id="pass_old">
+                                        <span class="text-danger font-weight-bold">
+                                            <?php echo (isset($error['pass-old'])) ? $error['pass-old'] : '' ?>
+                                        </span>
                                     </div>
                                     <div class="form-row m-2">
                                         <div class="col  mr-4">
                                             <label>New Password</label>
-                                            <input type="text" class="form-control">
+                                            <input type="password" class="form-control" name="pass_new" id="pass_new">
+                                            <span class="text-danger font-weight-bold">
+                                                <?php echo (isset($error['pass-new'])) ? $error['pass-new'] : '' ?>
+                                            </span>
                                         </div>
                                         <div class="col">
                                             <label>Confirm Password</label>
-                                            <input type="text" class="form-control">
+                                            <input type="password" class="form-control" name="pass_confirm" id="pass_confirm">
+                                            <span class="text-danger font-weight-bold">
+                                                <?php echo (isset($error['pass-confirm'])) ? $error['pass-confirm'] : '' ?>
+                                            </span>
                                         </div>
                                     </div>
-                                    <button type="submit" class="m-2 btn btn-lg br-color">Save changes</button>
+
+                                    <button type="submit" class="m-2 btn br-color">Save changes</button>
                                 </form>
                             </div>
                         </div>

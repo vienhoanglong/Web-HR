@@ -59,6 +59,35 @@ function change_password($user, $pass)
     }
     return array('code' => 0, 'error' => 'Thay đổi mật khẩu thành công!');
 }
+function change_new_password($user, $pass, $newpass)
+{
+    $sql = 'select * from users where username = ?';
+    $conn = open_database();
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('s', $user);
+    if (!$stm->execute()) {
+        return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+    }
+    $result = $stm->get_result();
+    if ($result->num_rows == 0) {
+        return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+    }
+    $data = $result->fetch_assoc();
+    $hashed_password = $data['password'];
+    if (!password_verify($pass, $hashed_password)) {
+        return array('code' => 1, 'error' => 'Mật khẩu hiện tại của bạn không đúng!');
+    }
+    $hash = password_hash($newpass, PASSWORD_DEFAULT);
+    $sql1 = 'update users set password = ? where username = ?';
+    $conn = open_database();
+    $stm = $conn->prepare($sql1);
+    $stm->bind_param('ss', $hash, $user);
+
+    if (!$stm->execute()) {
+        return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+    }
+    return array('code' => 0, 'error' => 'Thay đổi mật khẩu thành công!');
+}
 function get_information($user)
 {
     $conn = open_database();
@@ -145,6 +174,24 @@ function check_manager_department($id_department)
         return false;
     }
 }
+function check_manager_byname($nameDepartment)
+{
+    $sql = 'select manager from department where nameDepartment = ?';
+    $conn = open_database();
+
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('s', $nameDepartment);
+    if (!$stm->execute()) {
+        die('Query error: ' . $stm->error);
+    }
+
+    $result = $stm->get_result();
+    $data = implode($result->fetch_assoc());
+    if (!isset($data)) {
+        return false;
+    }
+    return true;
+}
 function get_department_byid($idDepartment)
 {
     $sql = 'select nameDepartment from department where idDepartment = ?';
@@ -217,16 +264,17 @@ function delete_employee($employee_id)
     }
     return array('code' => 0, 'error' => 'Xóa thành công!');
 }
-function update_employee($fullname, $user, $position, $email, $employee_id)
+function update_employee($fullname, $user, $email, $employee_id)
 {
+
     $conn = open_database();
-    $role = ($position === 'Manager') ? $role = 1 : $role = 2;
-    $sql = 'update users set fullname = ?, username = ?, position = ?, email = ?, role = ? where id = ?';
+    $sql = 'update users set fullname = ?, username = ?, email = ? where id = ?';
     $stm = $conn->prepare($sql);
-    $stm->bind_param('ssssii', $fullname, $user, $position, $email, $role, $employee_id);
+    $stm->bind_param('ssssii', $fullname, $user, $email, $employee_id);
     if (!$stm->execute()) {
         return array('code' => 1, 'error' => 'Không thể thực hiện lệnh!');
     }
+
     return array('code' => 0, 'error' => 'Cập nhật nhân viên thành công!');
 }
 function get_user_byid($employee_id)

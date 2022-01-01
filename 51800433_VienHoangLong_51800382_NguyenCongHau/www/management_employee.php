@@ -72,28 +72,22 @@ if (isset($_POST['checking_edit'])) {
     }
 }
 //Update employee
-$ud_eployee_fullname = '';
-$ud_eployee_username = '';
-$ud_eployee_position = '';
-$ud_eployee_email = '';
-$ud_eployee_id = '';
 $er_update = array(
     'error' => 0
 );
-if (isset($_POST['ud_employee_fullname']) && isset($_POST['ud_employee_username']) && isset($_POST['ud_employee_position']) &&  isset($_POST['ud_employee_email']) && isset($_POST['ud_employee_id'])) {
+if (isset($_POST['ud_employee_fullname']) && isset($_POST['ud_employee_username']) && isset($_POST['ud_employee_email']) && isset($_POST['ud_employee_id'])) {
     $ud_employee_fullname = $_POST['ud_employee_fullname'];
     $ud_employee_username = $_POST['ud_employee_username'];
-    $ud_employee_position = $_POST['ud_employee_position'];
     $ud_employee_email = $_POST['ud_employee_email'];
     $ud_employee_id = $_POST['ud_employee_id'];
-    $result = update_employee($ud_employee_fullname, $ud_employee_username, $ud_employee_position, $ud_employee_email, $ud_employee_id);
+    $result = update_employee($ud_employee_fullname, $ud_employee_username, $ud_employee_email, $ud_employee_id);
     if ($result['code'] == 0) {
         $er_update['error'] = 0;
-        $er_update = 'Cập nhật nhân viên thành công!';
+        $er_update['success'] = 'Cập nhật nhân viên thành công!';
     }
     if ($result['code'] == 1) {
         $er_update['error'] = 1;
-        $er_update = 'Cập nhật nhân viên không thành công!';
+        $er_update['comand'] = 'Cập nhật nhân viên không thành công!';
     }
     die(json_encode($er_update));
 }
@@ -296,19 +290,7 @@ if (isset($_POST['rs_employee_id'])) {
                             </div>
                             <div class="form-group">
                                 <label>Chức vụ</label>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="update_position" value="Employee" id="checked_employee">
-                                    <label class="form-check-label">
-                                        Nhân viên
-                                    </label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="update_position" value="Manager" id="checked_manager">
-                                    <label class="form-check-label">
-                                        Trưởng phòng
-                                    </label>
-                                </div>
-                                <span id="ud-err-department" class="text-danger font-weight-bold"></span>
+                                <input name="positon" id="update_position" class="form-control" type="text" readonly>
                             </div>
                             <div class="form-group">
                                 <label>Phòng ban</label>
@@ -319,10 +301,10 @@ if (isset($_POST['rs_employee_id'])) {
                                 <input name="email" class="form-control" type="text" id="update_email">
                                 <span id="ud-err-email" class="text-danger font-weight-bold"></span>
                             </div>
-                            <span class="alert-danger ud-employee-error">
+                            <span class="alert-danger">
 
                             </span>
-                            <span class="alert-success ud-employee-success">
+                            <span class="alert-success">
 
                             </span>
                         </div>

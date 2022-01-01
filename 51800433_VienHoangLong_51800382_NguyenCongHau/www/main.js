@@ -94,14 +94,15 @@ $(document).ready(function () {
                     //console.log(value)
                     $('#update_fullname').val(value['fullname']);
                     $('#update_user').val(value['username']);
-                    $('#employee_position').val(value['position']);
+                    $('#update_position').val(value['position']);
+                    // $('#employee_position').val(value['position']);
                     // var tmp = $(this).val(value['position']);
-                    var checked = $(this).val(value['position'])[0].position;
-                    if(checked == 'Manager'){
-                        $("#checked_manager").prop("checked", true);
-                    }else{
-                        $('#checked_employee').prop('checked', true)
-                    }
+                    // var checked = $(this).val(value['position'])[0].position;
+                    // if(checked == 'Manager'){
+                    //     $("#checked_manager").prop("checked", true);
+                    // }else{
+                    //     $('#checked_employee').prop('checked', true)
+                    // }
                     $('#update_department').val(value['department']);
                     $('#update_email').val(value['email']);
                 });
@@ -115,7 +116,10 @@ $(document).on('click', '#btn-update-employee', function(){
     var ud_employee_id = $('#ud_employee_id').val();
     var fullname = $('#update_fullname').val();
     var username = $('#update_user').val();
-    var position = $('input[name="update_position"]:checked').val();
+    var username = $('#update_position').val();
+    // var position = $('input[name="update_position"]:checked').val();
+    var department = $('#update_department').val();
+    console.log(department);
     var email = $('#update_email').val();
     if(fullname == ''){
         $('#ud-err-fullname').html('Vui lòng nhập tên đẩy đủ!');
@@ -130,7 +134,7 @@ $(document).on('click', '#btn-update-employee', function(){
             type: 'post',
             dataType : 'JSON',
             url: 'management_employee.php',
-            data: {ud_employee_fullname:fullname, ud_employee_username:username, ud_employee_position: position, ud_employee_email:email, ud_employee_id: ud_employee_id},
+            data: {ud_employee_fullname:fullname, ud_employee_username:username, ud_employee_position: position, ud_employee_department:department, ud_employee_email:email, ud_employee_id: ud_employee_id},
             success: function(data) {
                 if (data.hasOwnProperty('error') && data.error == '1'){
                     var html ='';
@@ -141,10 +145,10 @@ $(document).on('click', '#btn-update-employee', function(){
                             html += '<li>'+item+'</li>';
                         }
                     });
-                    $('.ud-employee-error').html(html).removeClass('hide');
+                    $('.alert-danger').html(html).removeClass('hide');
                 }
                 else{ // Thành công
-                    $('.ud-employee-success').html('Cập nhật tài khoản thành công!');
+                    $('.alert-success').html('Cập nhật tài khoản thành công!');
                     // 2 giay sau sẽ tắt popup
                     setTimeout(function(){
                         $('#update-employee').modal('hide');
@@ -322,4 +326,5 @@ $(document).ready(function () {
         });
     });
 });
+
 

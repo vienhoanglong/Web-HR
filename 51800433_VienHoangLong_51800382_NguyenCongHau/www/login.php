@@ -42,6 +42,7 @@ require_once('db.php');
                 $_SESSION['user'] = $user;
                 $_SESSION['name'] = $data['fullname'];
                 $_SESSION['activated'] = $data['activated'];
+                $_SESSION['role'] = $data['role'];
 
                 header('Location: index.php');
                 ob_end_flush();
