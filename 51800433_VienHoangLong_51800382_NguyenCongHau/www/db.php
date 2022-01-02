@@ -307,3 +307,14 @@ function reset_password_default($employee_id)
     }
     return array('code' => 0, 'error' => 'Reset mật khẩu về mặc định thành công!');
 }
+function upload_img_profile($user, $avatar)
+{
+    $conn = open_database();
+    $sql = 'update users set avatar = ? where username = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('ss', $avatar, $user);
+    if (!$stm->execute()) {
+        return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+    }
+    return array('code' => 0, 'error' => 'Upload ảnh đại diện thành công!');
+}

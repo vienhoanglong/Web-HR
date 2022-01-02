@@ -4,7 +4,7 @@ $(document).ready(function(){$('#sidebar-collapse').on('click',function(){$('#si
 //     $(this).addClass("active");
 // });
 
-// show dialog create employee
+// show modal create employee
 $(document).ready(function () {
     $(".click-create-employee").click(function () {
         $('#create-employee').modal({
@@ -73,7 +73,7 @@ $(document).on('click','#btn-create-employee',function(){
         })
     }
 })
-// show dialog update employee
+// show modal update employee
 $(document).ready(function () {
     $(".click-update-employee").click(function () {
         $('#update-employee').modal({
@@ -160,7 +160,7 @@ $(document).on('click', '#btn-update-employee', function(){
         })
     }
 })
-// show dialog delete employee
+// show modal delete employee
 $(document).ready(function () {
     $(".click-delete-employee").click(function () {
         $('#delete-employee').modal({
@@ -194,7 +194,7 @@ $(document).on('click','#btn-delete-employee',function(){
     }
     
 });
-//show dialog re-password employee
+//show modal re-password employee
 $(document).ready(function () {
     $(".click-reset-password").click(function () {
         $('#re-password-employee').modal({
@@ -254,7 +254,7 @@ $(document).ready(function () {
         })
     });
 });
-//show dialog create department
+//show modal create department
 $(document).ready(function () {
     $(".click-create-department").click(function () {
         $('#create-department').modal({
@@ -263,7 +263,7 @@ $(document).ready(function () {
         });
     });
 });
-//show dialog create promote
+//show modal create promote
 $(document).ready(function () {
     $(".click-create-promote").click(function () {
         $('#create-promote').modal({
@@ -272,7 +272,7 @@ $(document).ready(function () {
         });
     });
 });
-// show dialog update department
+// show modal update department
 $(document).ready(function () {
     $(".click-update-department").click(function () {
         $('#update-department').modal({
@@ -281,7 +281,7 @@ $(document).ready(function () {
         });
     });
 });
-// show dialog delete employee
+// show modal delete employee
 $(document).ready(function () {
     $(".click-delete-department").click(function () {
         $('#delete-department').modal({
@@ -290,7 +290,7 @@ $(document).ready(function () {
         });
     });
 });
-//show dialog details department
+//show modal details department
 $(document).ready(function () {
     $(".click-details-department").click(function () {
         $('#details-department').modal({
@@ -299,7 +299,7 @@ $(document).ready(function () {
         });
     });
 });
-//show dialog detail calender
+//show modal detail calender
 $(document).ready(function () {
     $(".click-detail-calender").click(function () {
         $('#detail-calender').modal({
@@ -308,7 +308,7 @@ $(document).ready(function () {
         });
     });
 });
-//Show dialog cancel calender
+//Show modal cancel calender
 $(document).ready(function () {
     $(".click-cancel-calender").click(function () {
         $('#cancel-calendar').modal({
@@ -317,7 +317,7 @@ $(document).ready(function () {
         });
     });
 });
-//Show dialog create calendar
+//Show modal create calendar
 $(document).ready(function () {
     $(".create-calender-tp").click(function () {
         $('#create-calendar').modal({
@@ -326,5 +326,37 @@ $(document).ready(function () {
         });
     });
 });
-
-
+//Show modal upload profile
+$(document).ready(function () {
+    $(".click-update-image").click(function () {
+        $('#upload-profile').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+    });
+});
+avatar.onchange = e => {
+    const [file] = avatar.files;
+    if (file) {
+        img_preview.src = URL.createObjectURL(file);
+    }
+}
+$(document).ready(function(){
+    $('#btn_upload').click(function(){
+        var postData =  new FormData($("#form-upload-img")[0]);
+        console.log(postData);
+        $.ajax({
+            type:'POST',
+            url:'profile.php',
+            enctype : 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            data : postData,
+            success:function(data){
+                //console.log(data)
+                $('#upload-profile').modal('hide');
+            }
+        })
+    });
+});

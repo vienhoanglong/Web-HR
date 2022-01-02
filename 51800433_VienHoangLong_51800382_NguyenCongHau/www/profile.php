@@ -29,7 +29,7 @@ if (!isset($_SESSION['user'])) {
     $pass_old = '';
     $user_new = '';
     $pass_confirm = '';
-    if (isset($_POST['pass_old']) && isset($_POST['pass_old']) && isset($_POST['pass_old'])) {
+    if (isset($_POST['pass_old']) && isset($_POST['pass_new']) && isset($_POST['pass_confirm'])) {
         $pass = $_POST['pass_old'];
         $newpass = $_POST['pass_new'];
         $confirm = $_POST['pass_confirm'];
@@ -64,6 +64,29 @@ if (!isset($_SESSION['user'])) {
             }
         }
     }
+    //Upload avatar
+    $uploadDir = 'images/';
+    $uploadedFile = '';
+    if (!empty($_FILES['avatar']['name'])) {
+        $fileName = basename($_FILES['avatar']['name']);
+        $targetFilePath = $uploadDir . $fileName;
+        $fileType = pathinfo($targetFilePath, PATHINFO_EXTENSION);
+
+        $allowTypes = array('jpeg', 'png', 'jpg');
+        if (in_array($fileType, $allowTypes)) {
+            if (move_uploaded_file($_FILES['avatar']['tmp_name'], $targetFilePath)) {
+                $uploadedFile = $fileName;
+                $result = upload_img_profile($user, $fileName);
+                if ($result['code'] == 1) {
+                    die("error");
+                }
+            } else {
+                die("error");
+            }
+        } else {
+            die("error");
+        }
+    }
     ?>
     <div class="wrapper">
         <?php include('includes/sidebar.php'); ?>
@@ -75,45 +98,48 @@ if (!isset($_SESSION['user'])) {
                 <div class="d-sm-flex justify-content-between">
                     <h4 class="text-gray-800">Thông tin về bạn</h4>
                 </div>
-                <div class="row m-2">
+                <div class="row">
                     <div class="col-xl-12 col-lg-9">
                         <div class="card shadow mb-4">
                             <div class="card-body">
-                                <form method="post" action="" novalidate>
-                                    <div class="text-center mb-4">
-                                        <img class="img-profile-edit rounded-circle shadow" src="/images/<?= $info['avatar'] ?>" alt="">
-                                        <label class="btn d-flex justify-content-center ">
-                                            <span class="input-group-text">
-                                                <i class="fa fa-camera"></i>
-                                            </span>
-                                            <input type="file" class="upload-img" value="Upload Photo">
-                                        </label>
-                                        <h4 class="text-primary"><?= $info['fullname'] ?></h4>
+                                <div class="text-center">
+                                    <img class="img-profile-edit rounded-circle shadow" src="/images/<?= $info['avatar'] ?>" alt="">
+                                </div>
+                                <div class="d-flex justify-content-center">
+                                    <button class="btn">
+                                        <span class="input-group-text click-update-image">
+                                            <i class="fa fa-camera"></i>
+                                        </span>
+                                    </button>
+                                </div>
+                                <div class="text-center mb-4">
+                                    <h4 class="text-primary"><?= $info['fullname'] ?></h4>
+                                </div>
+                                <div class="form-row m-2">
+                                    <div class="col mr-4">
+                                        <label>Mã nhân viên</label>
+                                        <input type="text" class="form-control" value="<?= $info['id'] ?>" readonly>
                                     </div>
-                                    <div class="form-row m-2">
-                                        <div class="col mr-4">
-                                            <label>Mã nhân viên</label>
-                                            <input type="text" class="form-control" value="<?= $info['id'] ?>" readonly>
-                                        </div>
-                                        <div class="col">
-                                            <label>Username</label>
-                                            <input type="text" class="form-control" value="<?= $info['username'] ?>" readonly>
-                                        </div>
+                                    <div class="col">
+                                        <label>Username</label>
+                                        <input type="text" class="form-control" value="<?= $info['username'] ?>" readonly>
                                     </div>
-                                    <div class="form-row m-2">
-                                        <div class="col mr-4">
-                                            <label>Chức vụ</label>
-                                            <input type="text" class="form-control" placeholder="Admin" value="<?= $info['position'] ?>" readonly>
-                                        </div>
-                                        <div class="col">
-                                            <label>Phòng ban</label>
-                                            <input type="text" class="form-control" placeholder="Admin" value="<?= $info['department'] ?>" readonly>
-                                        </div>
+                                </div>
+                                <div class="form-row m-2">
+                                    <div class="col mr-4">
+                                        <label>Chức vụ</label>
+                                        <input type="text" class="form-control" placeholder="Admin" value="<?= $info['position'] ?>" readonly>
                                     </div>
-                                    <div class="form-row m-2">
-                                        <label> Email</label>
-                                        <input type="text" class="form-control" value="<?= $info['email'] ?>" readonly>
+                                    <div class="col">
+                                        <label>Phòng ban</label>
+                                        <input type="text" class="form-control" placeholder="Admin" value="<?= $info['department'] ?>" readonly>
                                     </div>
+                                </div>
+                                <div class="form-row m-2">
+                                    <label> Email</label>
+                                    <input type="text" class="form-control" value="<?= $info['email'] ?>" readonly>
+                                </div>
+                                <form method="post" action="" enctype="multipart/form-data" novalidate>
                                     <div class="form-row m-2">
                                         <label> Password</label>
                                         <input type="password" class="form-control" name="pass_old" id="pass_old">
@@ -142,6 +168,29 @@ if (!isset($_SESSION['user'])) {
                                 </form>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="upload-profile" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <hp class="modal-title">Cập nhật ảnh đại diện</hp>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group text-center">
+                            <img id="img_preview" src="#" alt="Your image profile" class="img-profile-edit rounded-circle shadow">
+                        </div>
+                        <form runat="server" id="form-upload-img" method="post" enctype="multipart/form-data">
+                            <div class="form-group text-center">
+                                <input name="avatar" type="file" id="avatar" accept="image/*">
+                            </div>
+                            <div class="form-group pull-right mt-5">
+                                <input type='button' class='btn btn-info' value='Save' id='btn_upload'>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
