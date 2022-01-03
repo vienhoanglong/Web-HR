@@ -192,6 +192,21 @@ function check_manager_byname($nameDepartment)
     }
     return true;
 }
+function check_manager_byid($id_department)
+{
+    $sql = 'select status from department where idDepartment = ?';
+    $conn = open_database();
+
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('i', $id_department);
+    if (!$stm->execute()) {
+        die('Query error: ' . $stm->error);
+    }
+
+    $result = $stm->get_result();
+    $data = implode($result->fetch_assoc());
+    return $data;
+}
 function get_department_byid($idDepartment)
 {
     $sql = 'select nameDepartment from department where idDepartment = ?';
@@ -205,7 +220,6 @@ function get_department_byid($idDepartment)
     $data = $result->fetch_assoc();
     return $data;
 }
-
 function create_employee($user, $fullname, $email, $department, $position)
 {
     if (check_user($user)) {
@@ -214,7 +228,7 @@ function create_employee($user, $fullname, $email, $department, $position)
     if (is_email_exists($email)) {
         return array('code' => 4, 'error' => 'Email đã tồn tại');
     }
-    if (($position === 'Manager') && check_manager_department($department)) {
+    if (($position === 'Manager') && check_manager_byid($department) == 1) {
         return array('code' => 3, 'error' => 'Hiện phòng ban này đã có trưởng phòng');
     }
     $department = implode(get_department_byid($department));
@@ -232,7 +246,7 @@ function create_employee($user, $fullname, $email, $department, $position)
     }
     //Cập nhật trưởng phòng trong phòng ban
     if ($role == 1) {
-        $sql1 = 'update department set manager = ? where nameDepartment = ?';
+        $sql1 = 'update department set manager = ?, status = 1 where nameDepartment = ?';
         $conn = open_database();
         $stm = $conn->prepare($sql1);
         $stm->bind_param('ss', $user, $department);
@@ -317,4 +331,137 @@ function upload_img_profile($user, $avatar)
         return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
     }
     return array('code' => 0, 'error' => 'Upload ảnh đại diện thành công!');
+}
+function check_department($name)
+{
+    $sql = 'select * from department where nameDepartment = ?';
+    $conn = open_database();
+
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('s', $name);
+    if (!$stm->execute()) {
+        die('Query error: ' . $stm->error);
+    }
+    $result = $stm->get_result();
+    if ($result->num_rows > 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+function get_department()
+{
+
+    $conn = open_database();
+
+    $sql = 'select * from department';
+
+    $stm = $conn->prepare($sql);
+
+    $stm->execute();
+    $data = $stm->get_result();
+    return $data;
+}
+function create_department($name, $address, $desc)
+{
+    if (check_department($name)) {
+        return array('code' => 1, 'error' => 'Phòng ban này đã tồn tại');
+    }
+    $conn = open_database();
+    $sql = 'insert into department(nameDepartment, addressDepartment, descDepartment) values(?, ?, ?)';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('sss', $name, $address, $desc);
+    if (!$stm->execute()) {
+        return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+    }
+    return array('code' => 0, 'error' => 'Tạo phòng ban mới thành công!');
+}
+function get_information_load_department($id_department)
+{
+    $conn = open_database();
+    $count = count_employee_department($id_department);
+    $sql = 'select * from department where idDepartment = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('i', $id_department);
+    $stm->execute();
+    $result = $stm->get_result();
+    $data = array_push($count, $result);
+    return $result;
+}
+function count_employee_department($id_department)
+{
+
+    $conn = open_database();
+    $sql = 'select nameDepartment from department where idDepartment = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('i', $id_department);
+    $stm->execute();
+    $result = $stm->get_result();
+    $result = implode($result->fetch_assoc());
+    $sql1 = 'select count(position) from users where department = ?';
+    $stm = $conn->prepare($sql1);
+    $stm->bind_param('s', $result);
+    $stm->execute();
+    $count = $stm->get_result();
+    $count = $count->fetch_assoc();
+    // $data = $count['count(*)'];
+    return $count;
+}
+function update_department($name, $address, $desc, $id_department)
+{
+    if (check_department($name)) {
+        return array('code' => 1, 'error' => 'Phòng ban này đã tồn tại');
+    }
+    $conn = open_database();
+    $sql = 'update department set nameDepartment = ?, addressDepartment = ?, descDepartment = ? where idDepartment = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('sssi', $name, $address, $desc, $id_department);
+    if (!$stm->execute()) {
+        return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+    }
+    return array('code' => 0, 'error' => 'Cập nhật phòng ban thành công!');
+}
+function load_employee_department($id_department)
+{
+    $conn = open_database();
+    $nameDepartment = implode(get_department_byid($id_department));
+    $sql = 'select username from users where department = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('s', $nameDepartment);
+    if (!$stm->execute()) {
+        return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+    }
+    $result = $stm->get_result();
+    while ($row[] = $result->fetch_assoc()) {
+        $data = $row;
+    }
+    return $data;
+}
+function promote_department($department, $user, $position)
+{
+
+    //kiểm tra bổ nhiệm hoặc bãi nhiệm trưởng phòng'
+
+    if (($position == 'Manager') && check_manager_byid($department) == 1) {
+        return array('code' => 3, 'error' => 'Hiện phòng ban này đã có trưởng phòng');
+    }
+    if ($position == 'Employee') {
+        $rong = '';
+        $sql = 'update department set manager = ?, status = 0 where idDepartment = ?';
+        $conn = open_database();
+        $stm = $conn->prepare($sql);
+        $stm->bind_param('si', $rong, $department);
+        if (!$stm->execute()) {
+            return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+        }
+        return array('code' => 0, 'error' => 'Bãi nhiệm trưởng phòng thành công!');
+    }
+    $sql = 'update department set manager = ?, status = 1  where idDepartment = ?';
+    $conn = open_database();
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('si', $user, $department);
+    if (!$stm->execute()) {
+        return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+    }
+    return array('code' => 0, 'error' => 'Bổ nhiệm trưởng phòng thành công!');
 }

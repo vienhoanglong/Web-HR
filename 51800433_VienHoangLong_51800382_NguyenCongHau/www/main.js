@@ -119,7 +119,7 @@ $(document).on('click', '#btn-update-employee', function(){
     var username = $('#update_position').val();
     // var position = $('input[name="update_position"]:checked').val();
     var department = $('#update_department').val();
-    console.log(department);
+    // console.log(department);
     var email = $('#update_email').val();
     if(fullname == ''){
         $('#ud-err-fullname').html('Vui lòng nhập tên đẩy đủ!');
@@ -263,6 +263,48 @@ $(document).ready(function () {
         });
     });
 });
+$(document).on('click', '#btn-create-department', function() {
+    var address = $('#address_room').val();
+    var name = $('#name_room').val();
+    var desc = $('#desc_room').val();
+    (address == '') ? $('#er-address').html('Vui lòng nhập số phòng của phòng ban!'): $('#er-address').html('');
+    (name == '') ? $('#er-name').html('Vui lòng nhập tên phòng ban!'): $('#er-name').html('');
+    (desc == '') ? $('#er-desc').html('Vui lòng nhập mô tả về phòng ban!'): $('#er-desc').html('');
+    if (address !== '' && name !== '' && desc !== '') {
+        $.ajax({
+            type: 'post',
+            dataType: 'JSON',
+            url: 'management_department.php',
+            data: {
+                name: name,
+                address: address,
+                desc: desc
+            },
+            success: function(data) {
+                if (data.hasOwnProperty('error') && data.error == '1') {
+                    var html = '';
+                    // Lặp qua các key và xử lý nối lỗi
+                    $.each(data, function(key, item) {
+                        // Tránh key error ra vì nó là key thông báo trạng thái
+                        if (key != 'error') {
+                            html += '<li>' + item + '</li>';
+                        }
+                    });
+                    $('.alert-danger').html(html).removeClass('hide');
+                } else { // Thành công
+                    $('.alert-success').html('Tạo phòng ban thành công!');
+                    // 2 giay sau sẽ tắt popup
+                    setTimeout(function() {
+                        $('#create-department').modal('hide');
+                        location.reload();
+                    }, 1000);
+
+                }
+            }
+        })
+    }
+
+})
 //show modal create promote
 $(document).ready(function () {
     $(".click-create-promote").click(function () {
@@ -272,33 +314,190 @@ $(document).ready(function () {
         });
     });
 });
-// show modal update department
+$(document).on('click', '#btn-details-promote', $(document).ready(function () {
+    $('.btn-details-promote').click(function () {
+        $('#details-promote').removeClass('d-none');
+        $('#footer-promote').removeClass('d-none');
+        $('#department_promote').attr('disabled', true);
+        //clear select option
+        $('#user_promote')
+        .find('option')
+        .remove()
+        .end()
+        var id_department = $('#department_promote').val();
+        console.log("name",id_department);
+        $.ajax({
+            type:'post',
+            url: 'management_department.php',
+            dataType:'JSON',
+            data:{checking_promote:true, id_department_promote:id_department},
+            success: function(data){
+                var array = data;
+                if (array != '')
+                {
+                  for (i in array) {                        
+                   $("#user_promote").append('<option value='+array[i].username+'>'+array[i].username+'</option>');
+                 }
+                }     
+            }
+        })
+
+    });
+}))
 $(document).ready(function () {
-    $(".click-update-department").click(function () {
+    $('#close-promote').click(function () {
+        $('#department_promote').attr('disabled', false);
+    });
+})
+$(document).on('click', '#btn-department-promote', function(){
+    var department = $('#department_promote').val();
+    var user = $('#user_promote').val();
+    var position = $('#position_promote').val();
+    //console.log(department, user, position);
+    if (department !== '' && user !== '' && position !== '') {
+        $.ajax({
+            type: 'post',
+            dataType: 'JSON',
+            url: 'management_department.php',
+            data: {
+                department_promote: department,
+                user_promote: user,
+                position_promote: position
+            },
+            success: function(data) {
+                if (data.hasOwnProperty('error') && data.error == '1') {
+                    var html = '';
+                    // Lặp qua các key và xử lý nối lỗi
+                    $.each(data, function(key, item) {
+                        // Tránh key error ra vì nó là key thông báo trạng thái
+                        if (key != 'error') {
+                            html += '<li>' + item + '</li>';
+                        }
+                    });
+                    $('.alert-danger').html(html).removeClass('hide');
+                } else { // Thành công
+                    $('.alert-success').html('Bổ nhiểm/bãi nhiểm trưởng phòng thành công!');
+                    // 2 giay sau sẽ tắt popup
+                    setTimeout(function() {
+                        $('#create-department').modal('hide');
+                        location.reload();
+                    }, 1000);
+
+                }
+            }
+        })
+    }
+})
+// show modal update department
+$(document).ready(function() {
+    $(".click-update-department").click(function() {
         $('#update-department').modal({
             backdrop: 'static',
             keyboard: false
         });
+        var update_dpmid = $(this).closest('tr').find('#id-department').text();
+        // console.log(update_dpmid);
+        $('#ud_department_id').val(update_dpmid);
+        $.ajax({
+            type: 'post',
+            url: 'management_department.php',
+            dataType: 'JSON',
+            data: {
+                checking_load: true,
+                ud_department_id: update_dpmid
+            },
+            success: function(data) {
+
+                $.each(data, function(key, value) {
+                    $('#update_name').val(value['nameDepartment']);
+                    $('#update_address').val(value['addressDepartment']);
+                    $('#update_desc').val(value['descDepartment']);
+                });
+
+            }
+        })
+
     });
 });
-// show modal delete employee
-$(document).ready(function () {
-    $(".click-delete-department").click(function () {
-        $('#delete-department').modal({
-            backdrop: 'static',
-            keyboard: false
-        });
-    });
-});
+$(document).on('click', '#btn-update-department', function() {
+    var ud_department_id = $('#ud_department_id').val();
+    var name = $('#update_name').val();
+    var address = $('#update_address').val();
+    var desc = $('#update_desc').val();
+    (name == '') ? $('#ud-err-name').html('Vui lòng nhập tên phòng ban!'): $('#ud-err-name').html('');
+    (address == '') ? $('#ud-err-address').html('Vui lòng nhập số phòng!'): $('#ud-err-address').html('');
+    (desc == '') ? $('#ud-err-desc').html('Vui lòng nhập mô tả phòng ban!'): $('#ud-err-desc').html('');
+    if (address !== '' && name !== '' && desc !== '') {
+        $.ajax({
+            type: 'post',
+            dataType: 'JSON',
+            url: 'management_department.php',
+            data: {
+                ud_name: name,
+                ud_address: address,
+                ud_desc: desc,
+                ud_id_department: ud_department_id
+            },
+            success: function(data) {
+                if (data.hasOwnProperty('error') && data.error == '1') {
+                    var html = '';
+                    // Lặp qua các key và xử lý nối lỗi
+                    $.each(data, function(key, item) {
+                        // Tránh key error ra vì nó là key thông báo trạng thái
+                        if (key != 'error') {
+                            html += '<li>' + item + '</li>';
+                        }
+                    });
+                    $('.alert-danger').html(html).removeClass('hide');
+                } else { // Thành công
+                    $('.alert-success').html('Cập nhật phòng bản thành công!');
+                    // 2 giay sau sẽ tắt popup
+                    setTimeout(function() {
+                        $('#update-department').modal('hide');
+                        location.reload();
+                    }, 1000);
+
+                }
+            }
+        })
+    }
+
+})
 //show modal details department
-$(document).ready(function () {
-    $(".click-details-department").click(function () {
+$(document).ready(function() {
+    $(".click-details-department").click(function() {
         $('#details-department').modal({
             backdrop: 'static',
             keyboard: false
         });
+        var load_department_id = $(this).closest('tr').find('#id-department').text();
+        //console.log(load_department_id);
+        $('#load_department_id').val(load_department_id);
+        $.ajax({
+            type: 'post',
+            url: 'management_department.php',
+            dataType: 'JSON',
+            data: {
+                checking_load: true,
+                ud_department_id: load_department_id
+            },
+            success: function(data) {
+                // console.log(data);
+                var tmp = (data[0]);
+                $.each(data, function(key, value) {
+                    //console.log(typeof(value))
+                    $('#load_name').val(value['nameDepartment']);
+                    $('#load_address').val(value['addressDepartment']);
+                    $('#load_desc').val(value['descDepartment']);
+                    $('#load_dpm_manager').val(value['manager']);
+                    $('#load_quantity').val(tmp['count(position)']);
+                })
+            }
+        })
+
     });
-});
+
+})
 //show modal detail calender
 $(document).ready(function () {
     $(".click-detail-calender").click(function () {
@@ -335,13 +534,14 @@ $(document).ready(function () {
         });
     });
 });
-avatar.onchange = e => {
-    const [file] = avatar.files;
-    if (file) {
-        img_preview.src = URL.createObjectURL(file);
-    }
-}
+
 $(document).ready(function(){
+    imgInp.onchange = e => {
+        const [file] = imgInp.files;
+        if (file) {
+            img_preview.src = URL.createObjectURL(file);
+        }
+    }
     $('#btn_upload').click(function(){
         var postData =  new FormData($("#form-upload-img")[0]);
         console.log(postData);
@@ -360,3 +560,7 @@ $(document).ready(function(){
         })
     });
 });
+//
+
+
+

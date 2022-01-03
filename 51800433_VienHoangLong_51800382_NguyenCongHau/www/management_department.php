@@ -1,5 +1,94 @@
 <?php
 session_start();
+require_once('db.php');
+$departments = get_department();
+$d_name = get_name_department();
+$errors = array(
+    'error' => 0
+);
+$name = '';
+$address = '';
+$desc = '';
+if (isset($_POST['name']) && isset($_POST['address']) && isset($_POST['desc'])) {
+    $name = $_POST['name'];
+    $address = $_POST['address'];
+    $desc = $_POST['desc'];
+    $result = create_department($name, $address, $desc);
+    if ($result['code'] == 1) {
+        $errors['error'] = 1;
+        $errors['department'] = 'Phòng ban này đã tồn tại';
+    }
+    if ($result['code'] == 2) {
+        $errors['error'] = 1;
+        $errors['comand'] = 'Không thể tạo phòng ban!';
+    }
+    die(json_encode($errors));
+}
+//Hiển thị dữ liệu department lên modal
+if (isset($_POST['checking_load'])) {
+    $ud_department_id = $_POST['ud_department_id'];
+    $data = [];
+    $count = count_employee_department($ud_department_id);
+    array_push($data, $count);
+    $result = get_information_load_department($ud_department_id);
+    if (mysqli_fetch_assoc($result) > 0) {
+        foreach ($result as $row) {
+            array_push($data, $row);
+            header('Content-Type: application/json');
+            die(json_encode($data));
+        }
+    }
+}
+//Update department
+$er_ud = array(
+    'error' => 0
+);
+if (isset($_POST['ud_name']) && isset($_POST['ud_address']) && isset($_POST['ud_desc']) && isset($_POST['ud_id_department'])) {
+    $ud_name = $_POST['ud_name'];
+    $ud_address = $_POST['ud_address'];
+    $ud_desc = $_POST['ud_desc'];
+    $id_department = $_POST['ud_id_department'];
+    $result = update_department($ud_name, $ud_address, $ud_desc, $id_department);
+    if ($result['code'] == 1) {
+        $er_update['error'] = 1;
+        $er_update['department'] = 'Phòng ban này đã có trong công ty!';
+    }
+    if ($result['code'] == 2) {
+        $er_update['error'] = 1;
+        $er_update['department'] = 'Cập nhật phòng ban không thành công!';
+    }
+    die(json_encode($er_ud));
+}
+//Load dữ liệu lên modal bổ nhiệm
+if (isset($_POST['checking_promote'])) {
+    $id_department_promote = $_POST['id_department_promote'];
+    $result = load_employee_department($id_department_promote);
+    header('Content-Type: application/json');
+    die(json_encode($result));
+}
+//Bổ nhiệm trưởng phòng
+$er_promote = array(
+    'error' => 0
+);
+if (isset($_POST['department_promote']) && isset($_POST['user_promote']) && $_POST['position_promote']) {
+    $department_promote = $_POST['department_promote'];
+    $user_promote = $_POST['user_promote'];
+    $position_promote = $_POST['position_promote'];
+    $result = promote_department($department_promote, $user_promote, $position_promote);
+    if ($result['code'] == 3) {
+        $er_promote['error'] = 1;
+        $er_promote['department'] = 'Phòng ban này đã có trưởng phòng!';
+    }
+    if ($result['code'] == 2) {
+        $er_promote['error'] = 1;
+        $er_promote['department'] = 'Bổ nhiệm/bãi nhiệm trưởng phòng không thành công!';
+    }
+    if ($result['code'] == 1) {
+        $er_promote['error'] = 1;
+        $er_promote['department'] = 'Hiện đã là nhân viên!';
+    }
+    die(json_encode($er_promote));
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -30,12 +119,12 @@ session_start();
                             <div class="row pl-3">
                                 <div class="click-create-department mr-2">
                                     <button class="btn btn-primary"><i class="fa fa-plus-circle" aria-hidden="true"></i>
-                                        Create department</button>
+                                        Tạo phòng ban</button>
 
                                 </div>
-                                <div class="click-create-promote">
-                                    <button class="btn btn-primary"><i class="fa fa-plus-circle" aria-hidden="true"></i>
-                                        Promote</button>
+                                <div class="click-create-promote mr-2">
+                                    <button class="btn btn-primary"><i class="fa fa-star" aria-hidden="true"></i>
+                                        Bổ nhiệm</button>
                                 </div>
                             </div>
                         </div>
@@ -48,69 +137,31 @@ session_start();
                                 <table class="table table-bordered text-center table-hover" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
+                                            <th>Mã phòng</th>
                                             <th>Số phòng</th>
                                             <th>Trưởng phòng</th>
                                             <th>Phòng Ban</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>A1</td>
-                                            <td>Viên Hoàng Long</td>
-                                            <td> <a href="#" class="font-weight-bold click-details-department">Phòng CNTT</a></td>
-                                            <td>
-                                                <a class="btn btn-primary btn-icon-split click-update-department">
-                                                    <span class="icon text-white-50"><i class="fa fa-edit"></i></span>
-                                                    <span>Edit</span>
-                                                </a>
-                                                <a class="btn btn-danger btn-icon-split click-delete-department">
-                                                    <span class="icon text-white-50"><i class="fa fa-trash"></i></span>
-                                                    <span>Delete</span>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>A1</td>
-                                            <td>Viên Hoàng Long</td>
-                                            <td> <a href="#" class="font-weight-bold click-details-department">Phòng CNTT</a></td>
-                                            <td>
-                                                <a class="btn btn-primary btn-icon-split click-update-department">
-                                                    <span class="icon text-white-50"><i class="fa fa-edit"></i></span>
-                                                    <span>Edit</span>
-                                                </a>
-                                                <a class="btn btn-danger btn-icon-split click-delete-department">
-                                                    <span class="icon text-white-50"><i class="fa fa-trash"></i></span>
-                                                    <span>Delete</span>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>A1</td>
-                                            <td>Viên Hoàng Long</td>
-                                            <td> <a href="#" class="font-weight-bold click-details-department">Phòng CNTT</a></td>
-                                            <td>
-                                                <a class="btn btn-primary btn-icon-split click-update-department">
-                                                    <span class="icon text-white-50"><i class="fa fa-edit"></i></span>
-                                                    <span>Edit</span>
-                                                </a>
-                                                <a class="btn btn-danger btn-icon-split click-delete-department">
-                                                    <span class="icon text-white-50"><i class="fa fa-trash"></i></span>
-                                                    <span>Delete</span>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    </tbody>
+                                    <?php
+                                    while ($row = mysqli_fetch_assoc($departments)) { ?>
+                                        <tbody>
+                                            <tr>
+                                                <td id="id-department"><?= $row['idDepartment'] ?></td>
+                                                <td><?= $row['addressDepartment'] ?></td>
+                                                <td><?= $row['manager'] ?></td>
+                                                <td> <a href="#" class="font-weight-bold click-details-department"><?= $row['nameDepartment'] ?></a></td>
+                                                <td>
+                                                    <a class="btn btn-primary btn-icon-split click-update-department">
+                                                        <span class="icon text-white-50"><i class="fa fa-edit"></i></span>
+                                                        <span>Edit</span>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    <?php } ?>
                                 </table>
-                                <ul class="pagination">
-                                    <li class="page-item"><a class="page-link" href="#">Trước</a></li>
-                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">4</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">5</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">Sau</a></li>
-                                </ul>
                             </div>
                         </div>
                     </div>
@@ -121,30 +172,40 @@ session_start();
         <div id="create-department" class="modal fade" role="dialog">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <form id="myForm" method="">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Thêm phòng ban mới</h5>
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        </div>
-                        <div class="modal-body">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title">Thêm phòng ban mới</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" action="" novalidate>
                             <div class="form-group">
-                                <label for="num-room">Số phòng</label>
-                                <input name="num-room" class="form-control" type="text" placeholder="Số phòng" id="num-room">
+                                <label>Số phòng</label>
+                                <input name="address_room" class="form-control" type="text" placeholder="Số phòng" id="address_room">
+                                <span id="er-address" class="text-danger font-weight-bold"></span>
                             </div>
                             <div class="form-group">
-                                <label for="name-room">Tên phòng ban</label>
-                                <input name="name-room" class="form-control" type="text" placeholder="Tên phòng ban" id="name-room">
+                                <label>Tên phòng ban</label>
+                                <input name="name_room" class="form-control" type="text" placeholder="Tên phòng ban" id="name_room">
+                                <span id="er-name" class="text-danger font-weight-bold"></span>
                             </div>
                             <div class="form-group">
-                                <label for="desc-room">Mô tả</label>
-                                <textarea id="desc-room" name="desc-room" rows="4" class="form-control" placeholder="Mô tả"></textarea>
+                                <label>Mô tả</label>
+                                <textarea id="desc_room" name="desc_room" rows="4" class="form-control" placeholder="Mô tả"></textarea>
+                                <span id="er-desc" class="text-danger font-weight-bold"></span>
                             </div>
-                        </div>
-                        <div class="modal-footer pull-left">
-                            <button type="button" class="btn br-color" data-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn br-color">Create</button>
-                        </div>
-                    </form>
+                            <span class="alert-danger">
+
+                            </span>
+                            <span class="alert-success">
+
+                            </span>
+                        </form>
+                    </div>
+                    <div class="modal-footer pull-left">
+                        <button type="button" class="btn br-color" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn br-color" id="btn-create-department">Create</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -152,60 +213,52 @@ session_start();
         <div id="create-promote" class="modal fade" role="dialog">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <form id="myForm" method="">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Bổ nhiệm nhân viên</h5>
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label for="position">Nhân viên</label>
-                                <select class="form-control" id="position">
-                                    <option>Viên Hoàng Long</option>
-                                    <option>Diệp Nguyễn Trọng Phúc</option>
-                                    <option>Nguyễn Công Hậu</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="position">Chức vụ</label>
-                                <select class="form-control" id="position">
-                                    <option>Nhân viên</option>
-                                    <option>Trưởng phòng</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="department">Phòng ban</label>
-                                <select class="form-control" id="department">
-                                    <option>Phòng tài chính</option>
-                                    <option>Phòng marketing</option>
-                                    <option>Phòng kết toán</option>
-                                    <option>Phòng nhân sự</option>
-                                    <option>Phòng CNTT</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="modal-footer pull-left">
-                            <button type="button" class="btn br-color" data-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn br-color">Promote</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <!-- Dialog delete department -->
-        <div id="delete-department" class="modal fade" role="dialog">
-            <div class="modal-dialog">
-                <div class="modal-content">
                     <div class="modal-header">
-                        <hp class="modal-title">Xóa phòng ban</hp>
+                        <h5 class="modal-title">Bổ nhiệm nhân viên</h5>
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
+
                     <div class="modal-body">
-                        <p>Bạn có chắc rằng muốn xóa phòng ban này ?</p>
+                        <div class="form-group">
+                            <label>Phòng ban</label>
+                            <select class="form-control" id="department_promote" name="department_promote">
+                                <?php
+                                foreach ($d_name as $key => $value) :
+                                    echo '<option value =' . $value['idDepartment'] . '>' . $value['nameDepartment'] . '</option>';
+                                endforeach;
+                                ?>
+                            </select>
+                            <a class="btn br-color btn-icon-split btn-details-promote mt-2">
+                                <span class="icon text-white-50"><i class="fa fa-chevron-circle-down"></i></span>
+                                <span>Chọn</span>
+                            </a>
+                        </div>
+                        <div class="form-group d-none" id="details-promote">
+                            <h6 class="mb-2">Thông tin chi tiết nhân viên bổ nhiệm</h6>
+                            <div class="form-group">
+                                <label>Nhân viên</label>
+                                <select class="form-control" id="user_promote" name="user_promote">
+
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Chức vụ</label>
+                                <select class="form-control" id="position_promote" name="position_promote">
+                                    <option value="Employee">Nhân viên</option>
+                                    <option value="Manager">Trưởng phòng</option>
+                                </select>
+                            </div>
+                        </div>
+                        <span class="alert-danger">
+
+                        </span>
+                        <span class="alert-success">
+
+                        </span>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-danger">Delete</button>
+                    <div class="modal-footer pull-left d-none" id="footer-promote">
+                        <button type="button" class="btn br-color" data-dismiss="modal" id="close-promote">Cancel</button>
+                        <button type="button" class="btn br-color" id="btn-department-promote">Promote</button>
                     </div>
                 </div>
             </div>
@@ -221,25 +274,33 @@ session_start();
                         </div>
                         <div class="modal-body">
                             <div class="form-group">
-                                <label for="id-room">Mã số phòng</label>
-                                <input name="id-room" class="form-control" type="text" id="id-room" readonly>
+                                <input type="hidden" name="ud_department_id" id="ud_department_id">
                             </div>
                             <div class="form-group">
-                                <label for="num-room">Số phòng</label>
-                                <input name="num-room" class="form-control" type="text" placeholder="Số phòng" id="num-room">
+                                <label>Số phòng</label>
+                                <input name="num-room" class="form-control" type="text" id="update_address">
+                                <span id="ud-err-address" class="text-danger font-weight-bold"></span>
                             </div>
                             <div class="form-group">
-                                <label for="name-room">Tên phòng ban</label>
-                                <input name="name-room" class="form-control" type="text" placeholder="Tên phòng ban" id="name-room">
+                                <label>Tên phòng ban</label>
+                                <input name="update_name" class="form-control" type="text" id="update_name">
+                                <span id="ud-err-name" class="text-danger font-weight-bold"></span>
                             </div>
                             <div class="form-group">
-                                <label for="desc-room">Mô tả</label>
-                                <textarea id="desc-room" name="desc-room" rows="4" class="form-control" placeholder="Mô tả"></textarea>
+                                <label>Mô tả</label>
+                                <textarea id="update_desc" name="update_desc" rows="6" class="form-control"></textarea>
+                                <span id="ud-err-desc" class="text-danger font-weight-bold"></span>
                             </div>
+                            <span class="alert-danger">
+
+                            </span>
+                            <span class="alert-success">
+
+                            </span>
                         </div>
                         <div class="modal-footer pull-left">
                             <button type="button" class="btn br-color" data-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn br-color">Update</button>
+                            <button type="button" class="btn br-color" id="btn-update-department">Update</button>
                         </div>
                     </form>
                 </div>
@@ -255,29 +316,32 @@ session_start();
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
                         </div>
                         <div class="modal-body">
-                            <div class="form-group">
-                                <label for="num-rd">Số phòng</label>
-                                <input name="num-rd" class="form-control" type="text" placeholder="Số phòng" id="num-rd" readonly>
+                            <div class="fomr-group">
+                                <input type="hidden" name="load_department_id" id="load_department_id">
                             </div>
                             <div class="form-group">
-                                <label for="name-rd">Tên phòng ban</label>
-                                <input name="name-rd" class="form-control" type="text" placeholder="Tên phòng ban" id="name-rd" readonly>
+                                <label>Số phòng</label>
+                                <input name="load_address" class="form-control" type="text" id="load_address" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Tên phòng ban</label>
+                                <input name="load_name" class="form-control" type="text" id="load_name" readonly>
                             </div>
                             <div class="form-group">
                                 <div class="row">
                                     <div class="col">
-                                        <label for="name-rmd">Trưởng phòng</label>
-                                        <input name="name-rmd" class="form-control" type="text" placeholder="Tên phòng ban" id="name-rmd" readonly>
+                                        <label>Trưởng phòng</label>
+                                        <input name="load_dpm_manager" class="form-control" type="text" id="load_dpm_manager" readonly>
                                     </div>
                                     <div class="col">
-                                        <label for="name-rmd">Số lượng nhân viên</label>
-                                        <input name="name-rmd" class="form-control" type="text" placeholder="Tên phòng ban" id="name-rmd" readonly>
+                                        <label>Số lượng nhân viên</label>
+                                        <input name="load_quantity" class="form-control" type="text" id="load_quantity" readonly>
                                     </div>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="desc-rd">Mô tả</label>
-                                <textarea id="desc-rd" name="desc-rd" rows="6" class="form-control" placeholder="Mô tả" readonly></textarea>
+                                <label>Mô tả</label>
+                                <textarea id="load_desc" name="load_desc" rows="6" class="form-control" readonly></textarea>
                             </div>
                         </div>
                         <div class="modal-footer pull-left">
@@ -287,6 +351,7 @@ session_start();
                 </div>
             </div>
         </div>
+
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>

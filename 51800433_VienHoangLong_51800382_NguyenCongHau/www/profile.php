@@ -67,14 +67,14 @@ if (!isset($_SESSION['user'])) {
     //Upload avatar
     $uploadDir = 'images/';
     $uploadedFile = '';
-    if (!empty($_FILES['avatar']['name'])) {
-        $fileName = basename($_FILES['avatar']['name']);
+    if (!empty($_FILES['imgInp']['name'])) {
+        $fileName = basename($_FILES['imgInp']['name']);
         $targetFilePath = $uploadDir . $fileName;
         $fileType = pathinfo($targetFilePath, PATHINFO_EXTENSION);
 
         $allowTypes = array('jpeg', 'png', 'jpg');
         if (in_array($fileType, $allowTypes)) {
-            if (move_uploaded_file($_FILES['avatar']['tmp_name'], $targetFilePath)) {
+            if (move_uploaded_file($_FILES['imgInp']['tmp_name'], $targetFilePath)) {
                 $uploadedFile = $fileName;
                 $result = upload_img_profile($user, $fileName);
                 if ($result['code'] == 1) {
@@ -185,7 +185,7 @@ if (!isset($_SESSION['user'])) {
                         </div>
                         <form runat="server" id="form-upload-img" method="post" enctype="multipart/form-data">
                             <div class="form-group text-center">
-                                <input name="avatar" type="file" id="avatar" accept="image/*">
+                                <input name="imgInp" type="file" id="imgInp" accept="image/*">
                             </div>
                             <div class="form-group pull-right mt-5">
                                 <input type='button' class='btn btn-info' value='Save' id='btn_upload'>
