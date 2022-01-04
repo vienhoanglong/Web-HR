@@ -385,7 +385,7 @@ function get_information_load_department($id_department)
     $stm->bind_param('i', $id_department);
     $stm->execute();
     $result = $stm->get_result();
-    $data = array_push($count, $result);
+    //$data = array_push($count, $result);
     return $result;
 }
 function count_employee_department($id_department)
@@ -510,4 +510,57 @@ function load_calendar()
     $stm->execute();
     $result = $stm->get_result();
     return $result;
+}
+//load calendar by id
+function load_calendar_byid($id)
+{
+    $conn = open_database();
+    $sql = 'select * from calendar where id = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('i', $id);
+    $stm->execute();
+    $data = $stm->get_result();
+    return $data;
+}
+function load_calendar_byuser($id)
+{
+    $conn = open_database();
+    $sql = 'select username from calendar where id = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('i', $id);
+    $stm->execute();
+    $result = $stm->get_result();
+    $data = implode($result->fetch_assoc());
+    return $data;
+}
+function load_accept_calendar($user)
+{
+    $conn = open_database();
+    $sql = 'select * from accept_calendar';
+    $stm = $conn->prepare($sql);
+    $stm->execute();
+    $result = $stm->get_result();
+    $data = $result->fetch_assoc();
+    return $data;
+}
+
+function update_status_accept_calendar($user, $dayoff)
+{
+    //cập nhật status và chèn dữ liệu vào calendar
+    $conn = open_database();
+    $sql = 'update accept_calendar set ngayDaNghi = (ngayDaNghi + ?), ngayConLai = (ngayConLai - ?) where username = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('sss', $dayoff, $dayoff, $user);
+    if (!$stm->execute()) {
+        return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+    }
+    $conn = open_database();
+    $trangThai = 'Đã duyệt';
+    $sql1 = 'update calendar set trangThai = ? where username = ?';
+    $stm1 = $conn->prepare($sql1);
+    $stm1->bind_param('ss', $trangThai, $user);
+    if (!$stm1->execute()) {
+        return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+    }
+    return array('code' => 0, 'error' => 'Duyệt đơn thành công!');
 }

@@ -1,5 +1,55 @@
 <?php
 session_start();
+
+require_once('db.php');
+$page = 'calendar_admin';
+$calendar = load_calendar();
+
+
+if (isset($_POST['checking_calendar'])) {
+    $id_calendar = $_POST['id_calendar'];
+    $data = [];
+    $username = load_calendar_byuser($id_calendar);
+    $rest_day = load_accept_calendar($username);
+    array_push($data, $rest_day);
+    $temp = get_information($username);
+    $result1 = $temp->fetch_assoc();
+    array_push($data, $result1);
+    $result = load_calendar_byid($id_calendar);
+    if (mysqli_fetch_assoc($result) > 0) {
+        foreach ($result as $row) {
+            array_push($data, $row);
+            header('Content-Type: application/json');
+            die(json_encode($data));
+        }
+    }
+}
+$er_accept = array(
+    'error' => 0
+);
+if (isset($_POST['checking_accept'])) {
+    $id_calendar_admin = $_POST['id_calendar_admin'];
+    $calendar = load_calendar_byid($id_calendar_admin);
+    $calendar = $calendar->fetch_assoc();
+    $a = $calendar['ngayKetThuc'];
+    $b = $calendar['ngayBatDau'];
+    $user = $calendar['username'];
+    $ngayBatDau = date("d-m-Y", strtotime($a));
+    $ngayKetThuc = date("d-m-Y", strtotime($b));
+    $dayoff = check_dayoff($ngayKetThuc, $ngayBatDau);
+    $result = update_status_accept_calendar($user, $dayoff);
+    if ($result['code'] == 0) {
+        $er_accept['error'] = 0;
+        $er_accept = 'Phê duyệt thành công định thành công!';
+    }
+    if ($result['code'] == 2) {
+        $er_accept['error'] = 1;
+        $er_accept = 'Phê duyệt không thành công!';
+    }
+    die(json_encode($er_accept));
+}
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -13,11 +63,6 @@ session_start();
     <link rel="stylesheet" href="/style.css">
     <title>Ngày nghỉ phép</title>
 </head>
-<?php
-require_once('db.php');
-$page = 'calendar_admin';
-$calendar = load_calendar();
-?>
 
 <body>
     <div class="wrapper">
@@ -40,7 +85,7 @@ $calendar = load_calendar();
                                     <thead>
                                         <tr>
                                             <th>Mã nhân viên</th>
-                                            <th>Họ và tên</th>
+                                            <th>Nhân viên</th>
                                             <th>Yêu cầu</th>
                                             <th>Thời gian</th>
                                             <th>Lí do</th>
@@ -51,21 +96,28 @@ $calendar = load_calendar();
                                     while ($row = mysqli_fetch_assoc($calendar)) { ?>
                                         <tbody>
                                             <tr>
-                                                <td><?= $row['id'] ?></td>
+                                                <td id="id_calendar_admin"><?= $row['id'] ?></td>
                                                 <td><?= $row['username'] ?></td>
-                                                <td><?= check_dayoff($row['ngayBatDau'], $row['ngayKetThuc']) . ' ngày' ?></td>
+                                                <td><?= check_dayoff($row['ngayBatDau'], $row['ngayKetThuc']) ?> ngày</td>
                                                 <td><?= date('d/m/Y', strtotime($row['ngayBatDau'])) . '-' . date('d/m/Y', strtotime($row['ngayKetThuc'])) ?></td>
                                                 <td>
                                                     <a class="btn click-detail-calender text-primary">Chi tiết<a>
                                                 </td>
                                                 <td>
-                                                    <a class="btn btn-success btn-icon-split click-accept-calender">
-                                                        <span class="icon text-white-100"><i class="fa fa-check"></i></span>
-
+                                                    <?php
+                                                    if ($row['trangThai'] == 'Chờ duyệt') {
+                                                        echo '<a class="btn btn-success btn-icon-split click-accept-calender">
+                                                    <span class="icon text-white-100"><i class="fa fa-check"></i></span>
                                                     </a>
                                                     <a class="btn btn-danger btn-icon-split click-cancel-calender">
                                                         <span class="icon text-white-100"><i class="fa fa-times"></i></span>
-                                                    </a>
+                                                    </a>';
+                                                    } elseif ($row['trangThai'] == 'Đã duyệt') {
+                                                        echo '<span class="text alert-success font-weight-bold">Đã duyệt</span>';
+                                                    } else {
+                                                        echo '<span class="text alert-danger font-weight-bold">Không duyệt</span>';
+                                                    }
+                                                    ?>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -90,60 +142,64 @@ $calendar = load_calendar();
         <div id="detail-calender" class="modal fade" role="dialog">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <form id="myForm" method="">
-                        <div class="modal-header">
-                            <h3 class="modal-title">Thông tin chi tiết ngày nghỉ</h3>
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+                    <div class="modal-header">
+                        <h3 class="modal-title">Thông tin chi tiết ngày nghỉ</h3>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="fomr-group">
+                            <input type="hidden" name="load_calendar_id" id="load_calendar_id">
                         </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label for="num-rd">Mã nhân viên: </label>
-                                <span>NV01</span>
-                            </div>
-                            <div class="form-group">
-                                <label for="name-rd">Họ và tên: </label>
-                                <strong>Viên Hoàng Long</strong>
-                            </div>
-                            <div class="form-group">
-                                <label for="name-rmd">Chức vụ: </label>
-                                <span>Trưởng phòng CNTT</span>
-                            </div>
-                            <div class="form-group">
-                                <div class="row">
-                                    <div class="col">
-                                        <label for="name-rmd">Số ngày đã nghỉ: </label>
-                                        <span>5 ngày</span>
-                                    </div>
-                                    <div class="col">
-                                        <label for="name-rmd">Số ngày nghỉ còn lại: </label>
-                                        <span>9 ngày</span>
-                                    </div>
+                        <div class="form-group">
+                            <label>Mã nhân viên: </label>
+                            <span id="load_id_calendar"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Họ và tên: </label>
+                            <span id="load_user_calendar" class="text-alert font-weight-bold"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Chức vụ: </label>
+                            <span id="load_position_calendar"></span>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col">
+                                    <label>Số ngày đã nghỉ: </label>
+                                    <span id="load_dayoff"></span>
+                                </div>
+                                <div class="col">
+                                    <label>Số ngày nghỉ còn lại: </label>
+                                    <span id="load_restday"></span>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <h5 class="font-weight-bold">Yêu cầu xin nghỉ</h5>
-                            </div>
-                            <div class="form-group">
-                                <div class="row">
-                                    <div class="col">
-                                        <label for="name-rmd">Số ngày yêu cầu: </label>
-                                        <span>3 ngày</span>
-                                    </div>
-                                    <div class="col">
-                                        <label for="name-rmd">Thời gian: </label>
-                                        <span>12/12/21 - 15/12/21</span>
-                                    </div>
+                        </div>
+                        <div class="form-group">
+                            <h5 class="font-weight-bold">Yêu cầu xin nghỉ</h5>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col">
+                                    <label>Số ngày yêu cầu: </label>
+                                    <span id="load_reqday"></span>
+                                </div>
+                                <div class="col">
+                                    <label>Thời gian: </label>
+                                    <span id="load_time"></span>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label for="name-rmd">Lí do: </label>
-                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus optio earum at velit ipsa harum ipsum, minus a officia commodi? Blanditiis iusto vel repellat atque facere assumenda asperiores sint veritatis?</p>
-                            </div>
                         </div>
-                        <div class="modal-footer pull-left">
-                            <button type="button" class="btn br-color" data-dismiss="modal">Cancel</button>
+                        <div class="form-group">
+                            <label>Lí do: </label>
+                            <p id="load_reason"></p>
                         </div>
-                    </form>
+                        <span class="alert" id="status_calendar"></span>
+                    </div>
+                    <div class="modal-footer pull-left">
+                        <button type="button" class="btn br-color" data-dismiss="modal">Cancel</button>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -156,11 +212,30 @@ $calendar = load_calendar();
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <p>Bạn có chắc rằng không duyệt đơn xin nghỉ phép này ?</p>
+                        <p class="alert alert-danger">Bạn có chắc rằng không duyệt đơn xin nghỉ phép này ?</p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-dismiss="modal">No</button>
                         <button type="button" class="btn btn-danger">Yes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Accept calendar -->
+        <div id="accept-calendar" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <hp class="modal-title">Phê duyệt</hp>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="text" name="iduser_calendar" id="iduser_calendar">
+                        <p class="alert alert-success">Bạn có chắc rằng muốn duyệt đơn xin nghỉ phép này ?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">No</button>
+                        <button type="button" class="btn btn-success" id="btn_accept_calendar">Yes</button>
                     </div>
                 </div>
             </div>

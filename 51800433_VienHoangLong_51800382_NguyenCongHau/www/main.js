@@ -496,12 +496,54 @@ $(document).ready(function() {
 })
 //Calendar bên trưởng phòng
 //show modal detail calender
-$(document).ready(function () {
-    $(".click-detail-calender").click(function () {
+$(document).ready(function() {
+    $(".click-detail-calender").click(function() {
         $('#detail-calender').modal({
             backdrop: 'static',
             keyboard: false
         });
+        var id_calendar = $(this).closest('tr').find('#id_calendar_admin').text();
+        //console.log(id_calendar);
+        $('#load_calendar_id').val(id_calendar);
+        $.ajax({
+            type: 'post',
+            url: 'calendar_admin.php',
+            dataType: 'JSON',
+            data: {
+                checking_calendar: true,
+                id_calendar: id_calendar
+            },
+            success: function(data) {
+                //console.log(data);
+                var data0 = data[0];
+                var data1 = data[1];
+                var data2 = data[2];
+                $.each(data, function(key, value) {
+                    $('#load_id_calendar').text(data1['id']);
+                    $('#load_user_calendar').text(data1['fullname']);
+                    $('#load_position_calendar').text(data1['position'] + '-' + data1['department']);
+                    $('#load_dayoff').text(15 - data0['ngayConLai']);
+                    $('#load_restday').text(data0['ngayConLai']);
+                    var date1 = new Date(data2['ngayBatDau']);
+                    var date2 = new Date(data2['ngayKetThuc']);
+                    var difference = date2.getTime() - date1.getTime();
+                    var days = Math.ceil(difference / (1000 * 3600 * 24));
+                    $('#load_reqday').text(days + 1 + ' ngày');
+                    $('#load_time').text('Từ ' + data2['ngayBatDau'] + ' đến ' + data2['ngayKetThuc']);
+                    $('#load_reason').text(data2['liDo']);
+                    if(data2['trangThai']==='Chờ duyệt'){
+                        $('#status_calendar').text(data2['trangThai']);
+                        $('#status_calendar').addClass('alert-warning')
+                    }else if(data2['trangThai']==='Đã duyệt'){
+                        $('#status_calendar').text(data2['trangThai']);
+                        $('#status_calendar').addClass('alert-success')
+                    }else{
+                        $('#status_calendar').text(data2['trangThai']);
+                        $('#status_calendar').addClass('alert-danger')
+                    }
+                })
+            }
+        })
     });
 });
 //Show modal cancel calender
@@ -513,6 +555,44 @@ $(document).ready(function () {
         });
     });
 });
+//Show modal accept calender
+$(document).ready(function () {
+    $(".click-accept-calender").click(function () {
+        $('#accept-calendar').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+        
+        var id_calendar_admin = $(this).closest('tr').find('#id_calendar_admin').text();
+        $('#iduser_calendar').val(id_calendar_admin);
+    });
+});
+$(document).on('click', '#btn_accept_calendar', function(){
+    var id_calendar_admin = $('#iduser_calendar').val()
+    console.log(id_calendar_admin);
+    if(id_calendar_admin ==''){
+        alert('Thao tác xóa bị lỗi')
+    }
+    else{
+        console.log('Da vo')
+        $.ajax({
+            type: 'post',
+            url: 'calendar_admin.php',
+            dataType: 'JSON',
+            data: {
+                checking_accept: true,
+                id_calendar_admin: id_calendar_admin
+            },
+            success: function(data) {
+                console.log(data)
+                setTimeout(function(){
+                    $('#accept-calendar').modal('hide');
+                    location.reload();
+                }, 1000);
+            }
+        })
+    }
+})
 //Show modal create calendar
 $(document).ready(function () {
     $(".create-calender-tp").click(function () {
@@ -520,6 +600,7 @@ $(document).ready(function () {
             backdrop: 'static',
             keyboard: false
         });
+    
     });
 });
 $(document).on('click', '#btn-create-calender-tp', function(){
@@ -584,6 +665,7 @@ $(document).ready(function () {
 });
 
 $(document).ready(function(){
+    
     imgInp.onchange = e => {
         const [file] = imgInp.files;
         if (file) {
