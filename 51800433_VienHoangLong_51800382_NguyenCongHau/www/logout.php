@@ -2,6 +2,7 @@
 ob_start();
 session_start();
 session_destroy();
+$page = 'logout';
 ?>
 <!DOCTYPE html>
 <html lang="en">

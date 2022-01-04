@@ -5,6 +5,7 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 require_once('db.php');
+$page = 'management_employee';
 $users = get_employee();
 $errors = array(
     'error' => 0

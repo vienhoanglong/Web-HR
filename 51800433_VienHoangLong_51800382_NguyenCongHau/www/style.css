@@ -237,3 +237,128 @@ ul ul a {
   height: 0px;
   overflow: hidden;
 }
+.dropdown {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 12px 16px;
+}
+.drop_card {
+  font-size: 20px;
+  color: #0077bb;
+}
+.drop_card:hover {
+  color: #6bc9ff;
+}
+
+.dropdown-content {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background-color: #f9f9f9;
+  min-width: 120px;
+  /* box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); */
+  z-index: 1;
+  padding: 10px;
+}
+
+.dropdown-content a {
+  color: rgb(57, 57, 57);
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {
+  background-color: #71bbe6;
+  color: #f5efed;
+}
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-menu {
+  background-color: rgb(241, 241, 241);
+  color: white;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  border: 1px solid white;
+}
+.check_img {
+  position: absolute;
+  top: 0;
+  margin-top: -20px;
+  height: 22%;
+  width: 12%;
+  transform: rotate(-10deg);
+  -webkit-transform: rotate(-10deg);
+  -moz-transform: rotate(-10deg);
+  -ms-transform: rotate(-10deg);
+  -o-transform: rotate(-10deg);
+}
+.deadline_a {
+  position: absolute;
+  right: 10px;
+  bottom: 25px;
+  font-size: 13px;
+  color: rgb(169, 169, 169);
+  font-style: italic;
+}
+.card-body:hover {
+  box-shadow: 0px 0px 4px 2px #d5d5d5;
+}
+#cancel_dialog {
+  margin-left: 50px;
+  position: absolute;
+  left: 0;
+}
+/* trạng thái task */
+#statusbar {
+  display: block;
+  font-size: 10px;
+  color: white;
+  padding: 0px;
+  position: absolute;
+  bottom: 5px;
+  display: flex;
+  cursor: pointer;
+  margin-top: 50px;
+}
+.progress_task {
+  background-color: rgb(196, 196, 196);
+  border-radius: 10px 0px 0px 10px;
+  -webkit-border-radius: 10px 0px 0px 10px;
+  -moz-border-radius: 10px 0px 0px 10px;
+  -ms-border-radius: 10px 0px 0px 10px;
+  -o-border-radius: 10px 0px 0px 10px;
+  padding: 0px 4px 0px 4px;
+  border: 1px solid white;
+}
+.waiting_task {
+  background-color: rgb(196, 196, 196);
+  padding: 0px 4px 0px 4px;
+  border: 1px solid white;
+}
+.cancel_task {
+  background-color: rgb(196, 196, 196);
+  border-radius: 0px 10px 10px 0px;
+  -webkit-border-radius: 0px 10px 10px 0px;
+  -moz-border-radius: 0px 10px 10px 0px;
+  -ms-border-radius: 0px 10px 10px 0px;
+  -o-border-radius: 0px 10px 10px 0px;
+  padding: 0px 4px 0px 4px;
+  border: 1px solid white;
+}
+.reject_task {
+  background-color: rgb(196, 196, 196);
+  padding: 0px 4px 0px 4px;
+  border: 1px solid white;
+}
+.complete_task {
+  background-color: rgb(196, 196, 196);
+  padding: 0px 4px 0px 4px;
+  border: 1px solid white;
+}
+.card-body {
+  border: none;
+}

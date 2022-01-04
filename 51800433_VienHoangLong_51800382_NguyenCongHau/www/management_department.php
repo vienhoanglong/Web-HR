@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once('db.php');
+$page = 'management_department';
 $departments = get_department();
 $d_name = get_name_department();
 $errors = array(

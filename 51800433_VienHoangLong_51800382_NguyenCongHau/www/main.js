@@ -1,8 +1,4 @@
 $(document).ready(function(){$('#sidebar-collapse').on('click',function(){$('#sidebar').toggleClass('active');});});
-// $(document).on('click', '.components li', function() {
-//     $(".components li").removeClass("active");
-//     $(this).addClass("active");
-// });
 
 // show modal create employee
 $(document).ready(function () {
@@ -498,6 +494,7 @@ $(document).ready(function() {
     });
 
 })
+//Calendar bên trưởng phòng
 //show modal detail calender
 $(document).ready(function () {
     $(".click-detail-calender").click(function () {
@@ -525,6 +522,57 @@ $(document).ready(function () {
         });
     });
 });
+$(document).on('click', '#btn-create-calender-tp', function(){
+    var username = $('#user_tp_create').val();
+    var ngayBatDau = $('#from_date').val();
+    var ngayKetThuc = $('#to_date').val();
+    var liDo = $('#reason').val();
+    var ngayConLai = $('#rest_day').val();
+    var date1 = new Date(ngayBatDau);
+    var date2 = new Date(ngayKetThuc);
+    var difference = date2.getTime() - date1.getTime();
+    var days = Math.ceil(difference / (1000 * 3600 * 24));
+    (ngayBatDau == '') ? $('#err-from-date').html('Vui lòng chọn ngày bắt đầu nghỉ!'): $('#err-from-date').html('');
+    (ngayKetThuc == '') ? $('#err-to-date').html('Vui lòng chọn ngày kết thúc!'): $('#err-to-date').html('');
+    (liDo == '') ? $('#err-reason').html('Vui lòng nhập lý do nghỉ!'): $('#err-reason').html('');
+    (days >= ngayConLai) ? $('#err-to-date').html('Số ngày nghỉ của bạn đã vượt quá giá hạn!'): $('#err-to-date').html('');
+    console.log(username, ngayBatDau, ngayKetThuc, liDo, ngayConLai);
+    if (ngayBatDau != '' && ngayKetThuc != '' && liDo != '') {
+        $.ajax({
+            type: 'post',
+            dataType: 'JSON',
+            url: 'calendar_manager.php',
+            data: {
+                username: username,
+                ngayBatDau: ngayBatDau,
+                ngayKetThuc: ngayKetThuc,
+                liDo: liDo,
+                ngayConLai: ngayConLai,
+            },
+            success: function(data) {
+                if (data.hasOwnProperty('error') && data.error == '1') {
+                    var html = '';
+                    $.each(data, function(key, item) {
+                        if (key != 'error') {
+                            html += '<li>' + item + '</li>';
+                        }
+                    });
+                    $('.alert-danger').html(html).removeClass('hide');
+                } else { // Thành công
+                    $('.alert-success').html('Tạo đơn xin nghỉ phép thành công!');
+                    // 2 giay sau sẽ tắt popup
+                    setTimeout(function() {
+                        $('#create-calendar').modal('hide');
+                        location.reload();
+                    }, 1000);
+
+                }
+            }
+        })
+    }
+
+})
+//Calendar bên trưởng phòng
 //Show modal upload profile
 $(document).ready(function () {
     $(".click-update-image").click(function () {
@@ -560,7 +608,139 @@ $(document).ready(function(){
         })
     });
 });
-//
+// Manager Task
+// new task
+$(document).ready(function () {
+    $(".click-create-task").click(function () {
+        $('#new-task').modal({
+            backdrop: 'static',
+            keyboard: true, 
+        });
+    });
+});
+// view task
+$(document).ready(function () {
+    $(".click-preview-task").click(function () {
+        $('#preview-task').modal({
+            backdrop: 'static',
+            keyboard: true, 
+        });
+    });
+});
+// view task employee
+$(document).ready(function () {
+    $("#click_start_task_employee").click(function () {
+        $('#start_task_employee').modal({
+            backdrop: 'static',
+            keyboard: true, 
+        });
+    });
+});
+//delete task
+$(document).ready(function () {
+    $(".click-delete-task").click(function () {
+        $('#delete-task').modal({
+            backdrop: 'static',
+            keyboard: true, 
+        });
+    });
+});
+//edit task
+$(document).ready(function () {
+    $(".click-update-task").click(function () {
+        $('#update-task').modal({
+            backdrop: 'static',
+            keyboard: true, 
+        });
+    });
+});
+//submit task
+$(document).ready(function () {
+    $(".click-submit-task").click(function () {
+        $('#submit-task').modal({
+            backdrop: 'static',
+            keyboard: true, 
+        });
+    });
+});
+//view submit task
+$(document).ready(function () {
+    $(".click-view-submit-task").click(function () {
+        $('#view-submit-task').modal({
+            backdrop: 'static',
+            keyboard: true, 
+        });
+    });
+});
+//upload file
+function myFunction(){
+    var x = document.getElementById("myFile");
+    var txt = "";
+    if('files' in x){
+        if(x.files.length == 0){
+            txt = "Select one or more files.";
+        }else{
+            for(var i=0; i<x.files.length; i++){
+                txt += "<br><strong>" + (i+1) + ". file</strong><br>";
+                var file = x.files[i];
+                if('name' in file){
+                    txt += "name: " + file.name + "bytes <br>";
+                }if('size' in file){
+                    txt += "size: " + file.size + "bytes <br>";
+                }
+            }
+        }
+    }
+    else {
+        if (x.value == ""){
+            txt += "Select one or more file.";
+        }else{
+            txt += "The type file is not supported.";
+            txt += "<br>The path of the select file: " + x.value;
+        }
+    }
+    document.getElementById("demo").innerHTML = txt;
+}
+// submit file
+function submitFile(){
+    var x = document.getElementById("subFile");
+    var txt = "";
+    if('files' in x){
+        if(x.files.length == 0){
+            txt = "Select one or more files.";
+        }else{
+            for(var i=0; i<x.files.length; i++){
+                txt += "<br><strong>" + (i+1) + ". file</strong><br>";
+                var file = x.files[i];
+                if('name' in file){
+                    txt += "name: " + file.name + "bytes <br>";
+                }if('size' in file){
+                    txt += "size: " + file.size + "bytes <br>";
+                }
+            }
+        }
+    }
+    else {
+        if (x.value == ""){
+            txt += "Select one or more file.";
+        }else{
+            txt += "The type file is not supported.";
+            txt += "<br>The path of the select file: " + x.value;
+        }
+    }
+    document.getElementById("view_file_submit").innerHTML = txt;
+}
+
+const currentLocation = location.href;
+const menuitem = document.querySelectorAll('a');
+const menuLength = menuitem.length;
+for(let i=0; i<menuLength; i++){
+    if(menuitem[i].href === currentLocation){
+        menuitem[i].className = "active";
+    }
+}
+
+
 
 
 

@@ -228,7 +228,7 @@ function create_employee($user, $fullname, $email, $department, $position)
     if (is_email_exists($email)) {
         return array('code' => 4, 'error' => 'Email đã tồn tại');
     }
-    if (($position === 'Manager') && check_manager_byid($department) == 1) {
+    if (($position === 'Manager') && check_manager_byid($department) == '1') {
         return array('code' => 3, 'error' => 'Hiện phòng ban này đã có trưởng phòng');
     }
     $department = implode(get_department_byid($department));
@@ -441,8 +441,7 @@ function promote_department($department, $user, $position)
 {
 
     //kiểm tra bổ nhiệm hoặc bãi nhiệm trưởng phòng'
-
-    if (($position == 'Manager') && check_manager_byid($department) == 1) {
+    if (($position == 'Manager') && check_manager_byid($department) === '1') {
         return array('code' => 3, 'error' => 'Hiện phòng ban này đã có trưởng phòng');
     }
     if ($position == 'Employee') {
@@ -464,4 +463,51 @@ function promote_department($department, $user, $position)
         return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
     }
     return array('code' => 0, 'error' => 'Bổ nhiệm trưởng phòng thành công!');
+}
+//check số ngày nghỉ
+function calendar_rest($user)
+{
+    $conn = open_database();
+    $sql = 'select ngayConLai from accept_calendar where username = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('s', $user);
+    $stm->execute();
+    $result = $stm->get_result();
+    $data = implode($result->fetch_assoc());
+    return $data;
+}
+//Kiểm tra ngày nghỉ còn lại
+function check_dayoff($ngayBatDau, $ngayKetThuc)
+{
+    $diff = abs(strtotime($ngayKetThuc) - strtotime($ngayBatDau));
+    $years = floor($diff / (365 * 60 * 60 * 24));
+    $months = floor(($diff - $years * 365 * 60 * 60 * 24) / (30 * 60 * 60 * 24));
+    $days = floor(($diff - $years * 365 * 60 * 60 * 24 - $months * 30 * 60 * 60 * 24) / (60 * 60 * 24));
+    return $days + 1;
+}
+//create đơn xin nghỉ phép
+function create_calendar($username, $ngayBatDau, $ngayKetThuc, $liDo, $ngayConLai)
+{
+    if (check_dayoff($ngayBatDau, $ngayKetThuc) >= $ngayConLai) {
+        return array('code' => 1, 'error' => 'Ngày nghỉ đã vượt quá giới hạn');
+    }
+    $ngayBatDau1 = date("Y-m-d", strtotime($ngayBatDau));
+    $ngayKetThuc1 = date("Y-m-d", strtotime($ngayKetThuc));
+    $conn = open_database();
+    $sql = 'insert into calendar(username, ngayBatDau, ngayKetThuc, liDo) values(?, ?, ?, ?)';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('ssss', $username, $ngayBatDau1, $ngayKetThuc1, $liDo);
+    if (!$stm->execute()) {
+        return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+    }
+    return array('code' => 0, 'error' => 'Tạo phòng ban mới thành công!');
+}
+function load_calendar()
+{
+    $conn = open_database();
+    $sql = 'select * from calendar';
+    $stm = $conn->prepare($sql);
+    $stm->execute();
+    $result = $stm->get_result();
+    return $result;
 }
