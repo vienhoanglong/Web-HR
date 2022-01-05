@@ -24,8 +24,12 @@ $info = $info->fetch_assoc();
                 </div>
             </div>
         </form>
-        <ul class="nav navbar-nav navbar-right">
-            <li class="nav-item item-username "><a href="#" class="font-weight-bold">Tài khoản - <?= $_SESSION['name'] ?></a></li>
+        <ul class="nav navbar-nav navbar-right dropdown dropdown-user">
+            <li class="nav-item item-username"><a href="#" class="font-weight-bold">Tài khoản - <?= $_SESSION['name'] ?></a></li>
+            <div class="dropdown-content-user shadow-sm mt-3">
+                <a class="click-to-profile" href="../profile.php">Thông tin cá nhân</a>
+                <a class="click-to-logout" href="../logout.php">Đăng xuất</a>
+            </div>
             <img class="img-profile rounded-circle" src="/images/<?= $info['avatar'] ?>">
         </ul>
     </div>

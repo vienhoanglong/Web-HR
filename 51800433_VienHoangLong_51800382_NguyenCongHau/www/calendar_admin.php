@@ -40,15 +40,30 @@ if (isset($_POST['checking_accept'])) {
     $result = update_status_accept_calendar($user, $dayoff);
     if ($result['code'] == 0) {
         $er_accept['error'] = 0;
-        $er_accept = 'Phê duyệt thành công định thành công!';
+        $er_accept = 'Phê duyệt đơn thành công!';
     }
     if ($result['code'] == 2) {
         $er_accept['error'] = 1;
-        $er_accept = 'Phê duyệt không thành công!';
+        $er_accept = 'Phê duyệt đơn không thành công!';
     }
     die(json_encode($er_accept));
 }
-
+$er_cancel = array(
+    'error' => 0
+);
+if (isset($_POST['checking_cancel'])) {
+    $idcancel_calendar = $_POST['idcancel_calendar'];
+    $result = update_status_cancel_calendar($idcancel_calendar);
+    if ($result['code'] == 0) {
+        $er_cancel['error'] = 0;
+        $er_cancel = 'Không duyệt đơn thành công!';
+    }
+    if ($result['code'] == 2) {
+        $er_cancel['error'] = 1;
+        $er_cancel = 'Không duyệt đơn không thành công!';
+    }
+    die(json_encode($er_cancel));
+}
 
 ?>
 <!DOCTYPE html>
@@ -212,11 +227,12 @@ if (isset($_POST['checking_accept'])) {
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
+                        <input type="text" name="idcancel_calendar" id="idcancel_calendar">
                         <p class="alert alert-danger">Bạn có chắc rằng không duyệt đơn xin nghỉ phép này ?</p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-dismiss="modal">No</button>
-                        <button type="button" class="btn btn-danger">Yes</button>
+                        <button type="button" class="btn btn-danger" id="btn_cancel_calendar">Yes</button>
                     </div>
                 </div>
             </div>
@@ -230,7 +246,7 @@ if (isset($_POST['checking_accept'])) {
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <input type="text" name="iduser_calendar" id="iduser_calendar">
+                        <input type="hidden" name="iduser_calendar" id="iduser_calendar">
                         <p class="alert alert-success">Bạn có chắc rằng muốn duyệt đơn xin nghỉ phép này ?</p>
                     </div>
                     <div class="modal-footer">

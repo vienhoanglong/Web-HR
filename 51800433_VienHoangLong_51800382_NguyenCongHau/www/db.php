@@ -543,7 +543,16 @@ function load_accept_calendar($user)
     $data = $result->fetch_assoc();
     return $data;
 }
-
+function load_result_calendar($user)
+{
+    $conn = open_database();
+    $sql = 'select * from calendar where username = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('s', $user);
+    $stm->execute();
+    $result = $stm->get_result();
+    return $result;
+}
 function update_status_accept_calendar($user, $dayoff)
 {
     //cập nhật status và chèn dữ liệu vào calendar
@@ -563,4 +572,16 @@ function update_status_accept_calendar($user, $dayoff)
         return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
     }
     return array('code' => 0, 'error' => 'Duyệt đơn thành công!');
+}
+function update_status_cancel_calendar($id_calendar)
+{
+    $conn = open_database();
+    $trangThai = 'Không duyệt';
+    $sql = 'update calendar set trangThai = ? where id = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('si', $trangThai, $id_calendar);
+    if (!$stm->execute()) {
+        return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+    }
+    return array('code' => 0, 'error' => 'Thực hiện không duyệt đơn thành công!');
 }

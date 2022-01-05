@@ -6,7 +6,7 @@ $user = $_SESSION['user'];
 $info = get_information($user);
 $info = $info->fetch_assoc();
 $rest_dayoff = calendar_rest($user);
-
+$calendar_result = load_result_calendar($user);
 $er_calendar = array(
     'error' => 0
 );
@@ -59,11 +59,62 @@ if (isset($_POST['username']) && isset($_POST['ngayBatDau']) && isset($_POST['ng
                             <div>
                                 <button class="create-calender-tp btn btn-primary"><i class="fa fa-plus-circle" aria-hidden="true"></i>
                                     Xin nghỉ phép</button>
-                                <button class="btn btn-primary"><i class="fa fa-check-circle" aria-hidden="true"></i>
+                                <button onclick="toggleResult()" class="btn btn-primary"><i class="fa fa-check-circle" aria-hidden="true"></i>
                                     Kết quả</button>
                             </div>
                         </div>
+                        <div class="card-body" id="result_calendar_mn">
+                            <h5 class="text text-success">Bảng danh sách kết quả cầu nghỉ phép của bạn</h5>
+                            <div class="table-responsive">
+                                <table class="table table-bordered text-center table-hover" id="dataTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Tài khoản</th>
+                                            <th>Yêu cầu</th>
+                                            <th>Thời gian nghỉ</th>
+                                            <th>Thời gian yêu cầu</th>
+                                            <th>Lí do</th>
+                                            <th>Phê duyệt</th>
+                                        </tr>
+                                    </thead>
+                                    <?php
+                                    while ($row = mysqli_fetch_assoc($calendar_result)) { ?>
+                                        <tbody>
+                                            <tr>
+                                                <td><?= $row['username'] ?></td>
+                                                <td><?= check_dayoff($row['ngayBatDau'], $row['ngayKetThuc']) ?> ngày</td>
+                                                <td><?= date('d/m/Y', strtotime($row['ngayBatDau'])) . ' - ' . date('d/m/Y', strtotime($row['ngayKetThuc'])) ?></td>
+                                                <td><?= $row['thoiGianTao'] ?></td>
+                                                <td><?= $row['liDo'] ?></td>
+                                                <td>
+                                                    <?php
+                                                    if ($row['trangThai'] == 'Chờ duyệt') {
+                                                        echo '<span class="text  alert-warning font-weight-bold">Chờ duyệt</span>';
+                                                    } elseif ($row['trangThai'] == 'Đã duyệt') {
+                                                        echo '<span class="text  alert-success font-weight-bold">Đã duyệt</span>';
+                                                    } else {
+                                                        echo '<span class="text  alert-danger font-weight-bold">Không duyệt</span>';
+                                                    }
+                                                    ?>
+
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    <?php } ?>
+                                </table>
+                                <ul class="pagination">
+                                    <li class="page-item"><a class="page-link" href="#">Trước</a></li>
+                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">4</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">5</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">Sau</a></li>
+                                </ul>
+                            </div>
+                        </div>
                         <div class="card-body">
+                            <h5 class="text text-primary">Bảng danh sách yêu cầu nghỉ phép</h5>
                             <div class="table-responsive">
                                 <table class="table table-bordered text-center table-hover" id="dataTable" width="100%" cellspacing="0">
                                     <thead>

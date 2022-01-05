@@ -553,8 +553,34 @@ $(document).ready(function () {
             backdrop: 'static',
             keyboard: false
         });
+        var idcancel_calendar = $(this).closest('tr').find('#id_calendar_admin').text();
+        $('#idcancel_calendar').val(idcancel_calendar);
     });
 });
+$(document).on('click', '#btn_cancel_calendar',function(){
+    var idcancel_calendar =  $('#idcancel_calendar').val();
+    console.log(idcancel_calendar);
+    if(idcancel_calendar == ''){
+        alert('Thao tác xóa bị lỗi');
+    }else{
+        $.ajax({
+            type: 'post',
+            url: 'calendar_admin.php',
+            dataType: 'JSON',
+            data: {
+                checking_cancel: true,
+                idcancel_calendar: idcancel_calendar
+            },
+            success: function(data) {
+                console.log(data)
+                setTimeout(function(){
+                    $('#cancel-calendar').modal('hide');
+                    location.reload();
+                }, 1000);
+            }
+        })
+    }
+})
 //Show modal accept calender
 $(document).ready(function () {
     $(".click-accept-calender").click(function () {
@@ -571,10 +597,9 @@ $(document).on('click', '#btn_accept_calendar', function(){
     var id_calendar_admin = $('#iduser_calendar').val()
     console.log(id_calendar_admin);
     if(id_calendar_admin ==''){
-        alert('Thao tác xóa bị lỗi')
+        alert('Thao tác duyệt bị lỗi');
     }
     else{
-        console.log('Da vo')
         $.ajax({
             type: 'post',
             url: 'calendar_admin.php',
@@ -584,7 +609,7 @@ $(document).on('click', '#btn_accept_calendar', function(){
                 id_calendar_admin: id_calendar_admin
             },
             success: function(data) {
-                console.log(data)
+                //console.log(data)
                 setTimeout(function(){
                     $('#accept-calendar').modal('hide');
                     location.reload();
@@ -653,6 +678,7 @@ $(document).on('click', '#btn-create-calender-tp', function(){
     }
 
 })
+
 //Calendar bên trưởng phòng
 //Show modal upload profile
 $(document).ready(function () {
@@ -821,6 +847,16 @@ for(let i=0; i<menuLength; i++){
         menuitem[i].className = "active";
     }
 }
+function toggleResult(){
+    var x = document.getElementById("result_calendar_mn");
+    if (x.style.display == "none") {
+      x.style.display = "block";
+    } else {
+      x.style.display = "none";
+    }
+   
+}
+
 
 
 
