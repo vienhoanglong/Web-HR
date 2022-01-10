@@ -483,7 +483,7 @@ function check_dayoff($ngayBatDau, $ngayKetThuc)
     $years = floor($diff / (365 * 60 * 60 * 24));
     $months = floor(($diff - $years * 365 * 60 * 60 * 24) / (30 * 60 * 60 * 24));
     $days = floor(($diff - $years * 365 * 60 * 60 * 24 - $months * 30 * 60 * 60 * 24) / (60 * 60 * 24));
-    return $days + 1;
+    return $days;
 }
 //create đơn xin nghỉ phép
 function create_calendar($username, $ngayBatDau, $ngayKetThuc, $liDo, $ngayConLai)
@@ -502,11 +502,22 @@ function create_calendar($username, $ngayBatDau, $ngayKetThuc, $liDo, $ngayConLa
     }
     return array('code' => 0, 'error' => 'Tạo phòng ban mới thành công!');
 }
-function load_calendar()
+//
+function get_calendar()
 {
     $conn = open_database();
     $sql = 'select * from calendar';
     $stm = $conn->prepare($sql);
+    $stm->execute();
+    $result = $stm->get_result();
+    return $result;
+}
+function load_calendar($start_from, $num_per_page)
+{
+    $conn = open_database();
+    $sql = 'select * from calendar order by thoiGianTao desc limit ?, ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('ii', $start_from, $num_per_page);
     $stm->execute();
     $result = $stm->get_result();
     return $result;
@@ -543,17 +554,27 @@ function load_accept_calendar($user)
     $data = $result->fetch_assoc();
     return $data;
 }
-function load_result_calendar($user)
+// function load_result_calendar($user)
+// {
+//     $conn = open_database();
+//     $sql = 'select * from calendar where username = ? order by thoiGianTao desc';
+//     $stm = $conn->prepare($sql);
+//     $stm->bind_param('s', $user);
+//     $stm->execute();
+//     $result = $stm->get_result();
+//     return $result;
+// }
+function load_result_calendar($user, $start_from, $num_per_page)
 {
     $conn = open_database();
-    $sql = 'select * from calendar where username = ?';
+    $sql = 'select * from calendar where username = ? order by thoiGianTao desc limit ?, ?';
     $stm = $conn->prepare($sql);
-    $stm->bind_param('s', $user);
+    $stm->bind_param('sii', $user, $start_from, $num_per_page);
     $stm->execute();
     $result = $stm->get_result();
     return $result;
 }
-function update_status_accept_calendar($user, $dayoff)
+function update_status_accept_calendar($id_calendar, $user, $dayoff)
 {
     //cập nhật status và chèn dữ liệu vào calendar
     $conn = open_database();
@@ -565,9 +586,9 @@ function update_status_accept_calendar($user, $dayoff)
     }
     $conn = open_database();
     $trangThai = 'Đã duyệt';
-    $sql1 = 'update calendar set trangThai = ? where username = ?';
+    $sql1 = 'update calendar set trangThai = ? where id = ?';
     $stm1 = $conn->prepare($sql1);
-    $stm1->bind_param('ss', $trangThai, $user);
+    $stm1->bind_param('ss', $trangThai, $id_calendar);
     if (!$stm1->execute()) {
         return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
     }

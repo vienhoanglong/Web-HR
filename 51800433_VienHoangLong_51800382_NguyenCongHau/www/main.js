@@ -528,7 +528,7 @@ $(document).ready(function() {
                     var date2 = new Date(data2['ngayKetThuc']);
                     var difference = date2.getTime() - date1.getTime();
                     var days = Math.ceil(difference / (1000 * 3600 * 24));
-                    $('#load_reqday').text(days + 1 + ' ngày');
+                    $('#load_reqday').text(days + ' ngày');
                     $('#load_time').text('Từ ' + data2['ngayBatDau'] + ' đến ' + data2['ngayKetThuc']);
                     $('#load_reason').text(data2['liDo']);
                     if(data2['trangThai']==='Chờ duyệt'){
@@ -666,7 +666,7 @@ $(document).on('click', '#btn-create-calender-tp', function(){
                     $('.alert-danger').html(html).removeClass('hide');
                 } else { // Thành công
                     $('.alert-success').html('Tạo đơn xin nghỉ phép thành công!');
-                    // 2 giay sau sẽ tắt popup
+                    // 1 giay sau sẽ tắt popup
                     setTimeout(function() {
                         $('#create-calendar').modal('hide');
                         location.reload();

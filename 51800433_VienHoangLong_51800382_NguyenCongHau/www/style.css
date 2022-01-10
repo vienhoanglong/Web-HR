@@ -37,6 +37,7 @@ i {
 li {
   list-style-type: none !important;
 }
+
 a,
 a:hover,
 a:focus {
@@ -113,6 +114,9 @@ a:focus {
 #sidebar ul li a:hover {
   color: #f77741;
   background: #fff;
+}
+.border-left-color {
+  border-left: 0.25rem solid #f77741 !important;
 }
 #sidebar ul li a i {
   margin-right: 10px;
@@ -216,6 +220,7 @@ ul ul a {
 }
 .container-fluid {
   padding-left: 0px !important ;
+  padding-right: 0px !important;
   margin-left: 0px;
 }
 .navbar-header {

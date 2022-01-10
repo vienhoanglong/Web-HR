@@ -1,12 +1,20 @@
 <?php
 session_start();
 require_once('db.php');
-$page = 'calendar_manager';
+//Phân trang
+if (isset($_GET['page'])) {
+    $numpage = $_GET['page'];
+} else {
+    $numpage = 1;
+}
+$num_per_page = 05;
+$start_from = ($numpage - 1) * 05;
+$title_page = 'calendar_manager';
 $user = $_SESSION['user'];
 $info = get_information($user);
 $info = $info->fetch_assoc();
 $rest_dayoff = calendar_rest($user);
-$calendar_result = load_result_calendar($user);
+$calendar_result = load_result_calendar($user, $start_from, $num_per_page);
 $er_calendar = array(
     'error' => 0
 );
@@ -27,6 +35,7 @@ if (isset($_POST['username']) && isset($_POST['ngayBatDau']) && isset($_POST['ng
     }
     die(json_encode($er_calendar));
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">

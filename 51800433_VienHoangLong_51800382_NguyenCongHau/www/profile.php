@@ -22,7 +22,7 @@ if (!isset($_SESSION['user'])) {
 <body>
     <?php
     require_once('db.php');
-    $page = 'profile';
+    $title_page = 'profile';
     $user = $_SESSION['user'];
     $info = get_information($user);
     $info = $info->fetch_assoc();

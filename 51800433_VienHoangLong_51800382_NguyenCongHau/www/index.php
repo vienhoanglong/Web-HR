@@ -31,14 +31,14 @@ if ($_SESSION['activated'] == 0) {
 			<?php include('includes/navbar.php'); ?>
 			<!-- Page Content  -->
 			<div class="container-fluid">
-				<div class="d-sm-flex justify-content-between">
+				<div class="d-sm-flex">
 					<h4 class="text-gray-800">Trang chủ</h4>
 				</div>
 			</div>
 			<div class="row ml-2 mr-2">
-				<div class="col-xl-3 col-md-6 mb-4">
-					<div class="card shadow h-80">
-						<div class="card-body">
+				<div class="col-xl-3 col-md-4 mb-4">
+					<div class="card shadow">
+						<div class="card-body border-left-color">
 							<div class="row align-items-center">
 								<div class="col mr-2">
 									<div class="text-xs text-uppercase font-weight-bold text-orange mb-1">
@@ -52,9 +52,9 @@ if ($_SESSION['activated'] == 0) {
 						</div>
 					</div>
 				</div>
-				<div class="col-xl-3 col-md-6 mb-4">
-					<div class="card shadow h-80">
-						<div class="card-body">
+				<div class="col-xl-3 col-md-4 mb-4">
+					<div class="card shadow">
+						<div class="card-body border-left-color">
 							<div class="row align-items-center">
 								<div class="col mr-2">
 									<div class="text-xs text-uppercase font-weight-bold text-orange mb-1">
@@ -68,14 +68,14 @@ if ($_SESSION['activated'] == 0) {
 						</div>
 					</div>
 				</div>
-				<div class="col-xl-3 col-md-6 mb-4">
-					<div class="card shadow h-80">
-						<div class="card-body">
+				<div class="col-xl-3 col-md-4 mb-4">
+					<div class="card shadow">
+						<div class="card-body border-left-color">
 							<div class="row align-items-center">
 								<div class="col mr-2">
 									<div class="text-xs text-uppercase font-weight-bold text-orange mb-1">
 										Ngày Nghỉ</div>
-									<h5 class="mb-0 font-weight-bold text-gray-800">40</h5>
+									<h5 class="mb-0 font-weight-bold text-gray-800">40000</h5>
 								</div>
 								<div class="col-auto">
 									<i class="fa fa-calendar fa-2x text-orange"></i>

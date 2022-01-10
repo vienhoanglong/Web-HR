@@ -5,7 +5,7 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 require_once('db.php');
-$page = 'management_employee';
+$title_page = 'management_employee';
 $users = get_employee();
 $errors = array(
     'error' => 0
@@ -137,7 +137,7 @@ if (isset($_POST['rs_employee_id'])) {
             <!-- Page Content  -->
             <div class="container-fluid">
                 <div class="col-xl-12 col-lg-9">
-                    <div class="card shadow mb-4">
+                    <div class="card shadow mb-4 mt-5">
                         <!-- Card Body -->
                         <div class="card-header py-3">
                             <h4 class="font-weight-bold text-primary">Bảng Danh Sách Nhân Viên</h4>

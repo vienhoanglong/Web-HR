@@ -1,9 +1,16 @@
 <?php
 session_start();
-
+$title_page = 'calendar_admin';
 require_once('db.php');
-$page = 'calendar_admin';
-$calendar = load_calendar();
+//Phân trang
+if (isset($_GET['page'])) {
+    $page = $_GET['page'];
+} else {
+    $page = 1;
+}
+$num_per_page = 5;
+$start_from = ($page - 1) * 5;
+$calendar = load_calendar($start_from, $num_per_page);
 
 
 if (isset($_POST['checking_calendar'])) {
@@ -37,7 +44,7 @@ if (isset($_POST['checking_accept'])) {
     $ngayBatDau = date("d-m-Y", strtotime($a));
     $ngayKetThuc = date("d-m-Y", strtotime($b));
     $dayoff = check_dayoff($ngayKetThuc, $ngayBatDau);
-    $result = update_status_accept_calendar($user, $dayoff);
+    $result = update_status_accept_calendar($id_calendar_admin, $user, $dayoff);
     if ($result['code'] == 0) {
         $er_accept['error'] = 0;
         $er_accept = 'Phê duyệt đơn thành công!';
@@ -99,7 +106,7 @@ if (isset($_POST['checking_cancel'])) {
                                 <table class="table table-bordered text-center table-hover" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th>Mã nhân viên</th>
+                                            <th>Mã nghỉ phép</th>
                                             <th>Nhân viên</th>
                                             <th>Yêu cầu</th>
                                             <th>Thời gian</th>
@@ -138,14 +145,29 @@ if (isset($_POST['checking_cancel'])) {
                                         </tbody>
                                     <?php } ?>
                                 </table>
-                                <ul class="pagination">
-                                    <li class="page-item"><a class="page-link" href="#">Trước</a></li>
-                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">4</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">5</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">Sau</a></li>
+                                <?php
+                                $num_row = get_calendar();
+                                $num_row_calendar = (mysqli_num_rows($num_row));
+                                $total_page = ceil($num_row_calendar / $num_per_page);
+                                ?>
+                                <ul class="pagination pagination-sm">
+                                    <?php
+                                    if ($page > 1) { ?>
+                                        <li class="page-item">
+                                            <a class="page-link" href="calendar_admin.php?page=<?= ($page - 1) ?>">Trước</a>
+                                        </li>
+                                    <?php } ?>
+                                    <?php
+                                    for ($i = 1; $i <= $total_page; $i++) { ?>
+                                        <li class="page-item"><a class="page-link" href="calendar_admin.php?page=<?= $i ?>"><?= $i ?></a></li></a>
+                                        </li>
+                                    <?php } ?>
+                                    <?php
+                                    if ($i > $page) { ?>
+                                        <li class="page-item">
+                                            <a class="page-link" href="calendar_admin.php?page=<?= ($page + 1) ?> ">Sau</a>
+                                        </li>
+                                    <?php } ?>
                                 </ul>
                             </div>
                         </div>

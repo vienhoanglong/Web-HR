@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once('db.php');
-$page = 'management_department';
+$title_page = 'management_department';
 $departments = get_department();
 $d_name = get_name_department();
 $errors = array(
@@ -113,7 +113,7 @@ if (isset($_POST['department_promote']) && isset($_POST['user_promote']) && $_PO
             <!-- Page Content  -->
             <div class="container-fluid">
                 <div class="col-xl-12 col-lg-9">
-                    <div class="card shadow mb-4">
+                    <div class="card shadow mb-4 mt-5">
                         <!-- Card Body -->
                         <div class="card-header py-3">
                             <h4 class="font-weight-bold text-primary">Bảng Danh Sách Phòng Ban</h4>
