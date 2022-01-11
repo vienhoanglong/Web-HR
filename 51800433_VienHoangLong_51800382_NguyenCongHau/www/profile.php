@@ -78,7 +78,7 @@ if (!isset($_SESSION['user'])) {
             if (move_uploaded_file($_FILES['imgInp']['tmp_name'], $targetFilePath)) {
                 $uploadedFile = $fileName;
                 $result = upload_img_profile($user, $fileName);
-                if ($result['code'] == 1) {
+                if ($result['code'] == 2) {
                     die("error");
                 }
             } else {

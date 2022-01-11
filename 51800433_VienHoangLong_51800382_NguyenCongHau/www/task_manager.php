@@ -16,12 +16,11 @@ $page = 'task_manager';
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
-</head>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<link rel="stylesheet" href="/style.css">
-<title>Quản lý nhân viên</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/style.css">
+    <title>Quản lý nhân viên</title>
 </head>
 
 <body>
@@ -37,7 +36,7 @@ $page = 'task_manager';
             <!-- Page Content  -->
             <div class="container-fluid">
                 <div class="col-xl-12 col-lg-9">
-                    <div class="card shadow mb-4">
+                    <div class="card shadow mb-4 mt-3">
                         <!-- Card Body -->
                         <div class="card-header py-3">
                             <h4 class="font-weight-bold text-primary">Danh Sách Công Việc</h4>
@@ -49,8 +48,9 @@ $page = 'task_manager';
                         <!-- Hậu list card -->
                         <div class="row ml-2 mr-2 mt-4">
                             <!-- card_task -->
+
                             <div class="col-xl-4 col-md-6 mb-4">
-                                <div class="card shadow-sm h-80">
+                                <div class="card shadow-sm">
                                     <div class="card-body " id="card_item">
                                         <div class="list-group list-group-flush" id="click_start_task_employee">
                                             <a class="list-group-item" href="#">Thiết kế poster ngày tết 2022 âm lịch</a>
@@ -71,26 +71,27 @@ $page = 'task_manager';
                                                 </div>
                                             </div>
                                         </nav>
+
                                         <a class="deadline_a">Deadline: 01/01/2022 11:59 AM</a>
+
                                         <p></p>
                                         <nav class="deadline_task">
-                                            <div id="statusbar">
-                                                <a class="progress_task">IN PROGRESS</a>
-                                                <a class="waiting_task">WAITING</a>
-                                                <a class="reject_task">REJECTED</a>
-                                                <a class="complete_task">COMPLETED</a>
-                                                <a class="cancel_task">CANCELED</a>
+                                            <div id="statusbar row">
+                                                <a class="progress_task btn bg-primary text-white">IN PROGRESS</a>
+                                                <a class="waiting_task btn bg-warning text-white">WAITING</a>
+                                                <a class="reject_task btn bg-info text-white">REJECTED</a>
+                                                <a class="complete_task btn bg-success text-white">COMPLETED</a>
+                                                <a class="cancel_task btn bg-danger text-white">CANCELED</a>
                                             </div>
                                         </nav>
                                         <nav class="check_new">
-                                            <img class="check_img" src="/images/new2.gif">
+                                            <img class="check_img" src="/images/new.svg">
                                         </nav>
                                     </div>
                                 </div>
                             </div>
-                            <!-- card_task -->
                             <div class="col-xl-4 col-md-6 mb-4">
-                                <div class="card shadow-sm h-80">
+                                <div class="card shadow-sm">
                                     <div class="card-body " id="card_item">
                                         <div class="list-group list-group-flush" id="click_start_task_employee">
                                             <a class="list-group-item" href="#">Thiết kế poster ngày tết 2022 âm lịch</a>
@@ -111,26 +112,27 @@ $page = 'task_manager';
                                                 </div>
                                             </div>
                                         </nav>
+
                                         <a class="deadline_a">Deadline: 01/01/2022 11:59 AM</a>
+
                                         <p></p>
                                         <nav class="deadline_task">
-                                            <div id="statusbar">
-                                                <a class="progress_task">IN PROGRESS</a>
-                                                <a class="waiting_task">WAITING</a>
-                                                <a class="reject_task">REJECTED</a>
-                                                <a class="complete_task">COMPLETED</a>
-                                                <a class="cancel_task">CANCELED</a>
+                                            <div id="statusbar row">
+                                                <a class="progress_task btn bg-primary text-white">IN PROGRESS</a>
+                                                <a class="waiting_task btn bg-default text-white">WAITING</a>
+                                                <a class="reject_task btn  bg-default text-white">REJECTED</a>
+                                                <a class="complete_task btn  bg-default text-white">COMPLETED</a>
+                                                <a class="cancel_task btn  bg-default text-white">CANCELED</a>
                                             </div>
                                         </nav>
                                         <nav class="check_new">
-                                            <img class="check_img" src="/images/new2.gif">
+                                            <img class="check_img" src="/images/new.svg">
                                         </nav>
                                     </div>
                                 </div>
                             </div>
-                            <!-- card_task -->
                             <div class="col-xl-4 col-md-6 mb-4">
-                                <div class="card shadow-sm h-80">
+                                <div class="card shadow-sm">
                                     <div class="card-body " id="card_item">
                                         <div class="list-group list-group-flush" id="click_start_task_employee">
                                             <a class="list-group-item" href="#">Thiết kế poster ngày tết 2022 âm lịch</a>
@@ -151,219 +153,21 @@ $page = 'task_manager';
                                                 </div>
                                             </div>
                                         </nav>
+
                                         <a class="deadline_a">Deadline: 01/01/2022 11:59 AM</a>
+
                                         <p></p>
                                         <nav class="deadline_task">
-                                            <div id="statusbar">
-                                                <a class="progress_task">IN PROGRESS</a>
-                                                <a class="waiting_task">WAITING</a>
-                                                <a class="reject_task">REJECTED</a>
-                                                <a class="complete_task">COMPLETED</a>
-                                                <a class="cancel_task">CANCELED</a>
+                                            <div id="statusbar row">
+                                                <a class="progress_task btn bg-primary text-white">IN PROGRESS</a>
+                                                <a class="waiting_task btn bg-primary text-white">WAITING</a>
+                                                <a class="reject_task btn bg-primary text-white">REJECTED</a>
+                                                <a class="complete_task btn bg-primary text-white">COMPLETED</a>
+                                                <a class="cancel_task btn bg-primary text-white">CANCELED</a>
                                             </div>
                                         </nav>
                                         <nav class="check_new">
-                                            <img class="check_img" src="/images/new2.gif">
-                                        </nav>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- card_task -->
-                            <div class="col-xl-4 col-md-6 mb-4">
-                                <div class="card shadow-sm h-80">
-                                    <div class="card-body " id="card_item">
-                                        <div class="list-group list-group-flush" id="click_start_task_employee">
-                                            <a class="list-group-item" href="#">Thiết kế poster ngày tết 2022 âm lịch</a>
-                                            <a class="list-group-item" href="#">Thực hiện: Nguyễn Công Hậu</a>
-                                            <a class="list-group-item" href="#">Trạng thái: chưa hoàn thành</a>
-                                        </div>
-                                        <nav class="dropdown">
-                                            <div class="drop_card" id="dropdownMenuButton">
-                                                <a type="text">
-                                                    <i class="fas fa-ellipsis-h "></i>
-                                                </a>
-                                                <div class="dropdown-content dropdown-menu shadow-sm">
-                                                    <a class="click-preview-task">Xem</a>
-                                                    <a class="click-delete-task">Hủy</a>
-                                                    <a class="click-update-task">Sửa</a>
-                                                    <a class="click-submit-task">Submit</a>
-                                                    <a class="click-view-submit-task">Xác nhận</a>
-                                                </div>
-                                            </div>
-                                        </nav>
-                                        <a class="deadline_a">Deadline: 01/01/2022 11:59 AM</a>
-                                        <p></p>
-                                        <nav class="deadline_task">
-                                            <div id="statusbar">
-                                                <a class="progress_task">IN PROGRESS</a>
-                                                <a class="waiting_task">WAITING</a>
-                                                <a class="reject_task">REJECTED</a>
-                                                <a class="complete_task">COMPLETED</a>
-                                                <a class="cancel_task">CANCELED</a>
-                                            </div>
-                                        </nav>
-                                        <nav class="check_new">
-                                            <img class="check_img" src="/images/new2.gif">
-                                        </nav>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- card_task -->
-                            <div class="col-xl-4 col-md-6 mb-4">
-                                <div class="card shadow-sm h-80">
-                                    <div class="card-body " id="card_item">
-                                        <div class="list-group list-group-flush" id="click_start_task_employee">
-                                            <a class="list-group-item" href="#">Thiết kế poster ngày tết 2022 âm lịch</a>
-                                            <a class="list-group-item" href="#">Thực hiện: Nguyễn Công Hậu</a>
-                                            <a class="list-group-item" href="#">Trạng thái: chưa hoàn thành</a>
-                                        </div>
-                                        <nav class="dropdown">
-                                            <div class="drop_card" id="dropdownMenuButton">
-                                                <a type="text">
-                                                    <i class="fas fa-ellipsis-h "></i>
-                                                </a>
-                                                <div class="dropdown-content dropdown-menu shadow-sm">
-                                                    <a class="click-preview-task">Xem</a>
-                                                    <a class="click-delete-task">Hủy</a>
-                                                    <a class="click-update-task">Sửa</a>
-                                                    <a class="click-submit-task">Submit</a>
-                                                    <a class="click-view-submit-task">Xác nhận</a>
-                                                </div>
-                                            </div>
-                                        </nav>
-                                        <a class="deadline_a">Deadline: 01/01/2022 11:59 AM</a>
-                                        <p></p>
-                                        <nav class="deadline_task">
-                                            <div id="statusbar">
-                                                <a class="progress_task">IN PROGRESS</a>
-                                                <a class="waiting_task">WAITING</a>
-                                                <a class="reject_task">REJECTED</a>
-                                                <a class="complete_task">COMPLETED</a>
-                                                <a class="cancel_task">CANCELED</a>
-                                            </div>
-                                        </nav>
-                                        <nav class="check_new">
-                                            <img class="check_img" src="/images/new2.gif">
-                                        </nav>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- card_task -->
-                            <div class="col-xl-4 col-md-6 mb-4">
-                                <div class="card shadow-sm h-80">
-                                    <div class="card-body " id="card_item">
-                                        <div class="list-group list-group-flush" id="click_start_task_employee">
-                                            <a class="list-group-item" href="#">Thiết kế poster ngày tết 2022 âm lịch</a>
-                                            <a class="list-group-item" href="#">Thực hiện: Nguyễn Công Hậu</a>
-                                            <a class="list-group-item" href="#">Trạng thái: chưa hoàn thành</a>
-                                        </div>
-                                        <nav class="dropdown">
-                                            <div class="drop_card" id="dropdownMenuButton">
-                                                <a type="text">
-                                                    <i class="fas fa-ellipsis-h "></i>
-                                                </a>
-                                                <div class="dropdown-content dropdown-menu shadow-sm">
-                                                    <a class="click-preview-task">Xem</a>
-                                                    <a class="click-delete-task">Hủy</a>
-                                                    <a class="click-update-task">Sửa</a>
-                                                    <a class="click-submit-task">Submit</a>
-                                                    <a class="click-view-submit-task">Xác nhận</a>
-                                                </div>
-                                            </div>
-                                        </nav>
-                                        <a class="deadline_a">Deadline: 01/01/2022 11:59 AM</a>
-                                        <p></p>
-                                        <nav class="deadline_task">
-                                            <div id="statusbar">
-                                                <a class="progress_task">IN PROGRESS</a>
-                                                <a class="waiting_task">WAITING</a>
-                                                <a class="reject_task">REJECTED</a>
-                                                <a class="complete_task">COMPLETED</a>
-                                                <a class="cancel_task">CANCELED</a>
-                                            </div>
-                                        </nav>
-                                        <nav class="check_new">
-                                            <img class="check_img" src="/images/new2.gif">
-                                        </nav>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- card_task -->
-                            <div class="col-xl-4 col-md-6 mb-4">
-                                <div class="card shadow-sm h-80">
-                                    <div class="card-body " id="card_item">
-                                        <div class="list-group list-group-flush" id="click_start_task_employee">
-                                            <a class="list-group-item" href="#">Thiết kế poster ngày tết 2022 âm lịch</a>
-                                            <a class="list-group-item" href="#">Thực hiện: Nguyễn Công Hậu</a>
-                                            <a class="list-group-item" href="#">Trạng thái: chưa hoàn thành</a>
-                                        </div>
-                                        <nav class="dropdown">
-                                            <div class="drop_card" id="dropdownMenuButton">
-                                                <a type="text">
-                                                    <i class="fas fa-ellipsis-h "></i>
-                                                </a>
-                                                <div class="dropdown-content dropdown-menu shadow-sm">
-                                                    <a class="click-preview-task">Xem</a>
-                                                    <a class="click-delete-task">Hủy</a>
-                                                    <a class="click-update-task">Sửa</a>
-                                                    <a class="click-submit-task">Submit</a>
-                                                    <a class="click-view-submit-task">Xác nhận</a>
-                                                </div>
-                                            </div>
-                                        </nav>
-                                        <a class="deadline_a">Deadline: 01/01/2022 11:59 AM</a>
-                                        <p></p>
-                                        <nav class="deadline_task">
-                                            <div id="statusbar">
-                                                <a class="progress_task">IN PROGRESS</a>
-                                                <a class="waiting_task">WAITING</a>
-                                                <a class="reject_task">REJECTED</a>
-                                                <a class="complete_task">COMPLETED</a>
-                                                <a class="cancel_task">CANCELED</a>
-                                            </div>
-                                        </nav>
-                                        <nav class="check_new">
-                                            <img class="check_img" src="/images/new2.gif">
-                                        </nav>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- card_task -->
-                            <div class="col-xl-4 col-md-6 mb-4">
-                                <div class="card shadow-sm h-80">
-                                    <div class="card-body " id="card_item">
-                                        <div class="list-group list-group-flush" id="click_start_task_employee">
-                                            <a class="list-group-item" href="#">Thiết kế poster ngày tết 2022 âm lịch</a>
-                                            <a class="list-group-item" href="#">Thực hiện: Nguyễn Công Hậu</a>
-                                            <a class="list-group-item" href="#">Trạng thái: chưa hoàn thành</a>
-                                        </div>
-                                        <nav class="dropdown">
-                                            <div class="drop_card" id="dropdownMenuButton">
-                                                <a type="text">
-                                                    <i class="fas fa-ellipsis-h "></i>
-                                                </a>
-                                                <div class="dropdown-content dropdown-menu shadow-sm">
-                                                    <a class="click-preview-task">Xem</a>
-                                                    <a class="click-delete-task">Hủy</a>
-                                                    <a class="click-update-task">Sửa</a>
-                                                    <a class="click-submit-task">Submit</a>
-                                                    <a class="click-view-submit-task">Xác nhận</a>
-                                                </div>
-                                            </div>
-                                        </nav>
-                                        <a class="deadline_a">Deadline: 01/01/2022 11:59 AM</a>
-                                        <p></p>
-                                        <nav class="deadline_task">
-                                            <div id="statusbar">
-                                                <a class="progress_task">IN PROGRESS</a>
-                                                <a class="waiting_task">WAITING</a>
-                                                <a class="reject_task">REJECTED</a>
-                                                <a class="complete_task">COMPLETED</a>
-                                                <a class="cancel_task">CANCELED</a>
-                                            </div>
-                                        </nav>
-                                        <nav class="check_new">
-                                            <img class="check_img" src="/images/new2.gif">
+                                            <img class="check_img" src="/images/new.svg">
                                         </nav>
                                     </div>
                                 </div>

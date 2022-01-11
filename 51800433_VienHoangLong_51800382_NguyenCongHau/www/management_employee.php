@@ -6,7 +6,20 @@ if (!isset($_SESSION['user'])) {
 }
 require_once('db.php');
 $title_page = 'management_employee';
-$users = get_employee();
+// Phân trang
+if (isset($_GET['page'])) {
+    $page = $_GET['page'];
+} else {
+    $page = 1;
+}
+$num_per_page = 10;
+$start_from = ($page - 1) * 10;
+$users = load_employee($start_from, $num_per_page);
+$num_row = get_employee();
+$num_row_employee = (mysqli_num_rows($num_row));
+$total_page = ceil($num_row_employee / $num_per_page);
+$current_page = isset($_GET['page']) ? $_GET['page'] : 1;
+//
 $errors = array(
     'error' => 0
 );
@@ -191,13 +204,30 @@ if (isset($_POST['rs_employee_id'])) {
                                     <?php } ?>
                                 </table>
                                 <ul class="pagination">
-                                    <li class="page-item"><a class="page-link" href="#">Trước</a></li>
-                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">4</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">5</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">Sau</a></li>
+                                    <?php
+
+                                    if ($page > 1) { ?>
+                                        <li class="page-item">
+                                            <a class="page-link" href="management_employee.php?page=<?= ($page - 1) ?>">Trước</a>
+                                        </li>
+                                    <?php } ?>
+                                    <?php
+                                    for ($i = 1; $i <= $total_page; $i++) :
+                                        $active = "";
+                                        if ($i == $current_page) {
+                                            $active = 'active';
+                                        }
+                                    ?>
+                                        <li class="page-item <?= $active ?>">
+                                            <a class="page-link" href="management_employee.php?page=<?= $i; ?>"><?= $i; ?></a>
+                                        </li>
+                                    <?php endfor ?>
+                                    <?php
+                                    if ($i > $page) { ?>
+                                        <li class="page-item">
+                                            <a class="page-link" href="management_employee.php?page=<?= ($page + 1) ?> ">Sau</a>
+                                        </li>
+                                    <?php } ?>
                                 </ul>
                             </div>
                         </div>

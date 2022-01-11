@@ -2,7 +2,8 @@
 session_start();
 $title_page = 'calendar_admin';
 require_once('db.php');
-//Phân trang
+
+// Phân trang
 if (isset($_GET['page'])) {
     $page = $_GET['page'];
 } else {
@@ -11,13 +12,17 @@ if (isset($_GET['page'])) {
 $num_per_page = 5;
 $start_from = ($page - 1) * 5;
 $calendar = load_calendar($start_from, $num_per_page);
-
-
+//load phân trang
+$num_row = get_calendar();
+$num_row_calendar = (mysqli_num_rows($num_row));
+$total_page = ceil($num_row_calendar / $num_per_page);
+$current_page = isset($_GET['page']) ? $_GET['page'] : 1;
+//
 if (isset($_POST['checking_calendar'])) {
     $id_calendar = $_POST['id_calendar'];
     $data = [];
     $username = load_calendar_byuser($id_calendar);
-    $rest_day = load_accept_calendar($username);
+    $rest_day = load_accept_calendar();
     array_push($data, $rest_day);
     $temp = get_information($username);
     $result1 = $temp->fetch_assoc();
@@ -102,8 +107,9 @@ if (isset($_POST['checking_cancel'])) {
                             <h6 class="font-weight-bold text-danger">*Note: Tổng ngày nghỉ trong năm là 12 ngày nhân viên, trưởng phòng 15 ngày</h6>
                         </div>
                         <div class="card-body">
+                            <input type="search" class="form-control mb-2" id="search_calendar" placeholder="Search..." />
                             <div class="table-responsive">
-                                <table class="table table-bordered text-center table-hover" id="dataTable" width="100%" cellspacing="0">
+                                <table class="table table-bordered text-center table-hover" id="table-calendar" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
                                             <th>Mã nghỉ phép</th>
@@ -145,23 +151,25 @@ if (isset($_POST['checking_cancel'])) {
                                         </tbody>
                                     <?php } ?>
                                 </table>
-                                <?php
-                                $num_row = get_calendar();
-                                $num_row_calendar = (mysqli_num_rows($num_row));
-                                $total_page = ceil($num_row_calendar / $num_per_page);
-                                ?>
-                                <ul class="pagination pagination-sm">
+                                <ul class="pagination">
                                     <?php
+
                                     if ($page > 1) { ?>
                                         <li class="page-item">
                                             <a class="page-link" href="calendar_admin.php?page=<?= ($page - 1) ?>">Trước</a>
                                         </li>
                                     <?php } ?>
                                     <?php
-                                    for ($i = 1; $i <= $total_page; $i++) { ?>
-                                        <li class="page-item"><a class="page-link" href="calendar_admin.php?page=<?= $i ?>"><?= $i ?></a></li></a>
+                                    for ($i = 1; $i <= $total_page; $i++) :
+                                        $active = "";
+                                        if ($i == $current_page) {
+                                            $active = 'active';
+                                        }
+                                    ?>
+                                        <li class="page-item <?= $active ?>">
+                                            <a class="page-link" href="calendar_admin.php?page=<?= $i; ?>"><?= $i; ?></a>
                                         </li>
-                                    <?php } ?>
+                                    <?php endfor ?>
                                     <?php
                                     if ($i > $page) { ?>
                                         <li class="page-item">
@@ -283,6 +291,9 @@ if (isset($_POST['checking_cancel'])) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="/main.js"></script>
+    <script>
+
+    </script>
 </body>
 
 </html>

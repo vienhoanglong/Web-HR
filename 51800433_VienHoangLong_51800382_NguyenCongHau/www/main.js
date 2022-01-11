@@ -494,7 +494,7 @@ $(document).ready(function() {
     });
 
 })
-//Calendar bên trưởng phòng
+//*Calendar bên trưởng phòng
 //show modal detail calender
 $(document).ready(function() {
     $(".click-detail-calender").click(function() {
@@ -559,7 +559,7 @@ $(document).ready(function () {
 });
 $(document).on('click', '#btn_cancel_calendar',function(){
     var idcancel_calendar =  $('#idcancel_calendar').val();
-    console.log(idcancel_calendar);
+    //console.log(idcancel_calendar);
     if(idcancel_calendar == ''){
         alert('Thao tác xóa bị lỗi');
     }else{
@@ -625,7 +625,6 @@ $(document).ready(function () {
             backdrop: 'static',
             keyboard: false
         });
-    
     });
 });
 $(document).on('click', '#btn-create-calender-tp', function(){
@@ -678,8 +677,187 @@ $(document).on('click', '#btn-create-calender-tp', function(){
     }
 
 })
+//Show modal calendar employee
+$(document).ready(function () {
+    $(".create-calender-nv").click(function () {
+        $('#create-calendar-employee').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+    
+    });
+});
+$(document).on('click', '#btn-create-calender-nv', function(){
+    var username = $('#user_nv_create').val();
+    var ngayBatDau = $('#from_date_nv').val();
+    var ngayKetThuc = $('#to_date_nv').val();
+    var liDo = $('#reason_nv').val();
+    var ngayConLai = $('#rest_day_nv').val();
+    var date1 = new Date(ngayBatDau);
+    var date2 = new Date(ngayKetThuc);
+    var difference = date2.getTime() - date1.getTime();
+    var days = Math.ceil(difference / (1000 * 3600 * 24));
+    (ngayBatDau == '') ? $('#err-from-date-nv').html('Vui lòng chọn ngày bắt đầu nghỉ!'): $('#err-from-date-nv').html('');
+    (ngayKetThuc == '') ? $('#err-to-date-nv').html('Vui lòng chọn ngày kết thúc!'): $('#err-to-date-nv').html('');
+    (liDo == '') ? $('#err-reason-nv').html('Vui lòng nhập lý do nghỉ!'): $('#err-reason').html('');
+    (days >= ngayConLai) ? $('#err-to-date-nv').html('Số ngày nghỉ của bạn đã vượt quá giá hạn!'): $('#err-to-date-nv').html('');
+    console.log(username, ngayBatDau, ngayKetThuc, liDo, ngayConLai);
+    if (ngayBatDau != '' && ngayKetThuc != '' && liDo != '') {
+        $.ajax({
+            type: 'post',
+            dataType: 'JSON',
+            url: 'calendar_employee.php',
+            data: {
+                username: username,
+                ngayBatDau: ngayBatDau,
+                ngayKetThuc: ngayKetThuc,
+                liDo: liDo,
+                ngayConLai: ngayConLai,
+            },
+            success: function(data) {
+                if (data.hasOwnProperty('error') && data.error == '1') {
+                    var html = '';
+                    $.each(data, function(key, item) {
+                        if (key != 'error') {
+                            html += '<li>' + item + '</li>';
+                        }
+                    });
+                    $('.alert-danger').html(html).removeClass('hide');
+                } else { // Thành công
+                    $('.alert-success').html('Tạo đơn xin nghỉ phép thành công!');
+                    // 1 giay sau sẽ tắt popup
+                    setTimeout(function() {
+                        $('#create-calendar').modal('hide');
+                        location.reload();
+                    }, 1000);
 
-//Calendar bên trưởng phòng
+                }
+            }
+        })
+    }
+
+})
+//Show modal detail calendar employee
+$(document).ready(function(){
+    $('.click-detail-calender-nv').click(function(){
+        $('#detail-calender-employee').modal({
+            backdrop:'static',
+            keyboard: false
+        });
+        var idnv_calendar = $(this).closest('tr').find('#id_calendar_manager').text();
+        // console.log(idnv_calendar);
+        $('#load_calendar_idnv').val(idnv_calendar);
+        $.ajax({
+            type: 'post',
+            url: 'calendar_manager.php',
+            dataType: 'JSON',
+            data: {
+                checking_calendarnv: true,
+                idnv_calendar: idnv_calendar
+            },
+            success: function(data){
+                var data0 = data[0];
+                var data1 = data[1];
+                var data2 = data[2];
+                $.each(data, function(key, value) {
+                    $('#load_idnv_calendar').text(data1['id']);
+                    $('#load_usernv_calendar').text(data1['fullname']);
+                    $('#load_positionnv_calendar').text(data1['position'] + '-' + data1['department']);
+                    $('#load_dayoffnv').text(12 - data0['ngayConLai']);
+                    $('#load_restdaynv').text(data0['ngayConLai']);
+                    var date1 = new Date(data2['ngayBatDau']);
+                    var date2 = new Date(data2['ngayKetThuc']);
+                    var difference = date2.getTime() - date1.getTime();
+                    var days = Math.ceil(difference / (1000 * 3600 * 24));
+                    $('#load_reqdaynv').text(days + ' ngày');
+                    $('#load_timenv').text('Từ ' + data2['ngayBatDau'] + ' đến ' + data2['ngayKetThuc']);
+                    $('#load_reasonnv').text(data2['liDo']);
+                    if(data2['trangThai']==='Chờ duyệt'){
+                        $('#status_calendarnv').text(data2['trangThai']);
+                        $('#status_calendarnv').addClass('alert-warning')
+                    }else if(data2['trangThai']==='Đã duyệt'){
+                        $('#status_calendarnv').text(data2['trangThai']);
+                        $('#status_calendarnv').addClass('alert-success')
+                    }else{
+                        $('#status_calendarnv').text(data2['trangThai']);
+                        $('#status_calendarnv').addClass('alert-danger')
+                    }
+                })
+            }
+        })
+    });
+})
+//Show modal cancel calendar employee
+$(document).ready(function(){
+    $(".click-cancel-calender-nv").click(function () {
+        $('#cancel-calendar-nv').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+        var idnv_calendar = $(this).closest('tr').find('#id_calendar_manager').text();
+        $('#idnv_cancel_calendar').val(idnv_calendar);
+    
+    });
+})
+$(document).on('click', '#btn_cancel_calendarnv', function(){
+    var idnv_calendar = $('#idnv_cancel_calendar').val()
+    if(idnv_calendar ==''){
+        alert('Thao tác xóa bị lỗi');
+    }else{
+        $.ajax({
+            type: 'post',
+            url: 'calendar_manager.php',
+            dataType: 'JSON',
+            data: {
+                checking_nv_cancel: true,
+                idnv_calendar: idnv_calendar
+            },
+            success: function(data) {
+                console.log(data)
+                setTimeout(function(){
+                    $('#cancel-calendar-nv').modal('hide');
+                    location.reload();
+                }, 1000);
+            }
+        })
+    }
+})
+//Show modal accept calendar employee
+$(document).ready(function(){
+    $(".click-accept-calender-nv").click(function () {
+        $('#accept-calendar-nv').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+        var idnv_calendar = $(this).closest('tr').find('#id_calendar_manager').text();
+        $('#idnv_accept_calendar').val(idnv_calendar);
+    
+    });
+})
+$(document).on('click', '#btn_accept_calendarnv', function(){
+    var idnv_calendar = $('#idnv_accept_calendar').val();
+    if(idnv_calendar ==''){
+        alert('Thao tác duyệt bị lỗi');
+    }else{
+        $.ajax({
+            type: 'post',
+            url: 'calendar_manager.php',
+            dataType: 'JSON',
+            data: {
+                checking_nv_accept: true,
+                idnv_calendar: idnv_calendar
+            },
+            success: function(data) {
+                //console.log(data)
+                setTimeout(function(){
+                    $('#accept-calendar-nv').modal('hide');
+                    location.reload();
+                }, 1000);
+            }
+        }) 
+    }
+})
+//*Calendar bên trưởng phòng
 //Show modal upload profile
 $(document).ready(function () {
     $(".click-update-image").click(function () {
@@ -712,6 +890,11 @@ $(document).ready(function(){
             success:function(data){
                 //console.log(data)
                 $('#upload-profile').modal('hide');
+                alert('Thành công! Bạn đã upload ảnh đại điện thành công');
+                location.reload();
+            },
+            error: function(error){
+                alert('Không thành công! Upload ảnh đại diện không thành công');
             }
         })
     });
@@ -840,7 +1023,7 @@ function submitFile(){
 }
 
 const currentLocation = location.href;
-const menuitem = document.querySelectorAll('a');
+const menuitem = document.querySelectorAll('.a_active');
 const menuLength = menuitem.length;
 for(let i=0; i<menuLength; i++){
     if(menuitem[i].href === currentLocation){
@@ -856,7 +1039,36 @@ function toggleResult(){
     }
    
 }
+//Search calendar
+$(document).ready(function() {
+    $('#search_calendar').keyup(function() {
+        var search = $(this).val();
+        $.ajax({
+            url: 'search_calendar.php',
+            method: 'post',
+            data: {
+                search_calendar: search
+            },
+            success: function(data) {
+                
+                $("#table-calendar").html(data);
 
+            }
+        })
+    })
+})
+
+$(window).resize(function(){
+   
+   var width = $(window).width();
+   if(width <= 650){
+       $('#sidebar').removeClass('active');
+   }
+   if(width > 650){
+    $('#sidebar').addClass('active');
+}
+})
+.resize();
 
 
 

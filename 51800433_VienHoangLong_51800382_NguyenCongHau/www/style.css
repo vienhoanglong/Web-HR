@@ -293,8 +293,9 @@ ul ul a {
   position: absolute;
   top: 0;
   margin-top: -20px;
-  height: 22%;
-  width: 12%;
+  margin-left: -20px;
+  height: 18%;
+  width: 9%;
   transform: rotate(-10deg);
   -webkit-transform: rotate(-10deg);
   -moz-transform: rotate(-10deg);
@@ -302,9 +303,9 @@ ul ul a {
   -o-transform: rotate(-10deg);
 }
 .deadline_a {
-  position: absolute;
+  /* position: absolute; */
+  margin-left: 20px;
   right: 10px;
-  bottom: 25px;
   font-size: 13px;
   color: rgb(169, 169, 169);
   font-style: italic;
@@ -320,7 +321,7 @@ ul ul a {
 /* trạng thái task */
 #statusbar {
   display: block;
-  font-size: 10px;
+  font-size: 8px;
   color: white;
   padding: 0px;
   position: absolute;
@@ -338,11 +339,13 @@ ul ul a {
   -o-border-radius: 10px 0px 0px 10px;
   padding: 0px 4px 0px 4px;
   border: 1px solid white;
+  font-size: 12px;
 }
 .waiting_task {
   background-color: rgb(196, 196, 196);
   padding: 0px 4px 0px 4px;
   border: 1px solid white;
+  font-size: 12px;
 }
 .cancel_task {
   background-color: rgb(196, 196, 196);
@@ -353,16 +356,19 @@ ul ul a {
   -o-border-radius: 0px 10px 10px 0px;
   padding: 0px 4px 0px 4px;
   border: 1px solid white;
+  font-size: 12px;
 }
 .reject_task {
   background-color: rgb(196, 196, 196);
   padding: 0px 4px 0px 4px;
   border: 1px solid white;
+  font-size: 12px;
 }
 .complete_task {
   background-color: rgb(196, 196, 196);
   padding: 0px 4px 0px 4px;
   border: 1px solid white;
+  font-size: 12px;
 }
 .card-body {
   border: none;

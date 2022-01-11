@@ -252,7 +252,21 @@ function create_employee($user, $fullname, $email, $department, $position)
         $stm->bind_param('ss', $user, $department);
         $stm->execute();
     }
+    //Tạo nghỉ trong năm cho nhân viên
+    create_accept_calender($user, $role);
     return array('code' => 0, 'error' => 'Tạo nhân viên mới thành công!');
+}
+function load_employee($start_from, $num_per_page)
+{
+    $conn = open_database();
+    $sql = 'select * from users where role between ? and ? limit ?, ?';
+    $role1 = 1;
+    $role2 = 2;
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('iiii', $role1, $role2, $start_from, $num_per_page);
+    $stm->execute();
+    $data = $stm->get_result();
+    return $data;
 }
 function get_employee()
 {
@@ -445,12 +459,17 @@ function promote_department($department, $user, $position)
         return array('code' => 3, 'error' => 'Hiện phòng ban này đã có trưởng phòng');
     }
     if ($position == 'Employee') {
-        $rong = '';
-        $sql = 'update department set manager = ?, status = 0 where idDepartment = ?';
+        $sql = 'update department set manager = "", status = 0 where idDepartment = ?';
         $conn = open_database();
         $stm = $conn->prepare($sql);
-        $stm->bind_param('si', $rong, $department);
+        $stm->bind_param('i', $department);
         if (!$stm->execute()) {
+            return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+        }
+        $sql1 = "update users set role = 2, position = 'Employee' where username = ?";
+        $stm1 = $conn->prepare($sql1);
+        $stm1->bind_param('s', $user);
+        if (!$stm1->execute()) {
             return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
         }
         return array('code' => 0, 'error' => 'Bãi nhiệm trưởng phòng thành công!');
@@ -460,6 +479,13 @@ function promote_department($department, $user, $position)
     $stm = $conn->prepare($sql);
     $stm->bind_param('si', $user, $department);
     if (!$stm->execute()) {
+        return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+    }
+    //Update users
+    $sql1 = "update users set role = 1, position = 'Manager' where username = ?";
+    $stm1 = $conn->prepare($sql1);
+    $stm1->bind_param('s', $user);
+    if (!$stm1->execute()) {
         return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
     }
     return array('code' => 0, 'error' => 'Bổ nhiệm trưởng phòng thành công!');
@@ -476,7 +502,7 @@ function calendar_rest($user)
     $data = implode($result->fetch_assoc());
     return $data;
 }
-//Kiểm tra ngày nghỉ còn lại
+//Kiểm tra ngày nghỉ còn lại 
 function check_dayoff($ngayBatDau, $ngayKetThuc)
 {
     $diff = abs(strtotime($ngayKetThuc) - strtotime($ngayBatDau));
@@ -486,7 +512,7 @@ function check_dayoff($ngayBatDau, $ngayKetThuc)
     return $days;
 }
 //create đơn xin nghỉ phép
-function create_calendar($username, $ngayBatDau, $ngayKetThuc, $liDo, $ngayConLai)
+function create_calendar($username, $position, $department, $ngayBatDau, $ngayKetThuc, $liDo, $ngayConLai)
 {
     if (check_dayoff($ngayBatDau, $ngayKetThuc) >= $ngayConLai) {
         return array('code' => 1, 'error' => 'Ngày nghỉ đã vượt quá giới hạn');
@@ -494,13 +520,26 @@ function create_calendar($username, $ngayBatDau, $ngayKetThuc, $liDo, $ngayConLa
     $ngayBatDau1 = date("Y-m-d", strtotime($ngayBatDau));
     $ngayKetThuc1 = date("Y-m-d", strtotime($ngayKetThuc));
     $conn = open_database();
-    $sql = 'insert into calendar(username, ngayBatDau, ngayKetThuc, liDo) values(?, ?, ?, ?)';
+    $sql = 'insert into calendar(username, position, department, ngayBatDau, ngayKetThuc, liDo) values(?, ?, ?, ?, ?, ?)';
     $stm = $conn->prepare($sql);
-    $stm->bind_param('ssss', $username, $ngayBatDau1, $ngayKetThuc1, $liDo);
+    $stm->bind_param('ssssss', $username, $position, $department, $ngayBatDau1, $ngayKetThuc1, $liDo);
     if (!$stm->execute()) {
         return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
     }
     return array('code' => 0, 'error' => 'Tạo phòng ban mới thành công!');
+}
+//create accept_calendar
+function create_accept_calender($user, $role)
+{
+    $conn = open_database();
+    $ngayConLai = ($role === 1) ? 15 : 12;
+    $sql = 'insert into accept_calendar(username, ngayConLai) values (?,?)';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('ss', $user, $ngayConLai);
+    if (!$stm->execute()) {
+        return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+    }
+    return array('code' => 0, 'error' => 'Tạo thành công!');
 }
 //
 function get_calendar()
@@ -512,12 +551,45 @@ function get_calendar()
     $result = $stm->get_result();
     return $result;
 }
+function get_calenda_employee()
+{
+    $conn = open_database();
+    $position = "Employee";
+    $sql = 'select * from calendar where position = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('s', $position);
+    $stm->execute();
+    $result = $stm->get_result();
+    return $result;
+}
+//tìm kiếm calendar
+function search_calendar($search_calendar)
+{
+    $conn = open_database();
+    $sql = "select * from calendar where concat(username, id, ngayBatDau, ngayKetThuc, liDo) like '%$search_calendar%' order by thoiGianTao desc";
+    $stm = $conn->prepare($sql);
+    $stm->execute();
+    $result = $stm->get_result();
+    return $result;
+}
 function load_calendar($start_from, $num_per_page)
 {
     $conn = open_database();
-    $sql = 'select * from calendar order by thoiGianTao desc limit ?, ?';
+    $position = "Manager";
+    $sql = 'select * from calendar where position = ? order by thoiGianTao desc limit ?, ?';
     $stm = $conn->prepare($sql);
-    $stm->bind_param('ii', $start_from, $num_per_page);
+    $stm->bind_param('sii', $position, $start_from, $num_per_page);
+    $stm->execute();
+    $result = $stm->get_result();
+    return $result;
+}
+function load_calendar_employee($start_from, $num_per_page, $department)
+{
+    $conn = open_database();
+    $position = "Employee";
+    $sql = 'select * from calendar where position = ? and department = ? order by thoiGianTao desc limit ?, ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('ssii', $position, $department, $start_from, $num_per_page);
     $stm->execute();
     $result = $stm->get_result();
     return $result;
@@ -544,7 +616,7 @@ function load_calendar_byuser($id)
     $data = implode($result->fetch_assoc());
     return $data;
 }
-function load_accept_calendar($user)
+function load_accept_calendar()
 {
     $conn = open_database();
     $sql = 'select * from accept_calendar';
@@ -554,16 +626,16 @@ function load_accept_calendar($user)
     $data = $result->fetch_assoc();
     return $data;
 }
-// function load_result_calendar($user)
-// {
-//     $conn = open_database();
-//     $sql = 'select * from calendar where username = ? order by thoiGianTao desc';
-//     $stm = $conn->prepare($sql);
-//     $stm->bind_param('s', $user);
-//     $stm->execute();
-//     $result = $stm->get_result();
-//     return $result;
-// }
+function load_result_calendar_employee($user)
+{
+    $conn = open_database();
+    $sql = 'select * from calendar where username = ? order by thoiGianTao desc';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('s', $user);
+    $stm->execute();
+    $result = $stm->get_result();
+    return $result;
+}
 function load_result_calendar($user, $start_from, $num_per_page)
 {
     $conn = open_database();

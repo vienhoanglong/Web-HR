@@ -12,12 +12,12 @@ if (!isset($_SESSION)) {
         <li class="<?php if ($title_page == 'home') {
                         echo 'active';
                     } ?>">
-            <a href="/index.php"><i class="fa fa-home"></i>Trang chủ</a>
+            <a class="a_active" href="/index.php"><i class="fa fa-home"></i>Trang chủ</a>
         </li>
         <li class="<?php if ($title_page == 'profile') {
                         echo 'active';
                     } ?>">
-            <a href="/profile.php"><i class="fa fa-id-card-o"></i>Cá nhân</a>
+            <a class="a_active" href="/profile.php"><i class="fa fa-id-card-o"></i>Cá nhân</a>
         </li>
         <?php
         if ($_SESSION['role'] == 0) {
@@ -27,7 +27,7 @@ if (!isset($_SESSION)) {
                 echo "active";
             } ?>
             <?php echo '">' ?>
-            <?php echo '<a href="/management_employee.php"> <i class="fa fa-users"></i>Quản lý nhân viên</a>
+            <?php echo '<a class="a_active" href="/management_employee.php"> <i class="fa fa-users"></i>Quản lý nhân viên</a>
             </li>' ?>
             <?php echo '
             <li class=" ' ?>
@@ -35,14 +35,14 @@ if (!isset($_SESSION)) {
                 echo "active";
             } ?>"
             <?php echo '>' ?>
-            <?php echo '<a href="/management_department.php"> <i class="fa fa-briefcase"></i>Phòng ban</a>
+            <?php echo '<a class="a_active" href="/management_department.php"> <i class="fa fa-briefcase"></i>Phòng ban</a>
              </li> ' ?>
             <?php echo '
             <li  class=" ' ?>
             <?php if ($title_page == "calendar_admin") {
                 echo "active";
             } ?><?php echo '">' ?>
-            <?php echo '<a href="/calendar_admin.php"><i class="fa fa-calendar"></i>Lịch</a>
+            <?php echo '<a class="a_active "href="/calendar_admin.php"><i class="fa fa-calendar"></i>Lịch</a>
             </li>'; ?><?php
                     }
                     if ($_SESSION['role'] == 1) {
@@ -51,19 +51,19 @@ if (!isset($_SESSION)) {
             <?php if ($title_page == "management_employee") {
                             echo "active";
                         } ?><?php echo '">' ?>
-            <?php echo '<a href="/management_employee.php"> <i class="fa fa-users"></i>Quản lý nhân viên</a>
+            <?php echo '<a class="a_active" href="/management_employee.php"> <i class="fa fa-users"></i>Quản lý nhân viên</a>
             </li>' ?><?php echo '
             <li class=" ' ?>
             <?php if ($title_page == "calendar_manager") {
                             echo "active";
                         } ?><?php echo '">' ?>
-            <?php echo '<a href="/calendar_manager.php"><i class="fa fa-calendar"></i>Lịch</a>
+            <?php echo '<a class="a_active" href="/calendar_manager.php"><i class="fa fa-calendar"></i>Lịch</a>
             </li>' ?><?php echo '
             <li class=" ' ?>
             <?php if ($title_page == "task_manager") {
                             echo "active";
                         } ?><?php echo '">' ?>
-            <?php echo '<a href="/task_manager.php"> <i class="fa fa-tasks"></i>Task</a>
+            <?php echo '<a class="a_active" href="/task_manager.php"> <i class="fa fa-tasks"></i>Task</a>
             </li>'; ?><?php
                     }
                     if ($_SESSION['role'] == 2) {
@@ -71,27 +71,24 @@ if (!isset($_SESSION)) {
             <?php if ($title_page == "task_manager") {
                             echo "active";
                         } ?><?php echo '">' ?>
-            <?php echo '<a href="/task_manager.php"> <i class="fa fa-tasks"></i>Task</a>
-            </li>'; ?><?php
-                    }
-                        ?>
+            <?php echo '<a class="a_active" href="/task_manager.php"> <i class="fa fa-tasks"></i>Task</a>
+            </li>'; ?>
+            <li class=" ' ?>
+            <?php if ($title_page == "calendar_employee") {
+                            echo "active";
+                        } ?><?php echo '">' ?>
+            <?php echo '<a class="a_active" href="/calendar_employee.php"> <i class="fa fa-calendar"></i>Lịch</a>
+            </li>'; ?>
 
-            <!-- <li>
-            <a href="/management_employee.php"> <i class="fa fa-users"></i>Quản lý nhân viên</a>
-        </li> -->
-            <!-- <li>
-            <a href="#"> <i class="fa fa-tasks"></i>Task</a>
-        </li> -->
-            <!-- <li>
-            <a href="/management_department.php"> <i class="fa fa-briefcase"></i>Phòng ban</a>
-        </li> -->
-            <!-- <li>
-            <a href="/calendar_employee.php"><i class="fa fa-calendar"></i>Lịch</a>
-        </li> -->
-            <li class="<?php if ($title_page == 'logout') {
-                            echo 'active';
-                        } ?>">
-                <a href="/logout.php"><i class="fa fa-sign-out"></i>Thoát</a>
+
+
+        <?php
+                    }
+        ?>
+        <li class=" <?php if ($title_page == 'logout') {
+                        echo 'active';
+                    } ?>">
+                <a class="a_active" href="/logout.php"><i class="fa fa-sign-out"></i>Thoát</a>
             </li>
     </ul>
 </nav>

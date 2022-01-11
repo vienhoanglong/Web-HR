@@ -1,6 +1,6 @@
 <?php
 session_start();
-$page = 'home';
+$title_page = 'home';
 if (!isset($_SESSION['user'])) {
 	header('Location: login.php');
 	exit();
