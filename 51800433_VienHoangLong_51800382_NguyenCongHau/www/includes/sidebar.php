@@ -58,7 +58,8 @@ if (!isset($_SESSION)) {
                             echo "active";
                         } ?><?php echo '">' ?>
             <?php echo '<a class="a_active" href="/calendar_manager.php"><i class="fa fa-calendar"></i>Lịch</a>
-            </li>' ?><?php echo '
+            </li>' ?>
+            <?php echo '
             <li class=" ' ?>
             <?php if ($title_page == "task_manager") {
                             echo "active";

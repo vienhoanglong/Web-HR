@@ -907,8 +907,52 @@ $(document).ready(function () {
             backdrop: 'static',
             keyboard: true, 
         });
+
     });
+   
 });
+//Test
+$('#form_create_task').submit(function(e) {
+    e.preventDefault()
+    var task_title = $('#task_title').val();
+    var task_employee = $('#task_employee').val();
+    var task_time = $('#task_time').val();
+    var task_desc = $('#task_desc').val();
+    var file = $('#myFile').prop('files')[0];
+    (task_title =='')?$('#err-tasktitle').html('Vui lòng nhập tên công việc'):$('#err-tasktitle').html('');
+    (task_time =='')?$('#err-tasktime').html('Vui lòng chọn thời hạn công việc'):$('#err-tasktime').html('');
+    (task_desc =='')?$('#err-taskdesc').html('Vui lòng chọn thời hạn công việc'):$('#err-taskdesc').html('');
+    if(task_title != '' && task_employee != '' && task_time != '' && task_desc != ''){
+        $.ajax({
+            url: 'task_manager.php',
+            data:  new FormData(this),
+            enctype: 'multipart/form-data',
+            contentType: false,
+            cache: false,
+            processData:false,
+            dataType:'JSON',
+            method: 'Post',
+            type: 'POST',
+            success: function(data) {
+                if (data.hasOwnProperty('error') && data.error == '1') {
+                    var html = '';
+                    $.each(data, function(key, item) {
+                        if (key != 'error') {
+                            html += '<li>' + item + '</li>';
+                        }
+                    });
+                    $('.alert-danger').html(html).removeClass('hide');
+                } else { // Thành công
+                    $('.alert-success').html('Cập nhật phòng bản thành công!');
+                    setTimeout(function() {
+                        $('#new-task').modal('hide');
+                        location.reload();
+                    }, 1000);
+                }
+            }
+        })
+    }
+})
 // view task
 $(document).ready(function () {
     $(".click-preview-task").click(function () {
@@ -1057,7 +1101,6 @@ $(document).ready(function() {
         })
     })
 })
-
 $(window).resize(function(){
    
    var width = $(window).width();

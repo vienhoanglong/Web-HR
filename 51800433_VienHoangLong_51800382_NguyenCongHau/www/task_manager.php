@@ -5,7 +5,43 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 require_once('db.php');
-$page = 'task_manager';
+$title_page = 'task_manager';
+//Load list employee
+$department = $_SESSION['department'];
+$list_employee = get_list_employee_department($department);
+$tasks = load_task();
+
+$errors = array(
+    'error' => 0
+);
+if (isset($_POST['task_title']) && isset($_POST['task_employee']) && isset($_POST['task_time']) && isset($_POST['task_desc'])) {
+    $task_title = $_POST['task_title'];
+    $task_employee = $_POST['task_employee'];
+    $task_time = $_POST['task_time'];
+    $task_desc = $_POST['task_desc'];
+    $name_manager = $_SESSION['user'];
+    $department = $_SESSION['department'];
+    $file = $_FILES['myFile'];
+    //upload file 
+    $result = create_new_task($name_manager, $task_employee, $department, $task_title, $task_desc, $file, $task_time);
+    if ($result['code'] == 3) {
+        $errors['error'] = 1;
+        $errors['typefile'] = 'Định dạng file không được hỗ trợ, vui lòng chọn định dạng khác';
+    }
+    if ($result['code'] == 4) {
+        $errors['error'] = 1;
+        $errors['sizefile'] = 'Kích thước file không vượt quá 100MB';
+    }
+    if ($result['code'] == 2) {
+        $errors['error'] = 1;
+        $errors['command'] = 'Tạo công việc mới không thành công';
+    }
+    if ($result['code'] == 1) {
+        $errors['error'] = 1;
+        $errors['file'] = 'Không upload được file, vui lòng thử lại';
+    }
+    die(json_encode($errors));
+}
 ?>
 
 <!DOCTYPE html>
@@ -24,10 +60,6 @@ $page = 'task_manager';
 </head>
 
 <body>
-    <?php
-    $d_name = get_name_department();
-    // print_r($d_name);
-    ?>
     <div class="wrapper">
         <?php include('includes/sidebar.php'); ?>
         <div id="content">
@@ -45,140 +77,63 @@ $page = 'task_manager';
                                     New Task</button>
                             </div>
                         </div>
-                        <!-- Hậu list card -->
                         <div class="row ml-2 mr-2 mt-4">
                             <!-- card_task -->
-
-                            <div class="col-xl-4 col-md-6 mb-4">
-                                <div class="card shadow-sm">
-                                    <div class="card-body " id="card_item">
-                                        <div class="list-group list-group-flush" id="click_start_task_employee">
-                                            <a class="list-group-item" href="#">Thiết kế poster ngày tết 2022 âm lịch</a>
-                                            <a class="list-group-item" href="#">Thực hiện: Nguyễn Công Hậu</a>
-                                            <a class="list-group-item" href="#">Trạng thái: chưa hoàn thành</a>
-                                        </div>
-                                        <nav class="dropdown">
-                                            <div class="drop_card" id="dropdownMenuButton">
-                                                <a type="text">
-                                                    <i class="fas fa-ellipsis-h "></i>
-                                                </a>
-                                                <div class="dropdown-content dropdown-menu shadow-sm">
-                                                    <a class="click-preview-task">Xem</a>
-                                                    <a class="click-delete-task">Hủy</a>
-                                                    <a class="click-update-task">Sửa</a>
-                                                    <a class="click-submit-task">Submit</a>
-                                                    <a class="click-view-submit-task">Xác nhận</a>
+                            <?php
+                            while ($row = mysqli_fetch_assoc($tasks)) { ?>
+                                <div class="col-xl-4 col-md-6 mb-4">
+                                    <div class="card shadow-sm">
+                                        <div class="card-body" id="card_item">
+                                            <div class="list-group list-group-flush" id="click_start_task_employee">
+                                                <a class="list-group-item" href="#"><?= $row['name_task'] ?></a>
+                                                <a class="list-group-item" href="#"><?= get_fullname($row['name_employee']) ?></a>
+                                                <a class="list-group-item" href="#">Trạng thái: <?= $row['status'] ?></a>
+                                            </div>
+                                            <nav class="dropdown">
+                                                <div class="drop_card" id="dropdownMenuButton">
+                                                    <a type="text">
+                                                        <i class="fas fa-ellipsis-h "></i>
+                                                    </a>
+                                                    <div class="dropdown-content dropdown-menu shadow-sm">
+                                                        <a class="click-preview-task">Xem</a>
+                                                        <a class="click-delete-task">Hủy</a>
+                                                        <a class="click-update-task">Sửa</a>
+                                                        <a class="click-submit-task">Submit</a>
+                                                        <a class="click-view-submit-task">Xác nhận</a>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </nav>
+                                            </nav>
 
-                                        <a class="deadline_a">Deadline: 01/01/2022 11:59 AM</a>
+                                            <a class="deadline_a"><?= $row['deadline'] ?></a>
 
-                                        <p></p>
-                                        <nav class="deadline_task">
-                                            <div id="statusbar row">
-                                                <a class="progress_task btn bg-primary text-white">IN PROGRESS</a>
-                                                <a class="waiting_task btn bg-warning text-white">WAITING</a>
-                                                <a class="reject_task btn bg-info text-white">REJECTED</a>
-                                                <a class="complete_task btn bg-success text-white">COMPLETED</a>
-                                                <a class="cancel_task btn bg-danger text-white">CANCELED</a>
-                                            </div>
-                                        </nav>
-                                        <nav class="check_new">
-                                            <img class="check_img" src="/images/new.svg">
-                                        </nav>
+                                            <p></p>
+                                            <nav class="deadline_task">
+                                                <div id="statusbar row">
+                                                    <a class="progress_task btn bg-default text-white">IN PROGRESS</a>
+                                                    <a class="waiting_task btn bg-default text-white">WAITING</a>
+                                                    <a class="reject_task btn bg-default text-white">REJECTED</a>
+                                                    <a class="complete_task btn bg-default text-white">COMPLETED</a>
+                                                    <a class="cancel_task btn bg-default text-white">CANCELED</a>
+                                                </div>
+                                            </nav>
+                                            <nav class="check_new">
+                                                <?php
+                                                if ($row['status'] == 'New') {
+                                                    echo '<img class="check_img" src="/images/new.svg">';
+                                                } else {
+                                                }
+                                                ?>
+
+                                            </nav>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-xl-4 col-md-6 mb-4">
-                                <div class="card shadow-sm">
-                                    <div class="card-body " id="card_item">
-                                        <div class="list-group list-group-flush" id="click_start_task_employee">
-                                            <a class="list-group-item" href="#">Thiết kế poster ngày tết 2022 âm lịch</a>
-                                            <a class="list-group-item" href="#">Thực hiện: Nguyễn Công Hậu</a>
-                                            <a class="list-group-item" href="#">Trạng thái: chưa hoàn thành</a>
-                                        </div>
-                                        <nav class="dropdown">
-                                            <div class="drop_card" id="dropdownMenuButton">
-                                                <a type="text">
-                                                    <i class="fas fa-ellipsis-h "></i>
-                                                </a>
-                                                <div class="dropdown-content dropdown-menu shadow-sm">
-                                                    <a class="click-preview-task">Xem</a>
-                                                    <a class="click-delete-task">Hủy</a>
-                                                    <a class="click-update-task">Sửa</a>
-                                                    <a class="click-submit-task">Submit</a>
-                                                    <a class="click-view-submit-task">Xác nhận</a>
-                                                </div>
-                                            </div>
-                                        </nav>
-
-                                        <a class="deadline_a">Deadline: 01/01/2022 11:59 AM</a>
-
-                                        <p></p>
-                                        <nav class="deadline_task">
-                                            <div id="statusbar row">
-                                                <a class="progress_task btn bg-primary text-white">IN PROGRESS</a>
-                                                <a class="waiting_task btn bg-default text-white">WAITING</a>
-                                                <a class="reject_task btn  bg-default text-white">REJECTED</a>
-                                                <a class="complete_task btn  bg-default text-white">COMPLETED</a>
-                                                <a class="cancel_task btn  bg-default text-white">CANCELED</a>
-                                            </div>
-                                        </nav>
-                                        <nav class="check_new">
-                                            <img class="check_img" src="/images/new.svg">
-                                        </nav>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xl-4 col-md-6 mb-4">
-                                <div class="card shadow-sm">
-                                    <div class="card-body " id="card_item">
-                                        <div class="list-group list-group-flush" id="click_start_task_employee">
-                                            <a class="list-group-item" href="#">Thiết kế poster ngày tết 2022 âm lịch</a>
-                                            <a class="list-group-item" href="#">Thực hiện: Nguyễn Công Hậu</a>
-                                            <a class="list-group-item" href="#">Trạng thái: chưa hoàn thành</a>
-                                        </div>
-                                        <nav class="dropdown">
-                                            <div class="drop_card" id="dropdownMenuButton">
-                                                <a type="text">
-                                                    <i class="fas fa-ellipsis-h "></i>
-                                                </a>
-                                                <div class="dropdown-content dropdown-menu shadow-sm">
-                                                    <a class="click-preview-task">Xem</a>
-                                                    <a class="click-delete-task">Hủy</a>
-                                                    <a class="click-update-task">Sửa</a>
-                                                    <a class="click-submit-task">Submit</a>
-                                                    <a class="click-view-submit-task">Xác nhận</a>
-                                                </div>
-                                            </div>
-                                        </nav>
-
-                                        <a class="deadline_a">Deadline: 01/01/2022 11:59 AM</a>
-
-                                        <p></p>
-                                        <nav class="deadline_task">
-                                            <div id="statusbar row">
-                                                <a class="progress_task btn bg-primary text-white">IN PROGRESS</a>
-                                                <a class="waiting_task btn bg-primary text-white">WAITING</a>
-                                                <a class="reject_task btn bg-primary text-white">REJECTED</a>
-                                                <a class="complete_task btn bg-primary text-white">COMPLETED</a>
-                                                <a class="cancel_task btn bg-primary text-white">CANCELED</a>
-                                            </div>
-                                        </nav>
-                                        <nav class="check_new">
-                                            <img class="check_img" src="/images/new.svg">
-                                        </nav>
-                                    </div>
-                                </div>
-                            </div>
-
+                            <?php } ?>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
         <!-- Dialog create a new task-->
         <div id="new-task" class="modal fade" role="dialog">
             <div class="modal-dialog">
@@ -188,49 +143,47 @@ $page = 'task_manager';
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <form method="Post" action="" novalidate>
+                        <span class="alert-danger"></span>
+                        <span class="alert-success"></span>
+                        <form action="" id="form_create_task" enctype="multipart/form-data">
                             <div class="form-group">
-                                <label for="title_task">Tiêu đề:</label>
-                                <input name="title_task" class="form-control" type="text" placeholder="Nhập tiêu đề.." id="title_task">
-                                <span id="er-fullname" class="text-danger font-weight-bold"></span>
+                                <label>Tiêu đề:</label>
+                                <input name="task_title" class="form-control" type="text" placeholder="Nhập tiêu đề.." id="task_title">
+                                <span id="err-tasktitle" class="text-danger font-weight-bold"></span>
                             </div>
-                            <!-- <div class="form-group">
-                                <label for="username">Nhân viên thực hiện</label>
-                                <input name="username" class="form-control" type="text" placeholder="User name" id="username">
-                                <span id="er-username" class="text-danger font-weight-bold"></span>
-                            </div> -->
                             <div class="form-group">
-                                <label for="task_employee">Nhân viên thực hiện:</label>
-                                <select class="form-control" name="position" id="task_employee">
-                                    <option value="employee">Nhân viên 1</option>
-                                    <option value="employee">Nhân viên 2</option>
-                                    <option value="employee">Nhân viên 3</option>
-                                    <option value="employee">Nhân viên 4</option>
+                                <label>Nhân viên thực hiện:</label>
+                                <select class="form-control" name="task_employee" id="task_employee">
+                                    <?php
+                                    foreach ($list_employee as $key => $value) :
+                                        echo '<option value =' . $value['username'] . '>' . $value['fullname'] . '</option>';
+                                    endforeach;
+                                    ?>
                                 </select>
-                                <span id="er-position" class="text-danger font-weight-bold"></span>
+                                <span id="err-taskemployee" class="text-danger font-weight-bold"></span>
                             </div>
                             <div class="form-group">
-                                <label for="task_time">Thời hạn:</label>
+                                <label>Thời hạn:</label>
                                 <input class="form-control" type="datetime-local" id="task_time" name="task_time">
+                                <span id="err-tasktime" class="text-danger font-weight-bold"></span>
                             </div>
                             <div class="form-group">
-                                <label for="task_note">Mô tả:</label>
-                                <textarea class="form-control" rows="5" id="task_note"></textarea>
+                                <label>Mô tả:</label>
+                                <textarea class="form-control" rows="5" name="task_desc" id="task_desc"></textarea>
+                                <span id="err-taskdesc" class="text-danger font-weight-bold"></span>
                             </div>
-                            <input type="file" id="myFile" multiple size="50" onchange="myFunction()">
-                            <p id="demo"></p>
-                            <span class="alert-danger">
-
-                            </span>
-                            <span class="alert-success">
-
-                            </span>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-                                <button type="button" id="btn-create-employee" class="btn btn-primary">Create</button>
+                            <div class="form-group">
+                                <input type="file" id="myFile" name="myFile" multiple size="50" onchange="myFunction()">
+                                <p id="demo"></p>
                             </div>
                         </form>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                            <button class="btn btn-primary" form="form_create_task">Create</button>
+                        </div>
                     </div>
+
+
                 </div>
             </div>
         </div>
@@ -272,7 +225,7 @@ $page = 'task_manager';
                                 <label for="task_note">Mô tả:</label>
                                 <textarea class="form-control" rows="5" id="task_note"></textarea>
                             </div>
-                            <input type="file" id="myFile" multiple size="50" onchange="S()">
+                            <input type="file" id="" multiple size="50" onchange="S()">
                             <p id="demo"></p>
                             <span class="alert-danger">
 
@@ -382,7 +335,7 @@ $page = 'task_manager';
                                 <label for="task_note">Mô tả:</label>
                                 <textarea class="form-control" rows="5" id="task_note"></textarea>
                             </div>
-                            <input type="file" id="myFile" multiple size="50" onchange="myFunction()">
+                            <input type="file" id="" multiple size="50" onchange="myFunction()">
                             <p id="demo"></p>
                             <span class="alert-danger">
 
@@ -495,6 +448,7 @@ $page = 'task_manager';
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="/main.js"></script>
+
 </body>
 
 </html>
