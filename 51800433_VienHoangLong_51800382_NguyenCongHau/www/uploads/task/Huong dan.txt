@@ -1,0 +1,50 @@
+Hướng dẫn sử dụng project
+
+1. Cài đặt Docker Engine: https://www.docker.com/products/docker-desktop
+2. Chạy và chờ cho đến khi Docker Engine khởi động thành công (có thể mất tới 1-2 phút với máy chậm)
+3. Đổi tên thư mục 52001234_NguyenVanA thành họ tên của sinh viên (hoặc nhóm sinh viên)
+4. Mở cửa sổ dòng lệnh (Terminal hoặc Command Prompt hoặc PowerShell)
+5. Di chuyển thư mục làm việc của cửa sổ dòng lệnh đến thư mục 52001234_NguyenVanA ban đầu (dùng lệnh cd)
+6. Gõ lệnh "docker-compose up -d" và chờ nó chạy cho đến khi kết thúc (lần đầu tiên chạy có thể mất vài phút, cần mở internet)
+7. Sau khi chạy thành công, try cập
+	- http://localhost:8080 để kiểm tra website php có jquery, bootstrap và css cũng như javascript 
+	- http://localhost:8080/admin/db.php để kiểm tra kết nối với database
+	- http://localhost:8888 để vào phpMyAdmin quản lý database (đăng nhập bằng tải khoản root/root)
+
+
+Mô tả cấu trúc project:
+	1. Thư mục mysql
+		1.1 Thư mục sql: chứa các tập tin *.sql dùng để import vào database khi chạy docker 
+		1.2 data: chứa dữ liệu do mysql tự phát sinh ra, nó bao gồm tất cả database mà mysql đang có 
+	2. Thư mục www
+		- Đây là thư mục gốc của source code, tương đương với thư mục htdocs nếu đang sử dụng XAMPP
+		- Không được xóa những tập tin đang có sẵn
+		- Được tạo thêm tập tin và thư mục con (nên tạo thư mục con và viết code trong các thư mục con cho đỡ rối)
+		- Mọi Javascript của project phải được viết trong main.js có sẵn, không được viết chỗ khác
+		- Mọi CSS của project phải được viết trong style.css có sẵn, không được viets chỗ khác
+		- Bootstrap và jQuery đã được tích hợp trong hai tập tin mẫu (index.php và admin/db.php)
+		- index.php là code php mẫu, nó đọc cả main.js và style.css 
+		- admin/db.php là code php mẫu có kết nối với database 
+	3. Tập tin docker-compose.yml: thiết lập Docker Compose (không được chỉnh)
+
+
+Sinh viên cần làm gì?
+	1. Cài docker, chạy project để xem các ví dụ mẫu (có kết nối database và không kết nối database)
+	2. Bắt đầu viết code, code đặt trong thư mục www. Tập tin index.php bắt buộc phải là trang chủ, không được đổi vị trí của nó. 
+	3. Viết javascript và css bên trong main.js và style.css có sẵn. Không được đổi tên hoặc di chuyển vị trí 
+	4. Truy cập http://localhost:8888 để tạo hoặc database theo ý của mình 
+	5. Xem admin/db.php để biết ví dụ về cách kết nối tới database 
+	6. Nếu tắt máy tính/laptop thì khi khởi động lại chỉ cần mở docker và chờ 1-3 phút khởi động là có thể tiếp tục làm việc
+	
+
+Xử lý sự cố khi cần cài lại tự đầu 
+ 1. Di chuyển dòng lệnh đến thư mục gốc (52001234_NguyenVanA) và gõ lệnh 'docker-compose down'
+ 2. Gõ 'docker images' để xem danh sách các docker images đang có 
+ 3. Gõ 'docker rmi <id của image>' để xóa hết các image.
+ 4. Gõ lệnh 'docker-compose up -d' để chạy lại từ đầu.
+
+
+ Cách nộp bài 
+	- Truy cập http://localhost:8888 để vào phpMyAdmin, xuất database ra db.sql và lưu vào thư mục mysql/sql 
+	- Xóa thư mục mysql/data (vì nó rất nặng)
+	- Chi tiết sẽ được giảng viên hướng dẫn sau

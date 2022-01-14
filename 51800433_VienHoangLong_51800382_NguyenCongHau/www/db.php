@@ -98,7 +98,8 @@ function get_information($user)
     $data = $stm->get_result();
     return $data;
 }
-function get_fullname($user){
+function get_fullname($user)
+{
     $conn = open_database();
     $sql = 'select fullname from users where username = ?';
     $stm = $conn->prepare($sql);
@@ -563,7 +564,7 @@ function get_calendar()
     $result = $stm->get_result();
     return $result;
 }
-function get_calenda_employee()
+function get_calendar_employee()
 {
     $conn = open_database();
     $position = "Employee";
@@ -695,9 +696,10 @@ function update_status_cancel_calendar($id_calendar)
 function get_list_employee_department($department)
 {
     $conn = open_database();
-    $sql = 'select username, fullname from users where department = ?';
+    $role = 2;
+    $sql = 'select username, fullname from users where department = ? and role = ?';
     $stm = $conn->prepare($sql);
-    $stm->bind_param('s', $department);
+    $stm->bind_param('si', $department, $role);
     if (!$stm->execute()) {
         die('Query error: ' . $stm->error);
     }
@@ -711,7 +713,7 @@ function get_list_employee_department($department)
 function create_new_task($name_manager, $name_employee, $department, $name_task, $desc_task, $file, $deadline)
 {
     //xử lý file
-    $uploadDir = 'uploads/';
+    $uploadDir = 'uploads/task/';
     $fileName = basename($file['name']);
     $size = $file['size'];
     $targetFilePath = $uploadDir . $fileName;
@@ -739,6 +741,30 @@ function create_new_task($name_manager, $name_employee, $department, $name_task,
         return array('code' => 0, 'error' => 'Tạo công việc thành công!');
     }
 }
+//
+function get_deadline_task($id_task)
+{
+    $conn = open_database();
+    $sql = 'select deadline from list_task where id = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('i', $id_task);
+    if (!$stm->execute()) {
+        die('Query error: ' . $stm->error);
+    }
+    $result = $stm->get_result();
+    $data = implode($result->fetch_assoc());
+    return $data;
+}
+//Kiểm tra thời gian nộp
+function check_time_submit($deadline, $time_submit)
+{
+    if (strtotime($time_submit) <= strtotime($deadline)) {
+        $result = 'Turn in';
+    } else {
+        $result = 'Turn in late';
+    }
+    return $result;
+}
 //Load task
 function load_task()
 {
@@ -748,4 +774,224 @@ function load_task()
     $stm->execute();
     $result = $stm->get_result();
     return $result;
+}
+//Load task by id
+function load_task_byid($id)
+{
+    $conn = open_database();
+    $sql = 'select * from list_task where id = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('i', $id);
+    if (!$stm->execute()) {
+        die('Query error: ' . $stm->error);
+    }
+    $result = $stm->get_result();
+    $data = $result->fetch_assoc();
+    return $data;
+}
+//Load task được giao
+function load_task_employee($name_employee)
+{
+    $conn = open_database();
+    $status = 'Canceled';
+    $sql = 'select * from list_task where name_employee = ? and status != ? order by time_created desc';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('ss', $name_employee, $status);
+    if (!$stm->execute()) {
+        die('Query error: ' . $stm->error);
+    }
+    $result = $stm->get_result();
+    return $result;
+}
+//Update status task
+function update_status_task($id, $status)
+{
+    $conn = open_database();
+    $sql = 'update list_task set status = ? where id = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('si', $status, $id);
+    if (!$stm->execute()) {
+        return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+    }
+    return array('code' => 0, 'error' => 'Cập nhật trạng thái thành công!');
+}
+//Update status và gia hạn deadlien
+function update_deadline_task($id, $status, $deadline)
+{
+    $conn = open_database();
+    $sql = 'update list_task set status = ?, deadline = ? where id = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('ssi', $status, $deadline, $id);
+    if (!$stm->execute()) {
+        return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+    }
+    return array('code' => 0, 'error' => 'Cập nhật trạng thái thành công!');
+}
+//Submit kết quả công việc của nhân viên
+function submit_task($task_id, $desc, $user, $file)
+{
+
+    $uploadDir = 'uploads/submit/';
+    $fileName = basename($file['name']);
+    $size = $file['size'];
+    $targetFilePath = $uploadDir . $fileName;
+    $fileType = pathinfo($targetFilePath, PATHINFO_EXTENSION);
+    $allowTypes = array(
+        'gif', 'jpg', 'jpeg', 'txt', 'zip', 'rar', 'png', 'doc', 'pdf', 'mp3', 'mp4', 'pptx', 'docx', 'xlsx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation', ''
+    );
+    if (!in_array($fileType, $allowTypes)) {
+        return array('code' => 3, 'error' => 'Định dạng file này không được hỗ trợ, vui lòng chọn định dạng khác');
+    } elseif ($size >= 100 * 1024 * 1024) {
+        return array('code' => 4, 'error' => 'Kích thước file không được vượt quá 100MB');
+    } else {
+        move_uploaded_file($file['tmp_name'], $targetFilePath);
+        $conn = open_database();
+        //Kiểm tra trạng thái nộp
+        $deadline = get_deadline_task($task_id);
+        $today = date('Y-m-d H:i:s');
+        $submit_status = check_time_submit($deadline, $today);
+        $sql = 'insert into task_process(task_id, comment, user, file_submit, submit_status) values(?,?,?,?,?)';
+        $stm = $conn->prepare($sql);
+        $stm->bind_param('issss', $task_id, $desc, $user, $fileName, $submit_status);
+        if (!$stm->execute()) {
+            return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+        }
+        $status = 'Waiting';
+        update_status_task($task_id, $status);
+        return array('code' => 0, 'error' => 'Submit công việc thành công!');
+    }
+}
+//Load kết quả submit của nhân viên
+function history_task($id_task)
+{
+    $conn = open_database();
+    $sql = 'select * from task_process where task_id = ? order by time_submit desc';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('i', $id_task);
+    if (!$stm->execute()) {
+        die('Query error: ' . $stm->error);
+    }
+    $result = $stm->get_result();
+    return $result;
+}
+//Lấy user trong task_process
+// function get_user_task($id_task){
+//     $conn = open_database();
+//     $sql = 'select user from task_process where task_id = ?';
+//     $stm = $conn->prepare($sql);
+//     $stm->bind_param('i', $id_task);
+//     if (!$stm->execute()) {
+//         die('Query error: ' . $stm->error);
+//     }
+//     $result = $stm->get_result();
+//     $data = implode($result->fetch_assoc());
+//     return $data;
+// }
+// function check_manager_task($user){
+//     $sql = 'select role from users where username = ?';
+//     $conn = open_database();
+
+//     $stm = $conn->prepare($sql);
+//     $stm->bind_param('s', $name);
+//     if (!$stm->execute()) {
+//         die('Query error: ' . $stm->error);
+//     }
+//     $result = $stm->get_result();
+//     if ($result->num_rows > 0) {
+//         return true;
+//     } else {
+//         return false;
+//     }
+// }
+function submit_task_new($id_task)
+{
+    $conn = open_database();
+    $sql = 'select * from task_process where task_id = ? order by time_submit desc';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('i', $id_task);
+    if (!$stm->execute()) {
+        die('Query error: ' . $stm->error);
+    }
+    $result = $stm->get_result();
+    $data = $result->fetch_assoc();
+    return $data;
+}
+//Reject task 
+function reject_task($task_id, $desc, $user, $file, $deadline)
+{
+    $uploadDir = 'uploads/submit/';
+    $fileName = basename($file['name']);
+    $size = $file['size'];
+    $targetFilePath = $uploadDir . $fileName;
+    $fileType = pathinfo($targetFilePath, PATHINFO_EXTENSION);
+    $allowTypes = array(
+        'gif', 'jpg', 'jpeg', 'txt', 'zip', 'rar', 'png', 'doc', 'pdf', 'mp3', 'mp4', 'pptx', 'docx', 'xlsx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation', ''
+    );
+    if (!in_array($fileType, $allowTypes)) {
+        return array('code' => 3, 'error' => 'Định dạng file này không được hỗ trợ, vui lòng chọn định dạng khác');
+    } elseif ($size >= 100 * 1024 * 1024) {
+        return array('code' => 4, 'error' => 'Kích thước file không được vượt quá 100MB');
+    } else {
+        move_uploaded_file($file['tmp_name'], $targetFilePath);
+        $conn = open_database();
+        $submit_status = 'Manager reject';
+        $sql = 'insert into task_process(task_id, comment, user, file_submit, submit_status) values(?,?,?,?, ?)';
+        $stm = $conn->prepare($sql);
+        $stm->bind_param('issss', $task_id, $desc, $user, $fileName, $submit_status);
+        if (!$stm->execute()) {
+            return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+        }
+        $status = 'Rejected';
+        if ($deadline != null) {
+            update_deadline_task($task_id, $status, $deadline);
+            return array('code' => 0, 'error' => 'Reject công việc thành công!');
+        } else {
+            update_status_task($task_id, $status);
+            return array('code' => 0, 'error' => 'Reject công việc thành công!');
+        }
+    }
+}
+//Update task
+function update_task($task_id, $title, $desc, $deadline, $file, $fileold)
+{
+    $uploadDir = 'uploads/submit/';
+    $fileName = basename($file['name']);
+    $size = $file['size'];
+    $targetFilePath = $uploadDir . $fileName;
+    $fileType = pathinfo($targetFilePath, PATHINFO_EXTENSION);
+    $allowTypes = array(
+        'gif', 'jpg', 'jpeg', 'txt', 'zip', 'rar', 'png', 'doc', 'pdf', 'mp3', 'mp4', 'pptx', 'docx', 'xlsx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation', ''
+    );
+    if (!in_array($fileType, $allowTypes)) {
+        return array('code' => 3, 'error' => 'Định dạng file này không được hỗ trợ, vui lòng chọn định dạng khác');
+    } elseif ($size >= 100 * 1024 * 1024) {
+        return array('code' => 4, 'error' => 'Kích thước file không được vượt quá 100MB');
+    } else {
+        move_uploaded_file($file['tmp_name'], $targetFilePath);
+        $file_update = ($fileName != '') ? $fileName : $fileold;
+        $conn = open_database();
+        $sql = 'update list_task set name_task = ?, desc_task =?, deadline = ?, file = ? where id = ?';
+        $stm = $conn->prepare($sql);
+        $stm->bind_param('ssssi', $title, $desc, $deadline, $file_update, $task_id);
+        if (!$stm->execute()) {
+            return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+        }
+        return array('code' => 0, 'error' => 'Cập nhật thành công!');
+    }
+}
+//Complete task
+function complete_task($id_task, $rating)
+{
+    $conn = open_database();
+    $status = 'Completed';
+    $sql = 'update list_task set rating = ?, status = ? where id = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('ssi', $rating, $status, $id_task);
+    if (!$stm->execute()) {
+        return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+    }
+    return array('code' => 0, 'error' => 'Complete thành công!');
 }

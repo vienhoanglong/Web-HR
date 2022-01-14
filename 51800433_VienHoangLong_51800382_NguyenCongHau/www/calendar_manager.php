@@ -19,7 +19,7 @@ $rest_dayoff = calendar_rest($user);
 $calendar = load_calendar_employee($start_from, $num_per_page, $department);
 $calendar_result = load_result_calendar($user, $start_from, $num_per_page);
 //load phân trang
-$num_row = get_calenda_employee();
+$num_row = get_calendar_employee();
 $num_row_calendar = (mysqli_num_rows($num_row));
 $total_page = ceil($num_row_calendar / $num_per_page);
 $current_page = isset($_GET['page']) ? $_GET['page'] : 1;

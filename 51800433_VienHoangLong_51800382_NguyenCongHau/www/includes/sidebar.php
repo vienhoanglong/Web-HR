@@ -61,18 +61,18 @@ if (!isset($_SESSION)) {
             </li>' ?>
             <?php echo '
             <li class=" ' ?>
-            <?php if ($title_page == "task_manager") {
+            <?php if ($title_page == "task") {
                             echo "active";
                         } ?><?php echo '">' ?>
-            <?php echo '<a class="a_active" href="/task_manager.php"> <i class="fa fa-tasks"></i>Task</a>
+            <?php echo '<a class="a_active" href="/task.php"> <i class="fa fa-tasks"></i>Task</a>
             </li>'; ?><?php
                     }
                     if ($_SESSION['role'] == 2) {
                         echo '<li class=" ' ?>
-            <?php if ($title_page == "task_manager") {
+            <?php if ($title_page == "task") {
                             echo "active";
                         } ?><?php echo '">' ?>
-            <?php echo '<a class="a_active" href="/task_manager.php"> <i class="fa fa-tasks"></i>Task</a>
+            <?php echo '<a class="a_active" href="/task.php"> <i class="fa fa-tasks"></i>Task</a>
             </li>'; ?>
             <li class=" ' ?>
             <?php if ($title_page == "calendar_employee") {

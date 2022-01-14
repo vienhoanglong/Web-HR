@@ -911,7 +911,7 @@ $(document).ready(function () {
     });
    
 });
-//Test
+//Create new task
 $('#form_create_task').submit(function(e) {
     e.preventDefault()
     var task_title = $('#task_title').val();
@@ -924,7 +924,7 @@ $('#form_create_task').submit(function(e) {
     (task_desc =='')?$('#err-taskdesc').html('Vui lòng chọn thời hạn công việc'):$('#err-taskdesc').html('');
     if(task_title != '' && task_employee != '' && task_time != '' && task_desc != ''){
         $.ajax({
-            url: 'task_manager.php',
+            url: 'task.php',
             data:  new FormData(this),
             enctype: 'multipart/form-data',
             contentType: false,
@@ -960,15 +960,7 @@ $(document).ready(function () {
             backdrop: 'static',
             keyboard: true, 
         });
-    });
-});
-// view task employee
-$(document).ready(function () {
-    $("#click_start_task_employee").click(function () {
-        $('#start_task_employee').modal({
-            backdrop: 'static',
-            keyboard: true, 
-        });
+       
     });
 });
 //delete task
@@ -1007,6 +999,260 @@ $(document).ready(function () {
         });
     });
 });
+//Show modal confirm start task
+$(document).ready(function () {
+    $("#click-start-task").click(function () {
+        $('#start-task').modal({
+            backdrop: 'static',
+            keyboard: true, 
+        });
+    });
+});
+$(document).ready(function () {
+    $(".click-start-task").click(function () {
+        $('#start-task').modal({
+            backdrop: 'static',
+            keyboard: true, 
+        });
+        var id = $(this).data('id');
+        var id_task = id.toString();
+        $('#id_start_task').val(id_task);
+        
+    });
+});
+$(document).on('click', '#btn_start_task', function(){
+    var id_task = $('#id_start_task').val();
+    console.log(id_task);
+    if(id_task==''){
+        alert('Thao tác bị lỗi');
+    }else{
+        $.ajax({
+            type: 'post',
+            url: 'task_employee.php',
+            dataType: 'JSON',
+            data: {
+                start_task: true,
+                id_task: id_task
+            },
+            success: function(data) {
+                console.log(data)
+                setTimeout(function(){
+                    $('#start-task').modal('hide');
+                    location.reload();
+                }, 1000);
+            }
+        })
+    }
+})
+//Show modal submit task
+$(document).ready(function () {
+    $("#click-submit-task").click(function () {
+        $('#submit-task').modal({
+            backdrop: 'static',
+            keyboard: true, 
+        });
+    });
+});
+$('#form_submit_task').submit(function(e){
+    e.preventDefault();
+    var submit_task_desc = $('#submit_task_desc').val();
+    // console.log(submit_task_desc);
+    (submit_task_desc =='')?$('#err-taskdesc').html('Vui lòng nhập mô tả'):$('er-taskdesc').html('');
+    if(submit_task_desc != ''){
+        $.ajax({
+            url: 'task_employee.php',
+            data:  new FormData(this),
+            enctype: 'multipart/form-data',
+            contentType: false,
+            cache: false,
+            processData:false,
+            dataType:'JSON',
+            method: 'Post',
+            type: 'POST',
+            success: function(data) {
+                if (data.hasOwnProperty('error') && data.error == '1') {
+                    var html = '';
+                    $.each(data, function(key, item) {
+                        if (key != 'error') {
+                            html += '<li>' + item + '</li>';
+                        }
+                    });
+                    $('.alert-danger').html(html).removeClass('hide');
+                } else { // Thành công
+                    $('.alert-success').html('Cập nhật phòng bản thành công!');
+                    setTimeout(function() {
+                        $('#submit-task').modal('hide');
+                        location.reload();
+                    }, 1000);
+                }
+            }
+        })
+    }
+})
+//Show modal reject task
+$(document).ready(function () {
+    $("#click-reject-task").click(function () {
+        $('#reject-task').modal({
+            backdrop: 'static',
+            keyboard: true, 
+        });
+       
+    });
+});
+$('#form_reject_task').submit(function(e){
+    e.preventDefault();
+    var reject_task_desc = $('#reject_task_desc').val();
+    //console.log(reject_task_desc);
+    (reject_task_desc =='')?$('#err-rejectdesc').html('Vui lòng nhập mô tả'):$('#err-rejectdesc').html('');
+    if(reject_task_desc != ''){
+        $.ajax({
+            url: 'task_manager.php',
+            data:  new FormData(this),
+            enctype: 'multipart/form-data',
+            contentType: false,
+            cache: false,
+            processData:false,
+            dataType:'JSON',
+            method: 'Post',
+            type: 'POST',
+            success: function(data) {
+                if (data.hasOwnProperty('error') && data.error == '1') {
+                    var html = '';
+                    $.each(data, function(key, item) {
+                        if (key != 'error') {
+                            html += '<li>' + item + '</li>';
+                        }
+                    });
+                    $('.alert-danger').html(html).removeClass('hide');
+                } else { // Thành công
+                    $('.alert-success').html('Reject task thành công!');
+                    setTimeout(function() {
+                        $('#submit-task').modal('hide');
+                        location.reload();
+                    }, 1000);
+                }
+            }
+        })
+    }
+})
+//Show modal cancel task
+$(document).ready(function () {
+    $("#click-cancel-task").click(function () {
+        $('#cancel-task').modal({
+            backdrop: 'static',
+            keyboard: true, 
+        });
+       
+    });
+});
+$(document).on('click', '#btn_cancel_task', function(){
+    var id_task = $('#id_cancel_task').val();
+    //console.log(id_task);
+    if(id_task==''){
+        alert('Thao tác bị lỗi');
+    }else{
+        $.ajax({
+            type: 'post',
+            url: 'task_manager.php',
+            dataType: 'JSON',
+            data: {
+                cancel_task: true,
+                id_task: id_task
+            },
+            success: function(data) {
+                console.log(data)
+                setTimeout(function(){
+                    $('#cancel-task').modal('hide');
+                    location.reload();
+                }, 1000);
+            }
+        })
+    }
+})
+// Show modal update task
+$(document).ready(function () {
+    $("#click-update-task").click(function () {
+        $('#update-task').modal({
+            backdrop: 'static',
+            keyboard: true, 
+        });
+       
+    });
+});
+
+$('#form_update_task').submit(function(e){
+    e.preventDefault();
+    var update_task_title = $('#update_task_title').val();
+    var update_task_desc = $('#update_task_desc').val();
+    (update_task_title == '')?$('#err-title').html('Vui lòng nhập tên công việc'):$('#err-title').html('');
+    (update_task_desc == '')?$('#err-desc').html('Vui lòng nhập mô tả công việc'):$('#err-desc').html('');
+    if(update_task_title!='' && update_task_desc!=''){
+        $.ajax({
+            url: 'task_manager.php',
+            data:  new FormData(this),
+            enctype: 'multipart/form-data',
+            contentType: false,
+            cache: false,
+            processData:false,
+            dataType:'JSON',
+            method: 'Post',
+            type: 'POST',
+            success: function(data) {
+                console.log(data);
+                if (data.hasOwnProperty('error') && data.error == '1') {
+                    var html = '';
+                    $.each(data, function(key, item) {
+                        if (key != 'error') {
+                            html += '<li>' + item + '</li>';
+                        }
+                    });
+                    $('.alert-danger').html(html).removeClass('hide');
+                } else { // Thành công
+                    $('.alert-success').html('Update task thành công!');
+                    setTimeout(function() {
+                        $('#update-task').modal('hide');
+                        location.reload();
+                    }, 1000);
+                }
+            }
+        })
+    }
+})
+//Show modal complete task
+$(document).ready(function () {
+    $("#click-complete-task").click(function () {
+        $('#complete-task').modal({
+            backdrop: 'static',
+            keyboard: true, 
+        });
+       
+    });
+});
+$(document).on('click', '#btn_complete_task', function(){
+    var id_task = $('#id_complete_task').val();
+    var complete = $('input[name="complete"]:checked').val();
+    if(id_task == '' && complete ==''){
+        alert('Thao tác bị lỗi');
+    }else{
+        $.ajax({
+            type: 'post',
+            url: 'insert.php',
+           //dataType: 'JSON',
+            data: {
+                complete_task: true,
+                id_task: id_task,
+                rating: complete
+            },
+            success: function(data) {
+                console.log(data)
+                setTimeout(function(){
+                    $('#complete-task').modal('hide');
+                    location.reload();
+                }, 1000);
+            }
+        })
+    }
+})
 //upload file
 function myFunction(){
     var x = document.getElementById("myFile");
