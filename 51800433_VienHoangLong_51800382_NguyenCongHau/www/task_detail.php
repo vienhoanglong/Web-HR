@@ -6,8 +6,17 @@ if (isset($_GET['id_task'])) {
 }
 $detail_task = load_task_byid($id_task);
 $activity_task = history_task($id_task);
-$task_submit = submit_task_new($id_task);
+$employee = $detail_task['name_employee'];
+$task_submit = submit_task_new($id_task, $employee);
 $fullname = (isset($task_submit['user'])) ? get_fullname($task_submit['user']) : '';
+$avatar = (isset($task_submit['user'])) ? get_avatar($task_submit['user']) : '';
+//Check thoi gian nop
+
+$dl = get_deadline_task($id_task); //deadline
+$sm = $task_submit['time_submit']; //time_submit tassk
+$turnin = check_time_submit($dl, $sm);
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -61,7 +70,7 @@ $fullname = (isset($task_submit['user'])) ? get_fullname($task_submit['user']) :
                                         <dt><b class="border-bottom border-primary">Nhân viên thực hiện</b></dt>
                                         <dd>
                                             <div class="d-flex align-items-center mt-1">
-                                                <img class="img-profile rounded-circle" src="/images/avatar.png">
+                                                <img class="img-profile rounded-circle" src="/images/<?= get_avatar($detail_task['name_employee']) ?>">
                                                 <b><?= get_fullname($detail_task['name_employee']) ?></b>
                                             </div>
                                         </dd>
@@ -112,7 +121,7 @@ $fullname = (isset($task_submit['user'])) ? get_fullname($task_submit['user']) :
                             <div class="card-body collapse" id="info_submit">
                                 <b>Thông tin submit</b>
                                 <div class="user-block">
-                                    <img class="img-profile rounded-circle" src="/images/avatar.png">
+                                    <img class="img-profile rounded-circle" src="/images/<?= $avatar ?>">
                                     <span><?= $fullname ?></span>
                                     <span class="ml-1">
                                         <i class="fa fa-clock-o" aria-hidden="true"></i><?= $task_submit['time_submit'] ?>
@@ -155,7 +164,7 @@ $fullname = (isset($task_submit['user'])) ? get_fullname($task_submit['user']) :
                         <div class="card-body collapse" id="history_submit">
                             <?php while ($row = mysqli_fetch_assoc($activity_task)) { ?>
                                 <div class="user-block">
-                                    <img class="img-profile rounded-circle" src="/images/avatar.png">
+                                    <img class="img-profile rounded-circle" src="/images/<?= get_avatar($row['user']) ?>">
                                     <span><?= get_fullname($row['user']) ?></span>
                                     <span class="ml-1">
                                         <i class="fa fa-clock-o" aria-hidden="true"></i><?= $row['time_submit'] ?>
@@ -365,6 +374,7 @@ $fullname = (isset($task_submit['user'])) ? get_fullname($task_submit['user']) :
                         <p>Vui lòng chọn mức độ hoàn thành task?</p>
 
                         <input type="hidden" id="id_complete_task" name="id_complete_task" value="<?= $detail_task['id'] ?>">
+
                         <div class="form-check">
                             <label class="form-check-label" for="radio1">
                                 <input type="radio" class="form-check-input" id="bag_task" name="complete" value="Bad" checked>Bad
@@ -375,12 +385,13 @@ $fullname = (isset($task_submit['user'])) ? get_fullname($task_submit['user']) :
                                 <input type="radio" class="form-check-input" id="ok_task" name="complete" value="Ok" checked>Ok
                             </label>
                         </div>
-                        <div class="form-check">
-                            <label class="form-check-label" for="radio2">
-                                <input type="radio" class="form-check-input" id="good_task" name="complete" value="Good">Good
-                            </label>
-                        </div>
-
+                        <?php if ($turnin == 'Turn in') { ?>
+                            <div class="form-check">
+                                <label class="form-check-label" for="radio2">
+                                    <input type="radio" class="form-check-input" id="good_task" name="complete" value="Good">Good
+                                </label>
+                            </div>
+                        <?php } ?>
                         <div class="modal-footer">
                             <button class="btn btn-primary" type="button" id="btn_complete_task">Submit</button>
                         </div>

@@ -104,16 +104,6 @@ if (isset($_POST['task_title']) && isset($_POST['task_employee']) && isset($_POS
                                                     <div class="dropdown-content dropdown-menu shadow-sm">
                                                         <a class="click-preview-task" href="task_detail.php?id_task=<?= $row['id'] ?>">Xem</a>
                                                         <?php
-                                                        if ($_SESSION['role'] == 1) {
-                                                            if ($row['status'] == 'New') { ?>
-                                                                <a class="click-delete-task">Hủy</a>
-                                                                <a class="click-update-task">Sửa</a>
-                                                            <?php }
-                                                            if ($row['status'] == 'Wating' || $row['status'] == 'Rejected') { ?>
-                                                                <a class="click-view-submit-task">Xác nhận</a>
-                                                        <?php }
-                                                        } ?>
-                                                        <?php
                                                         if ($_SESSION['role'] == 2) { ?>
                                                             <?php if ($row['status'] == 'New') { ?>
                                                                 <a class="click-start-task" data-id="<?= $row['id'] ?>">Start</a>

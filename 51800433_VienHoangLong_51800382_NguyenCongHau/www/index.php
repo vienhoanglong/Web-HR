@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once('db.php');
 $title_page = 'home';
 if (!isset($_SESSION['user'])) {
 	header('Location: login.php');
@@ -8,6 +9,21 @@ if (!isset($_SESSION['user'])) {
 if ($_SESSION['activated'] == 0) {
 	header('Location: change_password.php');
 	exit();
+}
+$user = $_SESSION['user'];
+if ($_SESSION['role'] == 0) {
+	$count_position = count_position();
+	$count_user = count_user();
+	$count_calendar = count_calendar();
+}
+if ($_SESSION['role'] == 1) {
+	$count_task = count_task($user);
+	$count_employee_of_deparment = count_employee_of_deparment($user);
+	$count_calendar_department = count_calendar_department($user);
+}
+if ($_SESSION['role'] == 2) {
+	$count_total_task = count_total_task($user);
+	$count_complete_task = count_complete_task($user);
 }
 ?>
 <!DOCTYPE html>
@@ -35,144 +51,149 @@ if ($_SESSION['activated'] == 0) {
 					<h4 class="text-gray-800">Trang chủ</h4>
 				</div>
 			</div>
-			<div class="row ml-2 mr-2">
-				<div class="col-xl-3 col-md-4 mb-4">
-					<div class="card shadow">
-						<div class="card-body border-left-color">
-							<div class="row align-items-center">
-								<div class="col mr-2">
-									<div class="text-xs text-uppercase font-weight-bold text-orange mb-1">
-										Nhân Viên</div>
-									<h5 class="mb-0 font-weight-bold text-gray-800">10,000</h5>
+			<?php if ($_SESSION['role'] == 0) { ?>
+				<div class="row ml-2 mr-2">
+					<div class="col-xl-3 col-md-4 mb-4">
+						<div class="card shadow">
+							<div class="card-body border-left-color">
+								<div class="row align-items-center">
+									<div class="col mr-2">
+										<div class="text-xs text-uppercase font-weight-bold text-orange mb-1">
+											Nhân Viên</div>
+										<h5 class="mb-0 font-weight-bold text-gray-800"><?= $count_user ?></h5>
+									</div>
+									<div class="col-auto">
+										<i class="fa fa-users fa-2x text-orange"></i>
+									</div>
 								</div>
-								<div class="col-auto">
-									<i class="fa fa-users fa-2x text-orange"></i>
+							</div>
+						</div>
+					</div>
+					<div class="col-xl-3 col-md-4 mb-4">
+						<div class="card shadow">
+							<div class="card-body border-left-color">
+								<div class="row align-items-center">
+									<div class="col mr-2">
+										<div class="text-xs text-uppercase font-weight-bold text-orange mb-1">
+											Phòng Ban</div>
+										<h5 class="mb-0 font-weight-bold text-gray-800"> <?= $count_position ?></h5>
+									</div>
+									<div class="col-auto">
+										<i class="fa fa-briefcase fa-2x text-orange"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-xl-3 col-md-4 mb-4">
+						<div class="card shadow">
+							<div class="card-body border-left-color">
+								<div class="row align-items-center">
+									<div class="col mr-2">
+										<div class="text-xs text-uppercase font-weight-bold text-orange mb-1">
+											Đơn xin nghỉ</div>
+										<h5 class="mb-0 font-weight-bold text-gray-800"><?= $count_calendar ?></h5>
+									</div>
+									<div class="col-auto">
+										<i class="fa fa-calendar fa-2x text-orange"></i>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-				<div class="col-xl-3 col-md-4 mb-4">
-					<div class="card shadow">
-						<div class="card-body border-left-color">
-							<div class="row align-items-center">
-								<div class="col mr-2">
-									<div class="text-xs text-uppercase font-weight-bold text-orange mb-1">
-										Phòng Ban</div>
-									<h5 class="mb-0 font-weight-bold text-gray-800">10,000</h5>
+			<?php } ?>
+			<!-- Trưởng phòng -->
+			<?php if ($_SESSION['role'] == 1) { ?>
+				<div class="row ml-2 mr-2">
+					<div class="col-xl-3 col-md-4 mb-4">
+						<div class="card shadow">
+							<div class="card-body border-left-color">
+								<div class="row align-items-center">
+									<div class="col mr-2">
+										<div class="text-xs text-uppercase font-weight-bold text-orange mb-1">
+											Tổng Nhân Viên</div>
+										<h5 class="mb-0 font-weight-bold text-gray-800"><?= $count_employee_of_deparment ?></h5>
+									</div>
+									<div class="col-auto">
+										<i class="fa fa-users fa-2x text-orange"></i>
+									</div>
 								</div>
-								<div class="col-auto">
-									<i class="fa fa-briefcase fa-2x text-orange"></i>
+							</div>
+						</div>
+					</div>
+					<div class="col-xl-3 col-md-4 mb-4">
+						<div class="card shadow">
+							<div class="card-body border-left-color">
+								<div class="row align-items-center">
+									<div class="col mr-2">
+										<div class="text-xs text-uppercase font-weight-bold text-orange mb-1">
+											Đơn xin nghỉ</div>
+										<h5 class="mb-0 font-weight-bold text-gray-800"><?= $count_calendar_department ?></h5>
+									</div>
+									<div class="col-auto">
+										<i class="fa fa-calendar fa-2x text-orange"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-xl-3 col-md-4 mb-4">
+						<div class="card shadow">
+							<div class="card-body border-left-color">
+								<div class="row align-items-center">
+									<div class="col mr-2">
+										<div class="text-xs text-uppercase font-weight-bold text-orange mb-1">
+											công việc đã giao</div>
+										<h5 class="mb-0 font-weight-bold text-gray-800"><?= $count_task ?></h5>
+									</div>
+									<div class="col-auto">
+										<i class="fa fa-tasks fa-2x text-orange"></i>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-				<div class="col-xl-3 col-md-4 mb-4">
-					<div class="card shadow">
-						<div class="card-body border-left-color">
-							<div class="row align-items-center">
-								<div class="col mr-2">
-									<div class="text-xs text-uppercase font-weight-bold text-orange mb-1">
-										Ngày Nghỉ</div>
-									<h5 class="mb-0 font-weight-bold text-gray-800">40000</h5>
+			<?php } ?>
+			<?php if ($_SESSION['role'] == 2) { ?>
+				<div class="row ml-2 mr-2">
+					<div class="col-xl-3 col-md-4 mb-4">
+						<div class="card shadow">
+							<div class="card-body border-left-color">
+								<div class="row align-items-center">
+									<div class="col mr-2">
+										<div class="text-xs text-uppercase font-weight-bold text-orange mb-1">
+											Công việc được giao</div>
+										<h5 class="mb-0 font-weight-bold text-gray-800"><?= $count_total_task ?></h5>
+									</div>
+									<div class="col-auto">
+										<i class="fa fa-tasks fa-2x text-orange"></i>
+									</div>
 								</div>
-								<div class="col-auto">
-									<i class="fa fa-calendar fa-2x text-orange"></i>
+							</div>
+						</div>
+					</div>
+					<div class="col-xl-3 col-md-4 mb-4">
+						<div class="card shadow">
+							<div class="card-body border-left-color">
+								<div class="row align-items-center">
+									<div class="col mr-2">
+										<div class="text-xs text-uppercase font-weight-bold text-orange mb-1">
+											Hoàn thành</div>
+										<h5 class="mb-0 font-weight-bold text-gray-800"><?= $count_complete_task ?></h5>
+									</div>
+									<div class="col-auto">
+										<i class="fa fa-tasks fa-2x text-orange"></i>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-			<div class="row ml-2 mr-2">
-				<div class="col-xl-12 col-lg-9">
-					<div class="card shadow mb-4">
-						<!-- Card Body -->
-						<div class="card-header py-3">
-							<h6 class="m-0 font-weight-bold text-primary">Bảng Danh Sách Nhân Viên</h6>
-						</div>
-						<div class="card-body">
-							<div class="form-outline mb-2">
-								<input type="search" class="form-control" placeholder="Search..." />
-							</div>
-							<div class="table-responsive">
-								<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-									<thead>
-										<tr>
-											<th>Mã nhân viên</th>
-											<th>Họ Tên</th>
-											<th>Chức vụ</th>
-											<th>Phòng Ban</th>
-											<th>Function</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr>
-											<td>NV01</td>
-											<td>Viên Hoàng Long</td>
-											<td>Trưởng phòng CNTT</td>
-											<td>Phòng CNTT</td>
-											<td>
-												<a class="btn btn-primary btn-icon-split">
-													<span class="icon text-white-50"><i class="fa fa-edit"></i></span>
-													<span>Edit</span>
-												</a>
-												<a class="btn btn-danger btn-icon-split">
-													<span class="icon text-white-50"><i class="fa fa-remove"></i></span>
-													<span>Delete</span>
-												</a>
-											</td>
-										</tr>
-										<tr>
-											<td>NV01</td>
-											<td>Viên Hoàng Long</td>
-											<td>Trưởng phòng CNTT</td>
-											<td>Phòng CNTT</td>
-											<td>
-												<a class="btn btn-primary btn-icon-split">
-													<span class="icon text-white-50"><i class="fa fa-edit"></i></span>
-													<span>Edit</span>
-												</a>
-												<a class="btn btn-danger btn-icon-split">
-													<span class="icon text-white-50"><i class="fa fa-remove"></i></span>
-													<span>Delete</span>
-												</a>
-											</td>
-										</tr>
-										<tr>
-											<td>NV01</td>
-											<td>Viên Hoàng Long</td>
-											<td>Nhân viên phòng CNTT</td>
-											<td>Phòng CNTT</td>
-											<td>
-												<a class="btn btn-primary btn-icon-split">
-													<span class="icon text-white-50"><i class="fa fa-edit"></i></span>
-													<span>Edit</span>
-												</a>
-												<a class="btn btn-danger btn-icon-split">
-													<span class="icon text-white-50"><i class="fa fa-remove"></i></span>
-													<span>Delete</span>
-												</a>
-											</td>
-										</tr>
-									</tbody>
-								</table>
-								<ul class="pagination">
-									<li class="page-item"><a class="page-link" href="#">Trước</a></li>
-									<li class="page-item active"><a class="page-link" href="#">1</a></li>
-									<li class="page-item"><a class="page-link" href="#">2</a></li>
-									<li class="page-item"><a class="page-link" href="#">3</a></li>
-									<li class="page-item"><a class="page-link" href="#">4</a></li>
-									<li class="page-item"><a class="page-link" href="#">5</a></li>
-									<li class="page-item"><a class="page-link" href="#">Sau</a></li>
-								</ul>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+			<?php } ?>
 		</div>
+
 	</div>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>

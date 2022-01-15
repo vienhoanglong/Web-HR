@@ -23,6 +23,8 @@ $num_row = get_calendar_employee();
 $num_row_calendar = (mysqli_num_rows($num_row));
 $total_page = ceil($num_row_calendar / $num_per_page);
 $current_page = isset($_GET['page']) ? $_GET['page'] : 1;
+//Load so ngay nghi
+$day_calendar = get_dayoff($user);
 $er_calendar = array(
     'error' => 0
 );
@@ -132,7 +134,48 @@ if (isset($_POST['checking_nv_accept'])) {
             <!-- Page Content  -->
             <div class="container-fluid">
                 <div class="col-xl-12 col-lg-9">
-                    <div class="card shadow mb-4 mt-5">
+                    <div class="row mr-2 mt-4">
+                        <div class="col-xl-2 col-md-4 mb-4">
+                            <div class="card shadow-sm h-70">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs text-uppercase font-weight-bold text-orange mb-1">
+                                                Tổng ngày nghỉ</div>
+                                            <h5 class="mb-0 font-weight-bold text-gray"><?= $day_calendar['ngayDaNghi'] + $day_calendar['ngayConLai'] ?></h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-2 col-md-4 mb-4">
+                            <div class="card shadow-sm h-70">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs text-uppercase font-weight-bold text-orange mb-1">
+                                                Ngày đã nghỉ</div>
+                                            <h5 class="mb-0 font-weight-bold text-gray"><?= $day_calendar['ngayDaNghi'] ?></h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-2 col-md-4 mb-4">
+                            <div class="card shadow-sm h-70">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs text-uppercase font-weight-bold text-orange mb-1">
+                                                Ngày còn lại</div>
+                                            <h5 class="mb-0 font-weight-bold text-gray"><?= $day_calendar['ngayConLai'] ?></h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card shadow mb-4">
                         <!-- Card Body -->
                         <div class="card-header">
                             <h4 class="font-weight-bold text-primary">Bảng Danh Sách Yêu Cầu Xin Nghỉ Phép</h4>

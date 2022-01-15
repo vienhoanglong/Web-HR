@@ -1236,7 +1236,7 @@ $(document).on('click', '#btn_complete_task', function(){
     }else{
         $.ajax({
             type: 'post',
-            url: 'insert.php',
+            url: 'task_manager.php',
            //dataType: 'JSON',
             data: {
                 complete_task: true,

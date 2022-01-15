@@ -485,6 +485,13 @@ function promote_department($department, $user, $position)
         if (!$stm1->execute()) {
             return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
         }
+        //Tru di 3 ngay nghi neu bai nhiem truong phong
+        $sql2 = 'update accept_calendar set ngayConLai - 3 where username = ?';
+        $stm1 = $conn->prepare($sql2);
+        $stm1->bind_param('s', $user);
+        if (!$stm1->execute()) {
+            return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+        }
         return array('code' => 0, 'error' => 'Bãi nhiệm trưởng phòng thành công!');
     }
     $sql = 'update department set manager = ?, status = 1  where idDepartment = ?';
@@ -497,6 +504,13 @@ function promote_department($department, $user, $position)
     //Update users
     $sql1 = "update users set role = 1, position = 'Manager' where username = ?";
     $stm1 = $conn->prepare($sql1);
+    $stm1->bind_param('s', $user);
+    if (!$stm1->execute()) {
+        return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+    }
+    //Cong them 3 ngay nghi neu bo nhiem truong phong
+    $sql2 = 'update accept_calendar set ngayConLai + 3 where username = ?';
+    $stm1 = $conn->prepare($sql2);
     $stm1->bind_param('s', $user);
     if (!$stm1->execute()) {
         return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
@@ -691,6 +705,19 @@ function update_status_cancel_calendar($id_calendar)
     }
     return array('code' => 0, 'error' => 'Thực hiện không duyệt đơn thành công!');
 }
+function get_dayoff($user)
+{
+    $conn = open_database();
+    $sql = 'select * from accept_calendar where username = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('s', $user);
+    if (!$stm->execute()) {
+        die('Query error: ' . $stm->error);
+    }
+    $result = $stm->get_result();
+    $data = $result->fetch_assoc();
+    return $data;
+}
 //Task
 // Lấy danh sách nhân viên thuộc phòng ban
 function get_list_employee_department($department)
@@ -875,6 +902,19 @@ function history_task($id_task)
     $result = $stm->get_result();
     return $result;
 }
+function get_avatar($user)
+{
+    $conn = open_database();
+    $sql = 'select avatar from users where username = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('s', $user);
+    if (!$stm->execute()) {
+        die('Query error: ' . $stm->error);
+    }
+    $result = $stm->get_result();
+    $data = implode($result->fetch_assoc());
+    return $data;
+}
 //Lấy user trong task_process
 // function get_user_task($id_task){
 //     $conn = open_database();
@@ -904,12 +944,12 @@ function history_task($id_task)
 //         return false;
 //     }
 // }
-function submit_task_new($id_task)
+function submit_task_new($id_task, $user)
 {
     $conn = open_database();
-    $sql = 'select * from task_process where task_id = ? order by time_submit desc';
+    $sql = 'select * from task_process where task_id = ? and user = ? order by time_submit desc';
     $stm = $conn->prepare($sql);
-    $stm->bind_param('i', $id_task);
+    $stm->bind_param('is', $id_task, $user);
     if (!$stm->execute()) {
         die('Query error: ' . $stm->error);
     }
@@ -994,4 +1034,122 @@ function complete_task($id_task, $rating)
         return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
     }
     return array('code' => 0, 'error' => 'Complete thành công!');
+}
+function count_user()
+{
+    $conn = open_database();
+    $sql = 'select count(*) from users where role between 1 and 2';
+    $stm = $conn->prepare($sql);
+    $stm->execute();
+    $result = $stm->get_result();
+    $data = implode($result->fetch_assoc());
+    return $data;
+}
+function count_position()
+{
+    $conn = open_database();
+    $sql = 'select count(*) from department';
+    $stm = $conn->prepare($sql);
+    $stm->execute();
+    $result = $stm->get_result();
+    $data = implode($result->fetch_assoc());
+    return $data;
+}
+function count_calendar()
+{
+    $conn = open_database();
+    $trangThai = 'Chờ duyệt';
+    $position = 'Manager';
+    $sql = 'select count(*) from calendar where trangThai = ? and position = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('ss', $trangThai, $position);
+    if (!$stm->execute()) {
+        die('Query error: ' . $stm->error);
+    }
+    $result = $stm->get_result();
+    $data = implode($result->fetch_assoc());
+    return $data;
+} //
+function get_name_department_bymanager($user)
+{
+    $conn = open_database();
+    $sql = 'select nameDepartment from department where manager = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('s', $user);
+    if (!$stm->execute()) {
+        die('Query error: ' . $stm->error);
+    }
+    $result = $stm->get_result();
+    $data = implode($result->fetch_assoc());
+    return $data;
+}
+
+function count_calendar_department($user)
+{
+    $conn = open_database();
+    $department = get_name_department_bymanager($user);
+    $trangThai = 'Chờ duyệt';
+    $sql = 'select count(*) from calendar where department =? and trangThai = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('ss', $department, $trangThai);
+    if (!$stm->execute()) {
+        die('Query error: ' . $stm->error);
+    }
+    $result = $stm->get_result();
+    $data = implode($result->fetch_assoc());
+    return $data;
+}
+function count_employee_of_deparment($user)
+{
+    $conn = open_database();
+    $department = get_name_department_bymanager($user);
+    $sql = 'select count(*) from users where department =?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('s', $department);
+    if (!$stm->execute()) {
+        die('Query error: ' . $stm->error);
+    }
+    $result = $stm->get_result();
+    $data = implode($result->fetch_assoc());
+    return $data;
+}
+function count_task($user)
+{
+    $conn = open_database();
+    $department = get_name_department_bymanager($user);
+    $sql = 'select count(*) from list_task where department = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('s', $department);
+    if (!$stm->execute()) {
+        die('Query error: ' . $stm->error);
+    }
+    $result = $stm->get_result();
+    $data = implode($result->fetch_assoc());
+    return $data;
+}
+function count_total_task($user)
+{
+    $conn = open_database();
+    $sql = 'select count(*) from list_task where name_employee = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('s', $user);
+    if (!$stm->execute()) {
+        die('Query error: ' . $stm->error);
+    }
+    $result = $stm->get_result();
+    $data = implode($result->fetch_assoc());
+    return $data;
+}
+function count_complete_task($user){
+    $conn = open_database();
+    $status = 'Completed';
+    $sql = 'select count(*) from list_task where name_employee = ? and status = ?';
+    $stm = $conn->prepare($sql);
+    $stm->bind_param('ss', $user, $status);
+    if (!$stm->execute()) {
+        die('Query error: ' . $stm->error);
+    }
+    $result = $stm->get_result();
+    $data = implode($result->fetch_assoc());
+    return $data;
 }
