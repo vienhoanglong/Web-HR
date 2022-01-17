@@ -1,3 +1,3 @@
 # Web-NhanSu
 Project cuối kì môn Lập trình web ứng dụng
-:hammer:
+## :hammer: Chức năng chính
