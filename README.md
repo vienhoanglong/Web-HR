@@ -1,4 +1,4 @@
-# Final project of web and application programming :technologist: :technologist:
+# Final project of web and application programming :technologist:
 
 ## Programming language
 
@@ -9,13 +9,13 @@
 
 ## :hammer: The main functions in the program
 
-> [Account management function](#quanlytaikhoan)
+> [Account management function]()
 
-> [Department management function](#quanlyphongban)
+> [Department management function]()
 
-> [Task management function](#quanlynhiemvuphia)
+> [Task management function]()
 
-> [Leave management function](#quanlyngaynghiphep)
+> [Leave management function]()
 
 ## Other information
 
