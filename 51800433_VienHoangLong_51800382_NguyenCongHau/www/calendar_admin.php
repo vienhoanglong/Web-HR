@@ -2,7 +2,14 @@
 session_start();
 $title_page = 'calendar_admin';
 require_once('db.php');
-
+if (!isset($_SESSION['user'])) {
+    header('Location: login.php');
+    exit();
+}
+if ($_SESSION['role'] != 0) {
+    header('Location: index.php');
+    exit();
+}
 // Phân trang
 if (isset($_GET['page'])) {
     $page = $_GET['page'];

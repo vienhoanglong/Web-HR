@@ -48,12 +48,6 @@ if (!isset($_SESSION)) {
                     if ($_SESSION['role'] == 1) {
                         echo
                         '<li class=" ' ?>
-            <?php if ($title_page == "management_employee") {
-                            echo "active";
-                        } ?><?php echo '">' ?>
-            <?php echo '<a class="a_active" href="/management_employee.php"> <i class="fa fa-users"></i>Quản lý nhân viên</a>
-            </li>' ?><?php echo '
-            <li class=" ' ?>
             <?php if ($title_page == "calendar_manager") {
                             echo "active";
                         } ?><?php echo '">' ?>

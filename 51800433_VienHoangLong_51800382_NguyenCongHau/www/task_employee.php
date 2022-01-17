@@ -1,5 +1,7 @@
 <?php
 require_once('db.php');
+session_start();
+
 $er_start = array(
     'error' => 0
 );

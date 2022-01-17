@@ -1,6 +1,14 @@
 <?php
 session_start();
 require_once('db.php');
+if (!isset($_SESSION['user'])) {
+    header('Location: login.php');
+    exit();
+}
+if ($_SESSION['role'] != 2) {
+    header('Location: index.php');
+    exit();
+}
 $title_page = 'calendar_employee';
 $user = $_SESSION['user'];
 $date = 12;

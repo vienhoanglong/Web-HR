@@ -4,6 +4,10 @@ if (!isset($_SESSION['user'])) {
     header('Location: login.php');
     exit();
 }
+if ($_SESSION['role'] != 0) {
+    header('Location: index.php');
+    exit();
+}
 require_once('db.php');
 $title_page = 'management_employee';
 // Phân trang

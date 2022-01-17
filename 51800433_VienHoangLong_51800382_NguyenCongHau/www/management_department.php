@@ -1,6 +1,14 @@
 <?php
 session_start();
 require_once('db.php');
+if (!isset($_SESSION['user'])) {
+    header('Location: login.php');
+    exit();
+}
+if ($_SESSION['role'] != 0) {
+    header('Location: index.php');
+    exit();
+}
 $title_page = 'management_department';
 $departments = get_department();
 $d_name = get_name_department();

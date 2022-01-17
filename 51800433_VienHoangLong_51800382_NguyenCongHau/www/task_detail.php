@@ -1,6 +1,10 @@
 <?php
 session_start();
 require_once('db.php');
+if (!isset($_SESSION['user'])) {
+    header('Location: login.php');
+    exit();
+}
 if (isset($_GET['id_task'])) {
     $id_task = $_GET['id_task'];
 }
@@ -11,12 +15,11 @@ $task_submit = submit_task_new($id_task, $employee);
 $fullname = (isset($task_submit['user'])) ? get_fullname($task_submit['user']) : '';
 $avatar = (isset($task_submit['user'])) ? get_avatar($task_submit['user']) : '';
 //Check thoi gian nop
-
-$dl = get_deadline_task($id_task); //deadline
-$sm = $task_submit['time_submit']; //time_submit tassk
-$turnin = check_time_submit($dl, $sm);
-
-
+if ($task_submit != null) {
+    $dl = get_deadline_task($id_task); //deadline
+    $sm = $task_submit['time_submit']; //time_submit tassk
+    $turnin = check_time_submit($dl, $sm);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">

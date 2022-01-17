@@ -1,15 +1,5 @@
 <?php
 
-// $host = 'mysql-server'; // tên mysql server
-// $user = 'root';
-// $pass = 'root';
-// $db = 'company_management'; // tên databse
-
-// $conn = new mysqli($host, $user, $pass, $db);
-// $conn->set_charset("utf8");
-// if ($conn->connect_error) {
-//     die('Không thể kết nối database: ' . $conn->connect_error);
-// }
 define('HOST', 'mysql-server');
 define('USER', 'root');
 define('PASS', 'root');
@@ -436,9 +426,9 @@ function count_employee_department($id_department)
 }
 function update_department($name, $address, $desc, $id_department)
 {
-    if (check_department($name)) {
-        return array('code' => 1, 'error' => 'Phòng ban này đã tồn tại');
-    }
+    // if (check_department($name)) {
+    //     return array('code' => 1, 'error' => 'Phòng ban này đã tồn tại');
+    // }
     $conn = open_database();
     $sql = 'update department set nameDepartment = ?, addressDepartment = ?, descDepartment = ? where idDepartment = ?';
     $stm = $conn->prepare($sql);
@@ -485,13 +475,13 @@ function promote_department($department, $user, $position)
         if (!$stm1->execute()) {
             return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
         }
-        //Tru di 3 ngay nghi neu bai nhiem truong phong
-        $sql2 = 'update accept_calendar set ngayConLai - 3 where username = ?';
-        $stm1 = $conn->prepare($sql2);
-        $stm1->bind_param('s', $user);
-        if (!$stm1->execute()) {
-            return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
-        }
+        // //Tru di 3 ngay nghi neu bai nhiem truong phong
+        // $sql2 = 'update accept_calendar set ngayConLai - 3 where username = ?';
+        // $stm1 = $conn->prepare($sql2);
+        // $stm1->bind_param('s', $user);
+        // if (!$stm1->execute()) {
+        //     return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+        // }
         return array('code' => 0, 'error' => 'Bãi nhiệm trưởng phòng thành công!');
     }
     $sql = 'update department set manager = ?, status = 1  where idDepartment = ?';
@@ -508,13 +498,13 @@ function promote_department($department, $user, $position)
     if (!$stm1->execute()) {
         return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
     }
-    //Cong them 3 ngay nghi neu bo nhiem truong phong
-    $sql2 = 'update accept_calendar set ngayConLai + 3 where username = ?';
-    $stm1 = $conn->prepare($sql2);
-    $stm1->bind_param('s', $user);
-    if (!$stm1->execute()) {
-        return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
-    }
+    // //Cong them 3 ngay nghi neu bo nhiem truong phong
+    // $sql2 = 'update accept_calendar set ngayConLai + 3 where username = ?';
+    // $stm1 = $conn->prepare($sql2);
+    // $stm1->bind_param('s', $user);
+    // if (!$stm1->execute()) {
+    //     return array('code' => 2, 'error' => 'Không thể thực hiện lệnh!');
+    // }
     return array('code' => 0, 'error' => 'Bổ nhiệm trưởng phòng thành công!');
 }
 //check số ngày nghỉ
@@ -915,35 +905,6 @@ function get_avatar($user)
     $data = implode($result->fetch_assoc());
     return $data;
 }
-//Lấy user trong task_process
-// function get_user_task($id_task){
-//     $conn = open_database();
-//     $sql = 'select user from task_process where task_id = ?';
-//     $stm = $conn->prepare($sql);
-//     $stm->bind_param('i', $id_task);
-//     if (!$stm->execute()) {
-//         die('Query error: ' . $stm->error);
-//     }
-//     $result = $stm->get_result();
-//     $data = implode($result->fetch_assoc());
-//     return $data;
-// }
-// function check_manager_task($user){
-//     $sql = 'select role from users where username = ?';
-//     $conn = open_database();
-
-//     $stm = $conn->prepare($sql);
-//     $stm->bind_param('s', $name);
-//     if (!$stm->execute()) {
-//         die('Query error: ' . $stm->error);
-//     }
-//     $result = $stm->get_result();
-//     if ($result->num_rows > 0) {
-//         return true;
-//     } else {
-//         return false;
-//     }
-// }
 function submit_task_new($id_task, $user)
 {
     $conn = open_database();
@@ -1140,7 +1101,8 @@ function count_total_task($user)
     $data = implode($result->fetch_assoc());
     return $data;
 }
-function count_complete_task($user){
+function count_complete_task($user)
+{
     $conn = open_database();
     $status = 'Completed';
     $sql = 'select count(*) from list_task where name_employee = ? and status = ?';
