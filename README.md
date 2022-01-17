@@ -9,13 +9,13 @@
 
 ## :hammer: The main functions in the program
 
-> [Account management function]()
+> [Account management function]
 
-> [Department management function]()
+> [Department management function](#)
 
-> [Task management function]()
+> [Task management function](#)
 
-> [Leave management function]()
+> [Leave management function](#)
 
 ## Other information
 
