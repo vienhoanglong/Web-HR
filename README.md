@@ -3,7 +3,7 @@
 ## Programming language
 
 - PHP
-- Javascript
+- JavaScript
 - HTML & CSS
 - Bootstrap
 
