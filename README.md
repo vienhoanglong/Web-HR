@@ -9,7 +9,7 @@
 
 ## :hammer: The main functions in the program
 
-> [Account management function]
+> [Account management function](#)
 
 > [Department management function](#)
 
